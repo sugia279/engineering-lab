@@ -1,0 +1,27 @@
+{
+  "name": "engineering-lab",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/check": "^0.9.0",
+    "@astrojs/mdx": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

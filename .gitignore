@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Astro build output
+dist/
+
+# Astro generated types
+.astro/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor state
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Local AI tooling (Atlas MCP workspace state)
+.ccb-ai/
+.github/hooks/
+.github/agents/
+.github/copilot-instructions.md

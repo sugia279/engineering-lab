@@ -1,0 +1,632 @@
+<!-- Atlas v0.6.0 -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Su Duy Hien - Senior Automation Test Engineer Resume</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #586174;
+      --line: #d7dde8;
+      --paper: #fffaf2;
+      --panel: #ffffff;
+      --blue: #205b9f;
+      --teal: #16817a;
+      --green: #2f7a3d;
+      --gold: #b46c11;
+      --red: #9d3d34;
+      --violet: #6f4ba5;
+      --shadow: 0 14px 34px rgba(23, 32, 51, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 5%, rgba(32, 91, 159, 0.12), transparent 26%),
+        radial-gradient(circle at 88% 10%, rgba(22, 129, 122, 0.14), transparent 28%),
+        linear-gradient(135deg, #f4efe6 0%, #eef4f7 48%, #f8f2e8 100%);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.48;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 32px auto;
+      background: var(--paper);
+      border: 1px solid rgba(23, 32, 51, 0.14);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: center;
+      padding: 36px 42px 28px;
+      border-top: 7px solid var(--blue);
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.35)),
+        repeating-linear-gradient(135deg, rgba(32, 91, 159, 0.055) 0 2px, transparent 2px 12px);
+    }
+
+    .name {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 0.95;
+      letter-spacing: 0;
+      color: #123157;
+    }
+
+    .headline {
+      margin: 10px 0 0;
+      font-size: clamp(17px, 2.2vw, 23px);
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .summary {
+      max-width: 760px;
+      margin: 18px 0 0;
+      font-size: 16px;
+    }
+
+    .contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .contact span {
+      white-space: nowrap;
+    }
+
+    .mark {
+      width: 148px;
+      height: 148px;
+      border: 2px solid rgba(32, 91, 159, 0.28);
+      border-radius: 50%;
+      background: #ffffff;
+      display: grid;
+      place-items: center;
+      color: white;
+      font: 700 42px Georgia, "Times New Roman", serif;
+      box-shadow: 0 10px 24px rgba(23, 32, 51, 0.16);
+      overflow: hidden;
+    }
+
+    .mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.58);
+    }
+
+    .metric {
+      padding: 18px 24px;
+      border-right: 1px solid var(--line);
+    }
+
+    .metric:last-child {
+      border-right: 0;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      color: var(--blue);
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.05fr 1.95fr;
+      gap: 30px;
+      padding: 34px 42px 42px;
+    }
+
+    section {
+      margin-bottom: 28px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      padding-bottom: 7px;
+      border-bottom: 2px solid var(--ink);
+      color: #10192b;
+      font-size: 18px;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      margin: 0;
+      color: #123157;
+      font-size: 18px;
+    }
+
+    .role-meta {
+      margin: 3px 0 10px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0 0 10px;
+    }
+
+    ul {
+      margin: 8px 0 0;
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      border: 1px solid rgba(32, 91, 159, 0.24);
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #24324b;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .focus-list li::marker {
+      color: var(--teal);
+    }
+
+    .experience-item {
+      padding-bottom: 22px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .experience-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .recent {
+      border-left: 5px solid var(--teal);
+      background: #f7fffc;
+    }
+
+    .knowledge-graph {
+      width: 100%;
+      min-height: 500px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(247, 250, 252, 0.95)),
+        radial-gradient(circle at center, rgba(32, 91, 159, 0.08), transparent 62%);
+      overflow: hidden;
+    }
+
+    .graph-caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .node text {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 13px;
+      font-weight: 700;
+      fill: #12213a;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .node circle,
+    .node rect {
+      filter: drop-shadow(0 5px 8px rgba(23, 32, 51, 0.14));
+    }
+
+    .edge {
+      stroke: rgba(23, 32, 51, 0.38);
+      stroke-width: 2;
+    }
+
+    .edge-strong {
+      stroke: rgba(22, 129, 122, 0.78);
+      stroke-width: 3;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 6px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .legend span:nth-child(2)::before {
+      background: var(--teal);
+    }
+
+    .legend span:nth-child(3)::before {
+      background: var(--gold);
+    }
+
+    .print-note {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .hero,
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .mark {
+        width: 112px;
+        height: 112px;
+        font-size: 32px;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .metric:nth-child(2) {
+        border-right: 0;
+      }
+
+      .metric:nth-child(1),
+      .metric:nth-child(2) {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .legend {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .page {
+        width: 100%;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      .hero,
+      main {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .knowledge-graph {
+        min-height: 420px;
+      }
+
+      a {
+        color: var(--ink);
+      }
+
+      .print-note {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header class="hero">
+      <div>
+        <h1 class="name">Su Duy Hien</h1>
+        <p class="headline">Senior Automation Test Engineer | SDET | Test Framework & AI-Assisted QA Architecture</p>
+        <p class="summary">
+          Senior Automation Test Engineer with 15+ years across software development, test automation leadership, and enterprise automation framework development. Specialized in designing large-scale Web/UI, API, GraphQL, desktop, and distributed regression systems for complex billing and customer-care platforms.
+        </p>
+        <div class="contact" aria-label="Contact information">
+          <span>Ho Chi Minh City, Vietnam</span>
+          <span><a href="mailto:hiensu304@gmail.com">hiensu304@gmail.com</a></span>
+          <span>0909 383 020</span>
+          <span><a href="https://github.com/sugia279">github.com/sugia279</a></span>
+          <span><a href="https://medium.com/@hiensu304">medium.com/@hiensu304</a></span>
+        </div>
+      </div>
+      <div class="mark" aria-label="Su Duy Hien profile photo">
+        <img src="SuDuyHien_Profile.png" alt="Su Duy Hien" />
+      </div>
+    </header>
+
+    <div class="metrics" aria-label="Career highlights">
+      <div class="metric"><strong>15+</strong><span>years in software engineering and automation testing</span></div>
+      <div class="metric"><strong>7,000+</strong><span>enterprise regression tests maintained and orchestrated</span></div>
+      <div class="metric"><strong>5+</strong><span>internal automation tools designed and adopted</span></div>
+      <div class="metric"><strong>4</strong><span>automation surfaces: Web, API, desktop, AI-assisted migration</span></div>
+    </div>
+
+    <main>
+      <aside>
+        <section>
+          <h2>Core Strengths</h2>
+          <div class="tag-cloud">
+            <span class="tag">Automation Frameworks</span>
+            <span class="tag">Selenium 4</span>
+            <span class="tag">C# / .NET</span>
+            <span class="tag">GraphQL / REST</span>
+            <span class="tag">SQL Server / Oracle / PostgreSQL</span>
+            <span class="tag">AI Agent Design</span>
+            <span class="tag">Verification-Gated Learning</span>
+            <span class="tag">Knowledge Promotion Systems</span>
+            <span class="tag">Agent Memory Architecture</span>
+            <span class="tag">MCP / AI Tooling</span>
+          </div>
+        </section>
+
+        <section>
+          <h2>Technical Profile</h2>
+          <div class="card">
+            <strong>Frameworks &amp; Tools</strong>
+            <p>NUnit, TestNG, Selenium 4, RestAssured, Playwright (evaluated), TestStack.White, TeamCity, Jira, Visual Studio, VS Code, IntelliJ</p>
+          </div>
+          <div class="card">
+            <strong>Test Architecture</strong>
+            <p>Layered test frameworks, Page Object Model, API-first dual-mode setup (UI + service), data-driven and keyword-driven patterns, distributed execution orchestration, 5-bucket failure taxonomy, AI-assisted conversion pipelines</p>
+          </div>
+          <div class="card">
+            <strong>AI &amp; Agent Systems</strong>
+            <p>Designed verification-gated knowledge promotion: AI fixes are held provisional until an automatic test oracle (rerun pass/fail) confirms them, then promoted with evidence-graded blast-radius control — spoke-specific after 1 green rerun, shared-generic only after 2+ independent green spokes. Modelled on progressive delivery (canary deploy) applied to AI-generated knowledge rather than code releases.</p>
+            <p style="margin-top:6px">Designed 5-store memory &amp; context flow for AI agent pipelines: generic rule files, per-dialog rule files, in-run fast-path cache (learned-patterns.json), workflow state table (AITask), and append-only event log (TestRunContext) — enabling idempotent resume, 3-strike escalation, and full lifecycle tracing by session ID.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>Education</h2>
+          <p><strong>Master of Information System</strong><br />Posts & Telecommunication Institute of Technology, Ho Chi Minh City, 2015</p>
+          <p>Thesis: Keyphrase Extraction Automation system using ontology concepts and machine learning.</p>
+          <p><strong>Bachelor of Information Technology</strong><br />Van Lang University, Ho Chi Minh City, 2008</p>
+        </section>
+
+        <section>
+          <h2>Languages</h2>
+          <p>English: oral and written professional communication.</p>
+        </section>
+
+        <section>
+          <h2>Selected Links</h2>
+          <ul>
+            <li><a href="https://github.com/sugia279/AutomationTestingFramework">AutomationTestingFramework</a></li>
+            <li><a href="https://github.com/sugia279/HiEnds">HiEnds</a></li>
+            <li><a href="https://medium.com/@hiensu304">Technical articles on Medium</a></li>
+          </ul>
+        </section>
+      </aside>
+
+      <div>
+        <section>
+          <h2>Knowledge Graph Visual</h2>
+          <svg class="knowledge-graph" viewBox="0 0 1020 530" role="img" aria-label="Graph visual of Su Duy Hien automation knowledge areas">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(23,32,51,0.42)"></path>
+              </marker>
+            </defs>
+
+            <!-- Strong edges: center → all satellites -->
+            <line class="edge-strong" x1="510" y1="270" x2="275" y2="103" marker-end="url(#arrow)"/>
+            <line class="edge-strong" x1="510" y1="270" x2="735" y2="103" marker-end="url(#arrow)"/>
+            <line class="edge-strong" x1="510" y1="270" x2="899" y2="218" marker-end="url(#arrow)"/>
+            <line class="edge-strong" x1="510" y1="270" x2="899" y2="338" marker-end="url(#arrow)"/>
+            <line class="edge-strong" x1="510" y1="270" x2="725" y2="458" marker-end="url(#arrow)"/>
+            <line class="edge-strong" x1="510" y1="270" x2="295" y2="458" marker-end="url(#arrow)"/>
+            <line class="edge-strong" x1="510" y1="270" x2="92" y2="270" marker-end="url(#arrow)"/>
+
+            <!-- Secondary relationship edges -->
+            <line class="edge" x1="275" y1="103" x2="295" y2="415" marker-end="url(#arrow)"/>
+            <line class="edge" x1="735" y1="103" x2="725" y2="415" marker-end="url(#arrow)"/>
+            <line class="edge" x1="899" y1="261" x2="899" y2="295" marker-end="url(#arrow)"/>
+            <line class="edge" x1="899" y1="338" x2="725" y2="458" marker-end="url(#arrow)"/>
+            <line class="edge" x1="92" y1="313" x2="295" y2="415" marker-end="url(#arrow)"/>
+
+            <!-- CENTER -->
+            <g class="node">
+              <circle cx="510" cy="270" r="78" fill="#ffffff" stroke="#205b9f" stroke-width="4"/>
+              <text x="510" y="256">Automation</text>
+              <text x="510" y="276">Architecture</text>
+              <text x="510" y="296">Leadership</text>
+            </g>
+
+            <!-- TOP-LEFT: Enterprise .NET Test Framework -->
+            <g class="node">
+              <rect x="180" y="60" width="190" height="86" rx="8" fill="#eaf3ff" stroke="#205b9f" stroke-width="2"/>
+              <text x="275" y="92">Enterprise .NET</text>
+              <text x="275" y="112">Test Framework</text>
+            </g>
+
+            <!-- TOP-RIGHT: Modern Browser Testing -->
+            <g class="node">
+              <rect x="640" y="60" width="190" height="86" rx="8" fill="#e8faf5" stroke="#16817a" stroke-width="2"/>
+              <text x="735" y="92">Modern Browser</text>
+              <text x="735" y="112">Testing (Playwright)</text>
+            </g>
+
+            <!-- RIGHT-UPPER: UI to GraphQL Test Conversion -->
+            <g class="node">
+              <rect x="790" y="175" width="218" height="86" rx="8" fill="#fff3da" stroke="#b46c11" stroke-width="2"/>
+              <text x="899" y="207">UI to GraphQL</text>
+              <text x="899" y="227">Test Conversion</text>
+            </g>
+
+            <!-- RIGHT-LOWER: AI-Driven Test Modernization -->
+            <g class="node">
+              <rect x="790" y="295" width="218" height="86" rx="8" fill="#eef7fb" stroke="#205b9f" stroke-width="2"/>
+              <text x="899" y="327">AI-Driven</text>
+              <text x="899" y="347">Test Modernization</text>
+            </g>
+
+            <!-- BOTTOM-RIGHT: AI Knowledge Systems & Agent Design -->
+            <g class="node">
+              <rect x="614" y="415" width="222" height="86" rx="8" fill="#f3edf9" stroke="#6f4ba5" stroke-width="2"/>
+              <text x="725" y="447">AI Knowledge Systems</text>
+              <text x="725" y="467">&amp; Agent Design</text>
+            </g>
+
+            <!-- BOTTOM-LEFT: Distributed Test Orchestration -->
+            <g class="node">
+              <rect x="186" y="415" width="218" height="86" rx="8" fill="#edf8ef" stroke="#2f7a3d" stroke-width="2"/>
+              <text x="295" y="447">Distributed Test</text>
+              <text x="295" y="467">Orchestration</text>
+            </g>
+
+            <!-- LEFT: Desktop UI Automation -->
+            <g class="node">
+              <rect x="8" y="227" width="168" height="86" rx="8" fill="#fff1ef" stroke="#9d3d34" stroke-width="2"/>
+              <text x="92" y="259">Desktop UI</text>
+              <text x="92" y="279">Automation (WPF)</text>
+            </g>
+          </svg>
+          <p class="graph-caption">Visual map of connected strengths: enterprise .NET test platform at the center, supported by modern browser testing, UI-to-API conversion, AI-driven test modernization, intelligent agent &amp; knowledge systems, distributed orchestration, and desktop automation.</p>
+          <div class="legend">
+            <span>Enterprise .NET platform &amp; architecture</span>
+            <span>Modernization: browser, API &amp; AI layers</span>
+            <span>Orchestration &amp; execution systems</span>
+          </div>
+        </section>
+
+        <section class="card recent">
+          <h2>Recent Strategic Focus</h2>
+          <ul class="focus-list">
+            <li><strong>Built the QAutomate Knowledge Graph</strong> — Roslyn static analysis across all 7 .NET projects extracted 232,694 cross-project call edges into a 6,810-class map and 6,676-method catalog. Each method carries layer, entity, composite importance ranking (6-dimension scoring), and a semantic summary produced by a multi-stage pipeline (XML docs → heuristic generation → AI enhancement). CLI query tools resolve test-to-method dependencies and call trees in milliseconds — replacing broad file scans with token-efficient targeted lookups that underpin all AI-assisted pipeline work.</li>
+            <li>Mapped QAutomate's enterprise architecture: Selenium is the thin web adapter; .NET FrameworkCore (WCF/ASM, GraphQL client, DB, MQ) and desktop automation are the retained high-value core.</li>
+            <li>Defined hybrid modernization strategy: Playwright + TypeScript as browser/AI layer, .NET retained via gateway contracts — optimize the ~1,100-file web adapter, not the 6,500+ .NET files.</li>
+            <li>Designed UI-to-GraphQL/API conversion: decision matrix replacing business-action UI steps with GraphQL mutations; browser-visible assertions kept as UI smoke/E2E.</li>
+            <li>Built AI-assisted test modernization pipeline (Steps 3A–3F + Step 4): call-graph inventory → readiness gates → rule generation → pilot/bulk conversion → 10% smoke gate → AutoRunner handoff → wake-on-failure repair. Three human QA gates control blast radius.</li>
+            <li><strong>Verification-Gated Knowledge Promotion</strong> — fix is <em>provisional</em> (instant in-run reuse), promoted to per-spoke rules after 1 green rerun, to shared-generic rules after 2+ independent green spokes. Oracle = rerun pass/fail, not frequency. Equivalent to canary deploy for AI-generated knowledge.</li>
+            <li><strong>5-store agent memory architecture</strong> — generic rules · per-dialog rules · in-run fast-path cache · AITask (workflow state, idempotent resume) · TestRunContext (append-only event log, 3-strike escalation, lifecycle tracing).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Professional Experience</h2>
+          <div class="experience-item">
+            <h3>Senior Automation Test Engineer</h3>
+            <p class="role-meta">Hansen Technologies | May 2018 - Present</p>
+            <p>Hansen develops billing, customer care, and data management platforms for utility and telecom industries.</p>
+            <ul>
+              <li>Design and maintain enterprise automation frameworks for Web UI, desktop UI, API, GraphQL, and integration testing using C#, NUnit 3, Selenium 4, TestStack.White, WCF/ASM services, and database-backed validation.</li>
+              <li>Develop internal automation tools such as AutoConsole, AutoMonitor, AutoInstaller, and AutoSmoke to support regression execution, environment setup, monitoring, and reporting.</li>
+              <li>Built the QAutomate Knowledge Graph — a Roslyn-based .NET call graph extractor covering all 7 projects (232,694 cross-project call edges, 6,810 classes, 6,676 ranked methods). Implemented a multi-stage summarization pipeline (XML docs, heuristic generation with CCB domain dictionary, AI enhancement) and a composite importance-scoring system. CLI query tools enable AI agents to precisely locate tests, reusable step methods, and dialog wrappers without scanning thousands of files, eliminating unnecessary LLM token consumption and enabling accurate AI-driven test analysis and migration.</li>
+              <li>Support a large-scale regression suite of roughly 7,000 automated test cases across Oracle/PostgreSQL database modes, Internal/LDAP/SSO authentication, Oracle AQ/Kafka queue modes, and clustered/standalone product servers.</li>
+              <li>Review test cases for feature readiness, naming conventions, clarity, stability, and regression suitability before approving inclusion in the automated suite.</li>
+              <li>Analyze automation architecture and migration strategy for Selenium/.NET to Playwright/TypeScript, recommending a hybrid approach that preserves QAutomate's .NET service, DB, MQ, and desktop foundation while modernizing the browser and AI-agent layer.</li>
+              <li>Define conversion strategy for PSM/NUI UI tests to GraphQL or ASM/API tests, focusing on reduced browser runtime, stronger API coverage, and retained UI smoke/E2E safety nets.</li>
+              <li>Integrate automated tests into TeamCity pipelines, manage Git-based workflows, prepare quality reports, and advise Delivery Managers on release and regression risks.</li>
+              <li>Presented Automation Framework architecture during an onsite business visit in the UK.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <h3>Test Automation Leader</h3>
+            <p class="role-meta">DiCentral | Apr 2016 - Apr 2018</p>
+            <ul>
+              <li>Led the Automation Test Team and defined automation strategy for key EDI projects.</li>
+              <li>Developed UI automation and performance test suites using Selenium, TestComplete, and JMeter.</li>
+              <li>Built an internal Test Management System using C#, WPF, and MVVM architecture.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <h3>Research Engineer / Senior Software Developer</h3>
+            <p class="role-meta">LogiGear Corporation | Feb 2012 - Apr 2016</p>
+            <ul>
+              <li>Worked as an R&amp;D engineer for the TestArchitect automation tool, designing new automation features and improving engine performance.</li>
+              <li>Researched integration approaches between TestArchitect and Selenium/Appium.</li>
+              <li>Built Action Recorder capabilities for web and mobile automation.</li>
+              <li>Developed TestArchitect for Visual Studio using C#, WPF, MVVM, and .NET 4.5.</li>
+            </ul>
+          </div>
+
+          <div class="experience-item">
+            <h3>Software Developer</h3>
+            <p class="role-meta">Shinkawa Vietnam | Jan 2010 - Dec 2011</p>
+            <ul>
+              <li>Developed C++, C#, and .NET software modules for semiconductor machine control systems.</li>
+              <li>Implemented system components for Wire Bonder and Die Bonder equipment using multi-layer architecture and real-time control logic.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>Process & Collaboration</h2>
+          <p>Scrum/Agile delivery, Jira, requirement analysis, user story collaboration, peer review, test review, exploratory testing, risk-based test planning, regression reporting, and cross-functional consultation on automation techniques.</p>
+          <p class="print-note">This HTML resume is designed to print cleanly to PDF from a browser.</p>
+        </section>
+      </div>
+    </main>
+  </article>
+</body>
+</html>
