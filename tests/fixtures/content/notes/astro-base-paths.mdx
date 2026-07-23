@@ -1,0 +1,15 @@
+---
+title: "Astro Base Paths in Production"
+description: "A concise note on the behaviour of Astro's base configuration and how it affects internal links."
+publishedAt: 2026-04-02
+tags:
+  - astro
+  - base-path
+domains:
+  - engineering
+maturity: growing
+---
+
+A short observation on how `base` interacts with `getStaticPaths` and asset references.
+
+Use `import.meta.env.BASE_URL` or the URL utility rather than hard-coded strings.

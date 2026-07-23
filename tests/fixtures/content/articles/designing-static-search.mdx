@@ -1,0 +1,33 @@
+---
+title: "Designing Static Search with Pagefind"
+description: "A practical guide to integrating Pagefind into an Astro static site for fast, offline search without a backend."
+publishedAt: 2026-03-15
+tags:
+  - astro
+  - static-search
+  - pagefind
+domains:
+  - engineering
+featured: true
+showTableOfContents: true
+connections:
+  - type: explains
+    target:
+      collection: notes
+      id: astro-base-paths
+    context: "Explains the base path behavior that search URLs depend on."
+---
+
+# Designing Static Search with Pagefind
+
+This is fixture content for schema validation. It contains headings, a paragraph, and a code example.
+
+## Why static search
+
+Static sites are fast because they ship no server. Pagefind indexes the built HTML and ships as a browser bundle.
+
+```ts
+import * as pagefind from '/pagefind/pagefind.js';
+```
+
+No server required.
