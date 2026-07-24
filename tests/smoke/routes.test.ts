@@ -118,4 +118,55 @@ describe('dist/ artifact smoke tests (requires prior npm run build)', () => {
       expect(content).not.toContain('"draft-article"');
     });
   });
+
+  describe('SEO metadata', () => {
+    const seoPages = [
+      'index.html',
+      'about/index.html',
+      'articles/index.html',
+      'notes/index.html',
+      'projects/index.html',
+      'series/index.html',
+      'search/index.html',
+      'graph/index.html',
+    ];
+
+    for (const page of seoPages) {
+      it(`${page} has <title>`, () => {
+        expect(html(page)).toMatch(/<title>[^<]+<\/title>/i);
+      });
+      it(`${page} has meta description`, () => {
+        expect(html(page)).toMatch(/name="description"/i);
+      });
+      it(`${page} has lang="en"`, () => {
+        expect(html(page)).toContain('lang="en"');
+      });
+    }
+
+    it('search page has noindex', () => {
+      expect(html('search/index.html')).toContain('noindex');
+    });
+
+    it('404 page has noindex', () => {
+      expect(html('404.html')).toContain('noindex');
+    });
+  });
+
+  describe('accessibility baseline', () => {
+    it('every page has viewport meta', () => {
+      for (const page of ['index.html', 'about/index.html', 'graph/index.html']) {
+        if (exists(page)) {
+          expect(html(page)).toMatch(/name="viewport"/i);
+        }
+      }
+    });
+
+    it('resume iframe has title attribute', () => {
+      expect(html('index.html')).toMatch(/iframe[^>]+title="[^"]+"/i);
+    });
+
+    it('skip link present on home page', () => {
+      expect(html('index.html')).toContain('skip-link');
+    });
+  });
 });

@@ -83,6 +83,7 @@ const collections = [
   </fieldset>
 
   <button type="reset" class="graph-controls__reset">Reset filters</button>
+  <button type="submit" class="graph-controls__apply">Apply filters</button>
 </form>
 
 <style>
@@ -127,19 +128,10 @@ const collections = [
     outline-offset: 2px;
     border-color: #3b82f6;
   }
-  .graph-controls__reset {
-    padding: 0.4rem 0.875rem;
-    background: transparent;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
-    cursor: pointer;
-    align-self: flex-end;
-  }
+  .graph-controls__reset { padding: 0.4rem 0.875rem; background: transparent; color: #64748b; border: 1px solid #e2e8f0; border-radius: 0.375rem; font-size: 0.875rem; cursor: pointer; align-self: flex-end; }
   .graph-controls__reset:hover { background: #f1f5f9; color: #1e293b; }
-  .graph-controls__reset:focus-visible {
-    outline: 2px solid #1d4ed8;
-    outline-offset: 2px;
-  }
+  .graph-controls__reset:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
+  .graph-controls__apply { padding: 0.4rem 0.875rem; background: #1d4ed8; color: #fff; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; align-self: flex-end; }
+  .graph-controls__apply:hover { background: #1e40af; }
+  .graph-controls__apply:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
 </style>

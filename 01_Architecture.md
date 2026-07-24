@@ -184,7 +184,7 @@ Layouts own page structure and metadata placement. Components own reusable inter
 
 | Layout | Responsibility |
 | --- | --- |
-| `SiteLayout` | Document shell, global metadata defaults, skip link, header, primary navigation, footer, and shared assets. |
+| `SiteLayout` | Document shell, global metadata defaults, skip link, registered header/footer composition, collapsible left-sidebar grid, main landmark, and shared assets. |
 | `ListingLayout` | Collection indexes, topic indexes, result counts, optional filters, pagination region, and empty states. |
 | `KnowledgeLayout` | Article and note title block, dates, tags, reading structure, table of contents, related content, and MDX body. |
 | `ProjectLayout` | Project summary, role, skills and tools, external links, case-study body, and related projects. |
@@ -196,7 +196,7 @@ All specialized layouts compose `SiteLayout`. Articles and notes deliberately sh
 
 | Group | Components and responsibilities |
 | --- | --- |
-| Site chrome | Header, primary navigation, mobile navigation, footer, skip link, and theme-independent site identity. |
+| Site chrome | Search topbar and collapsible sidebar composed by `Header`; icon-based primary/mobile navigation; sidebar footer; skip link; and persistent site identity. Resume is the first navigation item and the default home view. |
 | Metadata | Document head, canonical URL, Open Graph data, structured data, publication dates, and content status. |
 | Discovery | Search form/results, collection navigation, tag list, topic links, pagination, and related-content list. |
 | Content | Prose wrapper, table of contents, heading anchors, code block treatment, callout, figure, and external-link treatment. |
@@ -213,7 +213,7 @@ Components should remain presentational where practical. Collection queries and 
 - No client UI framework is introduced for the initial architecture.
 - Pagefind's search UI may load browser JavaScript on the search experience only.
 - Cytoscape.js may be lazy-loaded by the graph controller on `/graph/` only; it is the approved focused graph engine, not a UI framework.
-- Mobile navigation should prefer native platform behavior and minimal script where needed.
+- The header may use a minimal isolated script to persist desktop sidebar collapse state and open/close the mobile sidebar overlay; navigation links remain ordinary crawlable anchors.
 - Graph browser code consumes the static manifest and must not import Astro collections or build-time content modules.
 - A client directive requires a documented interaction need and must not be added solely for developer convenience.
 
@@ -223,7 +223,7 @@ Astro file-based routes provide static pages. Dynamic route templates enumerate 
 
 | Logical route | Purpose |
 | --- | --- |
-| `/` | Knowledge-first home with search entry, featured knowledge, recent notes, selected series, and supporting project highlights. |
+| `/` | Resume-first default view. `src/pages/index.astro` embeds the standalone public HTML resume inside `SiteLayout`; global search remains available in the topbar and knowledge discovery continues through the sidebar destinations. |
 | `/articles/` | Article index. |
 | `/articles/<slug>/` | Article detail. |
 | `/notes/` | Note index. |
@@ -241,6 +241,8 @@ Astro file-based routes provide static pages. Dynamic route templates enumerate 
 | `/404.html` | Static not-found page compatible with GitHub Pages. |
 
 These are logical routes. Production URLs include Astro's configured `/engineering-lab/` base. Implementations must use Astro URL helpers, the configured base, or centralized link utilities instead of hard-coded root-relative paths.
+
+The standalone resume artifact under `/resume/SuDuyHien_Resume_Updated.html` remains directly printable and shareable, but `/` is its canonical in-application presentation. The resume is a public profile artifact, not a fifth collection, graph node, or replacement source for knowledge entries.
 
 Pagination is introduced only when collection size justifies it. When introduced, pagination URLs must be deterministic and index pages must retain useful non-JavaScript navigation.
 

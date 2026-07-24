@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Quality gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Clean install
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Content validation
+        run: npm run validate:content
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Production build
+        run: npm run build
+
+      - name: Smoke tests
+        run: npm run test:smoke
+
+      - name: Artifact verification
+        run: npm run verify:build
+
+      - name: Link check
+        run: npm run check:links
+
+      - name: Accessibility check
+        run: npm run test:a11y
+
+      - name: Lighthouse budgets
+        run: npm run check:lighthouse

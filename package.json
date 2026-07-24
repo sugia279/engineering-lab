@@ -16,6 +16,8 @@
     "validate:content": "tsx scripts/validate-content.ts",
     "verify:build": "tsx scripts/verify-build.ts",
     "check:links": "tsx scripts/check-links.ts",
+    "test:a11y": "html-validate \"dist/*.html\" \"dist/about/*.html\" \"dist/articles/*.html\" \"dist/notes/*.html\" \"dist/projects/*.html\" \"dist/series/*.html\" \"dist/topics/*.html\" \"dist/search/*.html\" \"dist/graph/*.html\"",
+    "check:lighthouse": "tsx scripts/check-lighthouse.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -30,6 +32,7 @@
     "astro": "^5.0.0",
     "cytoscape": "^3.34.0",
     "gray-matter": "^4.0.3",
+    "html-validate": "^11.5.6",
     "pagefind": "^1.5.2",
     "prettier": "^3.0.0",
     "prettier-plugin-astro": "^0.14.0",

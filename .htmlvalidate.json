@@ -1,0 +1,18 @@
+{
+  "extends": ["html-validate:recommended"],
+  "elements": [
+    "html5",
+    { "search": { "flow": true, "phrasing": true, "transparent": true, "attributes": {} } }
+  ],
+  "rules": {
+    "no-redundant-role": "off",
+    "void-style": "off",
+    "doctype-style": "off",
+    "no-trailing-whitespace": "off",
+    "element-permitted-content": "warn",
+    "no-raw-characters": "error",
+    "require-sri": "off",
+    "no-inline-style": "off",
+    "long-title": "off"
+  }
+}

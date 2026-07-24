@@ -1,0 +1,113 @@
+---
+title: "QAutomate Knowledge Graph"
+description: "A Roslyn-based .NET call-graph extractor and AI-enhanced method catalog that enables token-efficient, targeted code discovery for AI-assisted test analysis and migration pipelines."
+publishedAt: 2025-06-15
+tags:
+  - dotnet
+  - knowledge-graph
+  - roslyn
+  - ai
+  - test-automation
+  - static-analysis
+domains:
+  - engineering
+  - artificial-intelligence
+status: active
+role: "Senior Automation Test Engineer"
+skills:
+  - "Call graph analysis and cross-project dependency mapping"
+  - "Roslyn static analysis (.NET Compiler Platform)"
+  - "AI-enhanced method summarization pipelines"
+  - "Composite importance scoring design"
+  - "CLI query tool development"
+  - "Multi-stage documentation generation"
+tools:
+  - "C#"
+  - ".NET"
+  - "Roslyn"
+  - "Visual Studio"
+  - "CCB codebase (7 .NET projects)"
+period:
+  start: "2025-06"
+repositoryUrl: "https://github.com/sugia279"
+featured: true
+connections:
+  - type: applies-to
+    target:
+      collection: articles
+      id: verification-gated-knowledge-promotion
+    context: "The knowledge graph provides the code-intelligence foundation that the verification-gated pipeline relies on for accurate, targeted fixes."
+  - type: related
+    target:
+      collection: notes
+      id: five-store-agent-memory
+    context: "The graph's CLI query tools feed structured context into the five-store memory model used by AI agents in the pipeline."
+---
+
+## Overview
+
+QAutomate Knowledge Graph is a build-time code intelligence system for the CCB automation framework at Hansen Technologies. It extracts the complete cross-project call graph from all seven .NET projects in the QAutomate suite, ranks every method by composite importance, and makes the resulting catalog queryable by AI agents in milliseconds — replacing broad file scans with precise, token-efficient lookups.
+
+## Problem
+
+The QAutomate test framework spans over 7,000 automated test cases, roughly 7 .NET projects, 6,810 classes, and an estimated 232,694 cross-project call edges. When AI coding agents tried to work with this codebase, they spent excessive LLM tokens scanning thousands of files to locate relevant methods, test step implementations, and dialog wrappers. Context windows filled before reaching useful conclusions.
+
+## Solution
+
+### Call Graph Extraction (Roslyn)
+
+Using the .NET Compiler Platform (Roslyn), the system performs static analysis across all seven projects at build time. Every class, method, and property is inventoried along with its full cross-project call edges. The result is:
+
+- **6,810 classes** indexed with layer and entity classification
+- **6,676 methods** catalogued with composite importance rankings
+- **232,694 cross-project call edges** mapped and queryable
+
+### Composite Importance Scoring
+
+Each method receives a six-dimension composite score:
+
+1. Fan-in (how many callers reference it)
+2. Fan-out (how many methods it calls)
+3. Cross-layer bridging (does it cross architectural layers?)
+4. Test coverage (are tests written against it?)
+5. Entity centrality (does it handle a core domain entity?)
+6. AI-discoverability (would an agent need to find it?)
+
+This ranking surfaces the methods that matter most without requiring agents to read everything.
+
+### AI-Enhanced Summarization Pipeline
+
+Raw XML documentation comments are processed through a three-stage pipeline:
+
+1. **XML extraction** — parses existing `<summary>` tags from source files
+2. **Heuristic generation** — creates structured summaries using a CCB domain dictionary for methods lacking documentation
+3. **AI enhancement** — applies a language model to polish and contextualise the heuristic output
+
+The result is a semantic summary for every indexed method, giving agents meaningful descriptions instead of raw signatures.
+
+### CLI Query Tools
+
+A set of command-line tools allows agents (and engineers) to query the graph without touching source files:
+
+```
+qkg find-method --name "ApplyBillingCycle" --context BillingAgreement
+qkg call-tree --from "TestCase:CreateAgreement" --depth 3
+qkg test-coverage --entity "AgreementDetail"
+```
+
+Queries resolve in milliseconds. An agent can identify test-to-method dependencies and call trees without scanning thousands of files, eliminating unnecessary token consumption.
+
+## Impact
+
+- Replaced broad file scans with targeted graph lookups, reducing AI agent token consumption dramatically
+- Enabled accurate AI-driven test analysis by grounding agent reasoning in verified call-graph data
+- Provided the code-intelligence foundation for the AI-assisted test modernization pipeline (Steps 3A–3F)
+- Mapped QAutomate's enterprise architecture: Selenium is the thin web adapter; .NET FrameworkCore (WCF/ASM, GraphQL client, DB, MQ) and desktop automation are the high-value core retained across modernization
+
+## Relation to Test Modernization Strategy
+
+The knowledge graph directly enables the hybrid modernization approach:
+
+- Playwright + TypeScript as the browser/AI layer
+- .NET retained via gateway contracts for service, DB, MQ, and desktop automation
+- The ~1,100-file web adapter is optimised; the 6,500+ .NET files remain stable and well-understood through graph-assisted navigation

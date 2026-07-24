@@ -10,51 +10,40 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="site-footer__inner">
-    <p class="site-footer__copy">
-      © {year} {siteConfig.author}
-    </p>
-    {siteConfig.socialLinks.length > 0 && (
-      <ul class="site-footer__links" role="list" aria-label="Social links">
-        {siteConfig.socialLinks.map((link) => (
-          <li>
-            <ExternalLink href={link.url} newTab class="site-footer__link">
-              {link.service}
-            </ExternalLink>
-          </li>
-        ))}
-      </ul>
-    )}
-  </div>
+  <p class="site-footer__copy">© {year} {siteConfig.author}</p>
+  {siteConfig.socialLinks.length > 0 && (
+    <ul class="site-footer__links" aria-label="Social links">
+      {siteConfig.socialLinks.map((link) => (
+        <li>
+          <ExternalLink href={link.url} newTab class="site-footer__link">
+            {link.service}
+          </ExternalLink>
+        </li>
+      ))}
+    </ul>
+  )}
 </footer>
 
 <style>
   .site-footer {
-    border-top: 1px solid #e2e8f0;
-    background: #f8fafc;
-    margin-top: auto;
+    grid-area: footer;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0.75rem 1rem;
+    background: var(--sidebar-bg);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
   }
-  .site-footer__inner {
-    max-width: 72rem;
-    margin: 0 auto;
-    padding: 1.5rem 1.25rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-  }
-  .site-footer__copy { margin: 0; color: #64748b; font-size: 0.875rem; }
+  .site-footer__copy { margin: 0; color: #64748b; font-size: 0.75rem; white-space: nowrap; }
   .site-footer__links {
     list-style: none;
-    margin: 0;
+    margin: 0.35rem 0 0;
     padding: 0;
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    gap: 0.625rem;
   }
   .site-footer__link {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     color: #64748b;
     text-decoration: none;
   }
@@ -64,4 +53,8 @@ const year = new Date().getFullYear();
     outline-offset: 2px;
     border-radius: 2px;
   }
+  :global(.app-shell.is-collapsed) .site-footer__copy,
+  :global(.app-shell.is-collapsed) .site-footer__links { opacity: 0; }
+
+  @media (max-width: 767px) { .site-footer { display: none; } }
 </style>

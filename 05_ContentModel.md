@@ -111,6 +111,7 @@ flowchart TD
 | --- | --- | --- |
 | Site configuration | `src/config/site.ts` | Site identity, author/profile identity, language, production origin/base, default metadata, and social links. Not authored collection content. |
 | Navigation configuration | `src/config/navigation.ts` | Ordered global navigation. Not taxonomy and not a content collection. |
+| Resume presentation | `public/resume/SuDuyHien_Resume_Updated.html` and colocated image | Standalone printable/shareable visual resume embedded by `/` inside `SiteLayout`. It is a public profile artifact, not authored collection content, a graph node, or a second knowledge source. |
 | Collection schemas | `src/content.config.ts` | Shared and collection-specific field validation and typed loading. |
 | Authored entries | `src/content/<collection>/` | MDX body, explicit metadata, and colocated entry assets. |
 | Content domain | `src/lib/content/` | Production filtering, normalization, sorting, relationships, series context, and view-model construction. |
@@ -124,6 +125,7 @@ flowchart TD
 - Collection schemas own field shape and isolated validation.
 - Content-domain modules own relationships and derived properties.
 - Site configuration owns author identity and site-wide defaults.
+- The home route owns only the base-safe resume embed and application metadata; it does not duplicate resume facts into frontmatter or query collection content.
 - Routes and components consume content; they do not redefine it.
 - Search and SEO derive from validated content; they do not become alternative content stores.
 - The Knowledge Graph derives from the same validated public entries; it does not become an alternative content store.
@@ -136,10 +138,10 @@ Exactly four collections exist.
 
 | Collection | Purpose | Folder | Source type | URL pattern | Schema owner | Primary consumers |
 | --- | --- | --- | --- | --- | --- | --- |
-| `articles` | Long-form evergreen engineering writing with a durable thesis, explanation, or tutorial structure. | `src/content/articles/` | MDX | `/articles/<slug>/` | Article schema in `src/content.config.ts` | Article routes, home, article index, topics, series, related content, Pagefind, RSS, sitemap, SEO. |
-| `notes` | Short focused observations, references, decisions, and evolving knowledge. | `src/content/notes/` | MDX | `/notes/<slug>/` | Note schema in `src/content.config.ts` | Note routes, home, note index, topics, series, related content, Pagefind, RSS, sitemap, SEO. |
-| `projects` | Portfolio case studies describing context, role, decisions, outcomes, and lessons. | `src/content/projects/` | MDX | `/projects/<slug>/` | Project schema in `src/content.config.ts` | Project routes, home, project index, topics, related projects, Pagefind, sitemap, SEO. |
-| `series` | Narrative landing pages and ordered learning paths containing articles and notes. | `src/content/series/` | MDX | `/series/<slug>/` | Series schema in `src/content.config.ts` | Series routes, home, series index, topics, knowledge navigation, Pagefind, sitemap, SEO. |
+| `articles` | Long-form evergreen engineering writing with a durable thesis, explanation, or tutorial structure. | `src/content/articles/` | MDX | `/articles/<slug>/` | Article schema in `src/content.config.ts` | Article routes/index, topics, series, related content, Pagefind, RSS, sitemap, SEO. |
+| `notes` | Short focused observations, references, decisions, and evolving knowledge. | `src/content/notes/` | MDX | `/notes/<slug>/` | Note schema in `src/content.config.ts` | Note routes/index, topics, series, related content, Pagefind, RSS, sitemap, SEO. |
+| `projects` | Portfolio case studies describing context, role, decisions, outcomes, and lessons. | `src/content/projects/` | MDX | `/projects/<slug>/` | Project schema in `src/content.config.ts` | Project routes/index, topics, related projects, Pagefind, sitemap, SEO. |
+| `series` | Narrative landing pages and ordered learning paths containing articles and notes. | `src/content/series/` | MDX | `/series/<slug>/` | Series schema in `src/content.config.ts` | Series routes/index, topics, knowledge navigation, Pagefind, sitemap, SEO. |
 
 ### Shared collection rules
 
@@ -409,6 +411,8 @@ erDiagram
 
 | Content/taxonomy | Logical URL |
 | --- | --- |
+| Resume-first home | `/` |
+| Standalone resume artifact | `/resume/SuDuyHien_Resume_Updated.html` |
 | Article index/detail | `/articles/`, `/articles/<slug>/` |
 | Note index/detail | `/notes/`, `/notes/<slug>/` |
 | Project index/detail | `/projects/`, `/projects/<slug>/` |
@@ -422,6 +426,8 @@ erDiagram
 | Not found | `/404.html` |
 
 Production URLs include `/engineering-lab/`. Source content and routes never duplicate that base segment.
+
+`/` is the canonical in-application resume presentation and embeds the standalone artifact without converting it to MDX. `/about/` remains the living professional profile and platform context page. Neither surface is a collection, participates as an authored graph node, or changes the four-collection contract.
 
 ### Slug generation
 

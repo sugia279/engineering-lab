@@ -1,15 +1,15 @@
 ---
 /**
- * SiteLayout — app-shell with collapsible left sidebar and search topbar.
+ * SiteLayout — app shell composing the registered site components.
  * Registry: Layout, M8. All specialized layouts compose this.
  */
 import type { SEOData } from '../types/seo';
 import type { StructuredDataInput } from '../types/seo';
 import DocumentHead from '../components/metadata/DocumentHead.astro';
 import StructuredData from '../components/metadata/StructuredData.astro';
-import { primaryNavigation } from '../config/navigation';
-import { siteConfig } from '../config/site';
-import { buildUrl } from '../utils/url';
+import SkipLink from '../components/site/SkipLink.astro';
+import Header from '../components/site/Header.astro';
+import Footer from '../components/site/Footer.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -19,19 +19,6 @@ interface Props {
 }
 
 const { seo, structuredData, currentPath = Astro.url.pathname } = Astro.props;
-const searchUrl = buildUrl('/search/');
-
-// Icon map keyed by nav label
-const navIcons: Record<string, string> = {
-  'Resume':   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
-  'Articles': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,
-  'Notes':    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`,
-  'Projects': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>`,
-  'Series':   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
-  'Topics':   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`,
-  'Graph':    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`,
-  'About':    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-};
 ---
 
 <!doctype html>
@@ -41,115 +28,14 @@ const navIcons: Record<string, string> = {
     {structuredData && <StructuredData data={structuredData} />}
   </head>
   <body class="app-shell">
-    <!-- Skip link -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-
-    <!-- ── Topbar ── -->
-    <header class="topbar" role="banner">
-      <button
-        id="sidebar-toggle"
-        class="topbar__hamburger"
-        aria-label="Toggle navigation"
-        aria-controls="sidebar"
-        aria-expanded="true"
-        type="button"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
-
-      <span class="topbar__brand" aria-hidden="true">{siteConfig.name}</span>
-
-      <form
-        action={searchUrl}
-        method="get"
-        role="search"
-        class="topbar__search"
-        aria-label="Search the knowledge garden"
-      >
-        <div class="topbar__search-wrap">
-          <svg class="topbar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <input
-            id="topbar-search-input"
-            type="search"
-            name="q"
-            placeholder="Search articles, notes, projects, topics…"
-            class="topbar__search-input"
-            autocomplete="off"
-            spellcheck="false"
-          />
-        </div>
-      </form>
-    </header>
-
-    <!-- ── Sidebar ── -->
-    <aside id="sidebar" class="sidebar" aria-label="Main navigation">
-      <nav class="sidebar__nav" aria-label="Site navigation">
-        <ul class="sidebar__list" role="list">
-          {primaryNavigation.map((item) => {
-            const href = item.external ? item.href : buildUrl(item.href);
-            const homeUrl = buildUrl('/');
-            const isActive = item.label === 'Resume'
-              ? currentPath === homeUrl || currentPath === homeUrl + 'index.html'
-              : item.matchPattern
-                ? currentPath.includes(item.matchPattern)
-                : false;
-            const icon = navIcons[item.label] ?? navIcons['About'];
-            return (
-              <li class="sidebar__item">
-                <a
-                  href={href}
-                  class={`sidebar__link${isActive ? ' sidebar__link--active' : ''}`}
-                  aria-current={isActive ? 'page' : undefined}
-                  title={item.label}
-                >
-                  <span class="sidebar__icon" aria-hidden="true" set:html={icon} />
-                  <span class="sidebar__label">{item.label}</span>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-
-      <div class="sidebar__footer">
-        <span class="sidebar__copy">© {new Date().getFullYear()} {siteConfig.author}</span>
-      </div>
-    </aside>
-
-    <!-- ── Main content ── -->
+    <SkipLink />
+    <Header currentPath={currentPath} />
     <main id="main-content" class="app-main" tabindex="-1" data-pagefind-body>
       <slot />
     </main>
+    <Footer />
   </body>
 </html>
-
-<!-- Sidebar toggle script -->
-<script>
-  const STORAGE_KEY = 'sidebar-collapsed';
-  const shell = document.querySelector<HTMLElement>('.app-shell');
-  const toggle = document.getElementById('sidebar-toggle');
-
-  function setCollapsed(collapsed: boolean): void {
-    shell?.classList.toggle('is-collapsed', collapsed);
-    toggle?.setAttribute('aria-expanded', String(!collapsed));
-    localStorage.setItem(STORAGE_KEY, String(collapsed));
-  }
-
-  // Restore saved state
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved === 'true') setCollapsed(true);
-
-  toggle?.addEventListener('click', () => {
-    const isNowCollapsed = !shell?.classList.contains('is-collapsed');
-    setCollapsed(isNowCollapsed);
-  });
-</script>
 
 <style>
   /* ── App shell grid ── */
@@ -167,10 +53,11 @@ const navIcons: Record<string, string> = {
 
     display: grid;
     grid-template-columns: var(--sidebar-w) 1fr;
-    grid-template-rows: var(--topbar-h) 1fr;
+    grid-template-rows: var(--topbar-h) 1fr auto;
     grid-template-areas:
       "topbar topbar"
-      "sidebar main";
+      "sidebar main"
+      "footer main";
     min-height: 100svh;
     transition: grid-template-columns var(--transition);
   }
@@ -179,184 +66,6 @@ const navIcons: Record<string, string> = {
     grid-template-columns: var(--sidebar-w-sm) 1fr;
   }
 
-  /* ── Skip link ── */
-  .skip-link {
-    position: fixed;
-    top: -100%;
-    left: 0.5rem;
-    z-index: 9999;
-    padding: 0.5rem 1rem;
-    background: var(--sidebar-accent);
-    color: #fff;
-    font-weight: 600;
-    border-radius: 0 0 0.375rem 0.375rem;
-    text-decoration: none;
-    transition: top 0.1s;
-  }
-  .skip-link:focus { top: 0; }
-
-  /* ── Topbar ── */
-  .topbar {
-    grid-area: topbar;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0 1.25rem;
-    background: var(--topbar-bg);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    height: var(--topbar-h);
-  }
-
-  .topbar__hamburger {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: transparent;
-    color: var(--topbar-text);
-    cursor: pointer;
-    border-radius: 0.375rem;
-    padding: 0;
-  }
-  .topbar__hamburger svg { width: 20px; height: 20px; }
-  .topbar__hamburger:hover { background: rgba(255,255,255,0.08); }
-  .topbar__hamburger:focus-visible { outline: 2px solid var(--sidebar-accent); outline-offset: 2px; }
-
-  .topbar__brand {
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--topbar-text);
-    white-space: nowrap;
-    flex-shrink: 0;
-    display: none;
-  }
-  @media (min-width: 640px) { .topbar__brand { display: block; } }
-
-  .topbar__search { flex: 1; max-width: 600px; }
-
-  .topbar__search-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-  .topbar__search-icon {
-    position: absolute;
-    left: 0.625rem;
-    width: 16px;
-    height: 16px;
-    color: #64748b;
-    pointer-events: none;
-    flex-shrink: 0;
-  }
-  .topbar__search-input {
-    width: 100%;
-    padding: 0.45rem 0.75rem 0.45rem 2.25rem;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 0.5rem;
-    color: var(--topbar-text);
-    font-size: 0.9375rem;
-    outline: none;
-  }
-  .topbar__search-input::placeholder { color: #64748b; }
-  .topbar__search-input:focus {
-    border-color: var(--sidebar-accent);
-    background: rgba(255,255,255,0.1);
-    box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
-  }
-
-  /* ── Sidebar ── */
-  .sidebar {
-    grid-area: sidebar;
-    position: sticky;
-    top: var(--topbar-h);
-    height: calc(100svh - var(--topbar-h));
-    overflow: hidden;
-    background: var(--sidebar-bg);
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    transition: width var(--transition);
-    overflow-y: auto;
-  }
-
-  .sidebar__nav { flex: 1; padding: 0.75rem 0; }
-  .sidebar__list { list-style: none; margin: 0; padding: 0; }
-  .sidebar__item { margin: 0; }
-
-  .sidebar__link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.625rem 1rem;
-    color: var(--sidebar-text);
-    text-decoration: none;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
-    overflow: hidden;
-    min-width: 0;
-  }
-  .sidebar__link:hover {
-    background: rgba(255,255,255,0.06);
-    color: #e2e8f0;
-  }
-  .sidebar__link--active {
-    background: rgba(59,130,246,0.15);
-    color: var(--sidebar-text-active);
-    border-right: 3px solid var(--sidebar-accent);
-  }
-  .sidebar__link:focus-visible {
-    outline: 2px solid var(--sidebar-accent);
-    outline-offset: -2px;
-  }
-
-  .sidebar__icon {
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sidebar__icon :global(svg) { width: 20px; height: 20px; }
-
-  .sidebar__label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: opacity var(--transition), width var(--transition);
-  }
-
-  .sidebar__footer {
-    padding: 0.875rem 1rem;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    overflow: hidden;
-  }
-  .sidebar__copy {
-    display: block;
-    font-size: 0.75rem;
-    color: #475569;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* ── Collapsed sidebar ── */
-  .app-shell.is-collapsed .sidebar__label { opacity: 0; width: 0; }
-  .app-shell.is-collapsed .sidebar__copy { opacity: 0; }
-  .app-shell.is-collapsed .sidebar__link {
-    padding: 0.625rem;
-    justify-content: center;
-  }
-
-  /* ── Main content ── */
   .app-main {
     grid-area: main;
     min-width: 0;
@@ -371,18 +80,6 @@ const navIcons: Record<string, string> = {
     }
     .app-shell.is-collapsed {
       grid-template-columns: 0 1fr;
-    }
-    .sidebar {
-      position: fixed;
-      top: var(--topbar-h);
-      left: 0;
-      width: var(--sidebar-w);
-      transform: translateX(-100%);
-      transition: transform var(--transition);
-      z-index: 200;
-    }
-    .app-shell:not(.is-collapsed) .sidebar {
-      transform: translateX(0);
     }
   }
 </style>

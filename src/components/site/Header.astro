@@ -1,54 +1,190 @@
 ---
 /**
- * Header — site header composing SiteIdentity, PrimaryNavigation, MobileNavigation.
+ * Header — topbar and collapsible sidebar composition.
  * Registry: Site component, M7.
  */
 import SiteIdentity from './SiteIdentity.astro';
 import PrimaryNavigation from './PrimaryNavigation.astro';
 import MobileNavigation from './MobileNavigation.astro';
 import { primaryNavigation } from '../../config/navigation';
+import { buildUrl } from '../../utils/url';
 
 interface Props {
   currentPath?: string;
 }
 
 const { currentPath = '' } = Astro.props;
+const searchUrl = buildUrl('/search/');
 ---
 
-<header class="site-header">
-  <div class="site-header__inner">
-    <SiteIdentity />
-    <div class="site-header__desktop-nav">
-      <PrimaryNavigation items={primaryNavigation} currentPath={currentPath} />
+<header class="topbar">
+  <button
+    id="sidebar-toggle"
+    class="topbar__hamburger"
+    aria-label="Toggle navigation"
+    aria-controls="sidebar"
+    aria-expanded="true"
+    type="button"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  </button>
+
+  <SiteIdentity />
+
+  <form action={searchUrl} method="get" role="search" class="topbar__search" aria-label="Search the knowledge garden">
+    <div class="topbar__search-wrap">
+      <svg class="topbar__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        id="topbar-search-input"
+        type="search"
+        name="q"
+        placeholder="Search articles, notes, projects, topics…"
+        class="topbar__search-input"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit" class="topbar__search-submit" aria-label="Submit search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      </button>
     </div>
-    <div class="site-header__mobile-nav">
-      <MobileNavigation items={primaryNavigation} currentPath={currentPath} />
-    </div>
-  </div>
+  </form>
 </header>
 
+<aside id="sidebar" class="sidebar" aria-label="Main navigation">
+  <div class="sidebar__desktop-nav">
+    <PrimaryNavigation items={primaryNavigation} currentPath={currentPath} />
+  </div>
+  <MobileNavigation items={primaryNavigation} currentPath={currentPath} />
+</aside>
+
+<script>
+  const STORAGE_KEY = 'sidebar-collapsed';
+  const shell = document.querySelector<HTMLElement>('.app-shell');
+  const toggle = document.getElementById('sidebar-toggle');
+
+  function setCollapsed(collapsed: boolean): void {
+    shell?.classList.toggle('is-collapsed', collapsed);
+    toggle?.setAttribute('aria-expanded', String(!collapsed));
+    localStorage.setItem(STORAGE_KEY, String(collapsed));
+  }
+
+  const saved = localStorage.getItem(STORAGE_KEY);
+  setCollapsed(saved === null ? window.matchMedia('(max-width: 767px)').matches : saved === 'true');
+
+  toggle?.addEventListener('click', () => {
+    setCollapsed(!shell?.classList.contains('is-collapsed'));
+  });
+</script>
+
 <style>
-  .site-header {
-    border-bottom: 1px solid #e2e8f0;
-    background: #fff;
+  .topbar {
+    grid-area: topbar;
     position: sticky;
     top: 0;
-    z-index: 50;
-  }
-  .site-header__inner {
-    max-width: 72rem;
-    margin: 0 auto;
-    padding: 0.75rem 1.25rem;
+    z-index: 100;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
+    height: var(--topbar-h);
+    padding: 0 1.25rem;
+    background: var(--topbar-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   }
-  .site-header__desktop-nav { display: none; }
-  .site-header__mobile-nav { display: flex; }
 
-  @media (min-width: 768px) {
-    .site-header__desktop-nav { display: flex; }
-    .site-header__mobile-nav { display: none; }
+  .topbar__hamburger,
+  .topbar__search-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .topbar__hamburger {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    color: var(--topbar-text);
+    border-radius: 0.375rem;
+  }
+  .topbar__hamburger svg { width: 20px; height: 20px; }
+  .topbar__hamburger:hover { background: rgba(255, 255, 255, 0.08); }
+  .topbar__hamburger:focus-visible,
+  .topbar__search-submit:focus-visible {
+    outline: 2px solid var(--sidebar-accent);
+    outline-offset: 2px;
+  }
+
+  .topbar__search { flex: 1; max-width: 600px; }
+  .topbar__search-wrap { position: relative; display: flex; align-items: center; }
+  .topbar__search-icon {
+    position: absolute;
+    left: 0.625rem;
+    width: 16px;
+    height: 16px;
+    color: #64748b;
+    pointer-events: none;
+  }
+  .topbar__search-input {
+    width: 100%;
+    padding: 0.45rem 2.5rem 0.45rem 2.25rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 0.5rem;
+    color: var(--topbar-text);
+    font-size: 0.9375rem;
+    outline: none;
+  }
+  .topbar__search-input::placeholder { color: #64748b; }
+  .topbar__search-input:focus {
+    border-color: var(--sidebar-accent);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+  }
+  .topbar__search-submit {
+    position: absolute;
+    right: 0.375rem;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    border-radius: 0.25rem;
+  }
+  .topbar__search-submit:hover { background: rgba(255, 255, 255, 0.18); color: #e2e8f0; }
+  .topbar__search-submit svg { width: 14px; height: 14px; }
+
+  .sidebar {
+    grid-area: sidebar;
+    min-width: 0;
+    overflow-y: auto;
+    background: var(--sidebar-bg);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .sidebar__desktop-nav { display: block; }
+
+  @media (max-width: 767px) {
+    .sidebar {
+      position: fixed;
+      top: var(--topbar-h);
+      bottom: 0;
+      left: 0;
+      z-index: 200;
+      width: var(--sidebar-w);
+      transform: translateX(-100%);
+      transition: transform var(--transition);
+    }
+    :global(.app-shell:not(.is-collapsed)) .sidebar { transform: translateX(0); }
+    .sidebar__desktop-nav { display: none; }
   }
 </style>

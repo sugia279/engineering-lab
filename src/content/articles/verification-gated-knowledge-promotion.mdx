@@ -1,0 +1,94 @@
+---
+title: "Verification-Gated Knowledge Promotion in AI Agent Pipelines"
+description: "A canary-deploy pattern for AI-generated knowledge: fixes start provisional, earn per-spoke promotion after one confirmed green rerun, and reach shared-generic rules only after two independent confirmations."
+publishedAt: 2026-07-01
+tags:
+  - ai-agent
+  - knowledge-management
+  - test-automation
+  - automation-framework
+  - progressive-delivery
+domains:
+  - engineering
+  - artificial-intelligence
+featured: true
+showTableOfContents: true
+connections:
+  - type: applies-to
+    target:
+      collection: projects
+      id: qautomate-knowledge-graph
+    context: "Designed for the QAutomate AI-assisted test modernization pipeline."
+  - type: related
+    target:
+      collection: notes
+      id: five-store-agent-memory
+    context: "The five-store memory model is the runtime substrate that holds provisional and promoted knowledge."
+---
+
+## The Problem: Premature Trust in AI Fixes
+
+When an AI agent fixes a failing automation test, how confident should we be that the fix is correct? Using the fix immediately in other tests risks propagating a wrong assumption. Waiting for extensive manual review defeats the purpose of AI assistance.
+
+The core tension is between **speed** (reusing a fix as soon as it's generated) and **safety** (only trusting a fix after it has been verified).
+
+## The Analogy: Canary Deployment
+
+In software delivery, a canary deployment releases a change to a small subset of users before rolling it out broadly. If the canary performs well, confidence grows and the rollout widens.
+
+Verification-gated knowledge promotion applies the same principle to AI-generated knowledge instead of code releases.
+
+## The Promotion Ladder
+
+A fix produced by an AI agent moves through three states:
+
+### 1. Provisional (in-run reuse only)
+
+The fix is applied and the test re-runs immediately within the same session. The agent can reuse this fix in the current run without waiting.
+
+**Oracle:** the rerun passes or fails — not how many times the pattern has appeared.
+
+**Blast radius:** the current run only.
+
+### 2. Per-spoke rules (after 1 green rerun)
+
+If the rerun passes once, the fix is promoted to the per-spoke rule file for this specific test dialog or module. Other tests in the same spoke can now benefit.
+
+**Requirement:** exactly one confirmed independent green rerun.
+
+**Blast radius:** one test spoke (dialog, module, or feature area).
+
+### 3. Shared-generic rules (after 2+ independent green spokes)
+
+If the same fix independently passes in two or more separate spokes, it earns the highest trust level. It moves to the shared-generic rule file and benefits all future agent sessions across the entire suite.
+
+**Requirement:** two or more independent green reruns from different spokes.
+
+**Blast radius:** the whole suite.
+
+## Why Frequency Is Not the Oracle
+
+A naive implementation might count how many times a pattern appears and promote it when it exceeds a threshold. This is wrong for two reasons:
+
+1. **Correlated failures** — If the same incorrect assumption repeats across many tests without being re-run, frequency inflates without any actual verification.
+2. **Confounds** — A fix that appears 10 times in a flaky test suite is less trustworthy than a fix that appears once in a stable, independent rerun.
+
+The oracle must be the **outcome of a fresh execution** (pass or fail), not the raw count of appearances.
+
+## Implementation in QAutomate
+
+This pattern was designed for the QAutomate AI-assisted test modernization pipeline (Steps 3A–3F). The runtime substrate is the five-store memory model:
+
+| Store | Role in promotion |
+|-------|------------------|
+| `learned-patterns.json` | In-run fast-path cache — provisional fixes live here |
+| Per-dialog rule files | Promoted after 1 green rerun — spoke-specific fixes |
+| Generic rule files | Promoted after 2+ independent green spokes |
+| `AITask` (workflow state table) | Tracks promotion status and rerun evidence |
+| `TestRunContext` (event log) | Records green/red rerun outcomes per session |
+
+## Summary
+
+Verification-gated knowledge promotion answers the question: *when should we trust an AI-generated fix enough to share it?*
+
+The answer is: when an independent rerun confirms it, not just when it appears repeatedly. One green rerun earns local trust; two independent green reruns earn global trust. This mirrors canary deployment — evidence drives the blast radius, not optimism.

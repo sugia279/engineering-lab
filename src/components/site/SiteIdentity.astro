@@ -22,14 +22,15 @@ const homeUrl = buildUrl('/');
   }
   .site-identity__name {
     font-weight: 700;
-    font-size: 1.1rem;
-    color: #1e293b;
-    letter-spacing: -0.01em;
+    font-size: 1rem;
+    color: var(--topbar-text);
+    white-space: nowrap;
   }
-  .site-identity:hover .site-identity__name { color: #1d4ed8; }
+  .site-identity:hover .site-identity__name { color: #bfdbfe; }
   .site-identity:focus-visible {
-    outline: 2px solid #1d4ed8;
+    outline: 2px solid var(--sidebar-accent);
     outline-offset: 3px;
     border-radius: 3px;
   }
+  @media (max-width: 639px) { .site-identity { display: none; } }
 </style>

@@ -1,0 +1,70 @@
+---
+title: "Five-Store Agent Memory Architecture"
+description: "A structured five-store model for AI agent pipelines: generic rules, per-dialog rules, in-run fast-path cache, workflow state table, and append-only event log — enabling idempotent resume, 3-strike escalation, and full lifecycle tracing."
+publishedAt: 2026-07-01
+tags:
+  - ai-agent
+  - memory-architecture
+  - test-automation
+  - knowledge-management
+domains:
+  - engineering
+  - artificial-intelligence
+maturity: growing
+connections:
+  - type: explains
+    target:
+      collection: articles
+      id: verification-gated-knowledge-promotion
+    context: "This memory model is the substrate that makes verification-gated promotion possible at runtime."
+---
+
+## The Five Stores
+
+When designing AI agent pipelines for test automation, the naive approach uses a single global ruleset. This creates conflicts, makes rollback difficult, and loses the distinction between a fix that worked once and a fix that has been independently confirmed multiple times.
+
+The five-store model separates concerns into distinct memory layers with different scopes, mutability, and persistence:
+
+| Store | File / Table | Scope | Mutability |
+|-------|-------------|-------|------------|
+| Generic rule files | `rules/generic/*.md` | All runs, all dialogs | Promoted from per-dialog after 2+ independent confirmations |
+| Per-dialog rule files | `rules/<dialog>/*.md` | One dialog / spoke | Promoted from provisional after 1 green rerun |
+| In-run fast-path cache | `learned-patterns.json` | Current session only | Written freely during a run |
+| Workflow state table | `AITask` (DB/JSON) | Per session ID | Updated by state machine; enables idempotent resume |
+| Append-only event log | `TestRunContext` | Lifetime of a run | Append-only; never modified |
+
+## Store 1 & 2: Rule Files (Generic and Per-Dialog)
+
+These are the durable knowledge base. Generic rules apply to all tests; per-dialog rules apply to a specific test area. Both are plain text files the agent reads at session start.
+
+The promotion hierarchy is one-directional: `provisional → per-dialog → generic`. No demotion occurs; if a promoted rule causes new failures, the fix is a new provisional override.
+
+## Store 3: In-Run Fast-Path Cache
+
+`learned-patterns.json` is written during a single run. It holds fixes that succeeded within this session but haven't earned per-dialog promotion yet. At the end of the run, the orchestrator decides which entries are candidates for promotion based on rerun evidence.
+
+This allows an agent to immediately reuse a fix it discovered earlier in the same session without waiting for a full rerun cycle.
+
+## Store 4: Workflow State Table (AITask)
+
+`AITask` tracks the current state of every agent task in a session. Each row has a session ID, task ID, current state (pending / running / awaiting_rerun / promoted / failed), and the evidence count (number of green reruns).
+
+Because state is explicit and keyed by session ID, the pipeline supports **idempotent resume**: if the process crashes, it reads AITask and picks up exactly where it left off without re-running already-completed steps.
+
+The 3-strike escalation rule is also implemented here: if the same task fails three times consecutively without any green reruns, it escalates to human review rather than cycling indefinitely.
+
+## Store 5: Append-Only Event Log (TestRunContext)
+
+`TestRunContext` is the audit trail. Every significant event is appended: step started, fix applied, rerun passed, rerun failed, promotion triggered, escalation raised. Nothing is ever modified or deleted.
+
+This enables:
+- Full **lifecycle tracing** by session ID — reconstruct exactly what happened and why
+- **Debugging** without reproducing the run
+- **Promotion auditing** — verify that a generic rule was earned legitimately before trusting it
+
+## Design Principles
+
+1. **Scope isolation** — a fix that belongs to one dialog cannot contaminate another until independently confirmed
+2. **Idempotent resume** — any interruption can be recovered from without data loss or duplicate work
+3. **Evidence-based promotion** — blast radius expands only when evidence supports it
+4. **Immutable audit trail** — the event log is the source of truth for what actually happened
