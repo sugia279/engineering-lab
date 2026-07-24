@@ -27,7 +27,7 @@ const defaults: Record<StatusValue, string> = {
 const displayLabel = label ?? defaults[status] ?? status;
 ---
 
-<span class={`status status--${status}`} aria-label={`Status: ${displayLabel}`}>
+<span role="img" class={`status status--${status}`} aria-label={`Status: ${displayLabel}`}>
   {displayLabel}
 </span>
 
