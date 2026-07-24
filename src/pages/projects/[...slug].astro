@@ -1,0 +1,48 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+import { getPublishedProjects, getAllPublishedEntries, toProjectViewModel, toContentSummary } from '../../lib/content/queries';
+import { resolveEntryConnections } from '../../lib/content/graph';
+import { buildSEOData } from '../../utils/seo';
+import type { ProjectEntry } from '../../lib/content/queries';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const projects = await getPublishedProjects();
+  return projects.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+interface Props { entry: ProjectEntry; }
+const { entry } = Astro.props as unknown as Props;
+const { Content, headings } = await entry.render();
+
+const allEntries = await getAllPublishedEntries();
+const connections = resolveEntryConnections(entry, allEntries);
+const relatedContent = connections
+  .filter((c) => c.direction === 'outgoing' || c.direction === 'symmetric')
+  .map((c) => {
+    const related = allEntries.find(
+      (e) => `${e.collection}:${e.id}` === c.targetNodeId,
+    );
+    return related ? toContentSummary(related) : null;
+  })
+  .filter((x): x is NonNullable<typeof x> => x !== null);
+
+const viewModel = toProjectViewModel(entry);
+
+const seo = buildSEOData({
+  title: viewModel.title,
+  description: viewModel.description,
+  path: `projects/${entry.id}/`,
+  kind: 'project',
+  publishedAt: viewModel.publishedAt,
+  updatedAt: viewModel.updatedAt,
+  tags: entry.data.tags as string[],
+});
+---
+
+<ProjectLayout project={viewModel} seo={seo} headings={headings} connections={connections} relatedContent={relatedContent}>
+  <Content />
+</ProjectLayout>

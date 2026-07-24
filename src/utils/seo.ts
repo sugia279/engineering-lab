@@ -22,11 +22,12 @@ export interface SEOInput {
   readonly image?: string;
   readonly noIndex?: boolean;
   readonly breadcrumbs?: readonly Breadcrumb[];
+  readonly canonicalOverride?: string;
 }
 
 /** Build complete SEO data from content and site configuration. */
 export function buildSEOData(input: SEOInput): SEOData {
-  const canonical = canonicalUrl(input.path);
+  const canonical = input.canonicalOverride ?? canonicalUrl(input.path);
   const fullTitle =
     input.kind === 'home'
       ? `${siteConfig.name} — ${siteConfig.description.split('—')[0]?.trim()}`

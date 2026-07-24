@@ -1,0 +1,114 @@
+---
+/**
+ * SeriesLayout — series landing page with ordered entry list.
+ * Registry: Layout, M8. Composes SiteLayout.
+ */
+import type { SeriesViewModel, ResolvedSeriesEntry } from '../types/content';
+import type { ResolvedConnection } from '../types/graph';
+import type { SEOData } from '../types/seo';
+import type { Breadcrumb } from '../types/navigation';
+import SiteLayout from './SiteLayout.astro';
+import PublicationDates from '../components/metadata/PublicationDates.astro';
+import TagList from '../components/discovery/TagList.astro';
+import Prose from '../components/content/Prose.astro';
+import SeriesEntryList from '../components/series/SeriesEntryList.astro';
+import ConnectionList from '../components/graph/ConnectionList.astro';
+import { buildBreadcrumbStructuredData } from '../utils/seo';
+
+interface Props {
+  series: SeriesViewModel;
+  seo: SEOData;
+  resolvedEntries: readonly ResolvedSeriesEntry[];
+  connections?: ResolvedConnection[];
+  breadcrumbs?: Breadcrumb[];
+}
+
+const {
+  series,
+  seo,
+  resolvedEntries,
+  connections = [],
+  breadcrumbs = [],
+} = Astro.props;
+
+const structuredData = breadcrumbs.length > 0
+  ? buildBreadcrumbStructuredData(breadcrumbs)
+  : seo.structuredData;
+---
+
+<SiteLayout seo={seo} structuredData={structuredData}>
+  <article class="series-layout">
+    <header class="series-layout__header">
+      <p class="series-layout__collection">Series</p>
+      <h1 class="series-layout__title">{series.title}</h1>
+      <p class="series-layout__description">{series.description}</p>
+      <div class="series-layout__meta">
+        <PublicationDates publishedAt={series.publishedAt} updatedAt={series.updatedAt} />
+        <span class="series-layout__count">
+          · {resolvedEntries.length} {resolvedEntries.length === 1 ? 'entry' : 'entries'}
+        </span>
+      </div>
+      <TagList tags={series.tags} mode="linked" />
+    </header>
+
+    <Prose class="series-layout__intro">
+      <slot />
+    </Prose>
+
+    <section class="series-layout__entries" aria-label="Series entries">
+      <h2 class="series-layout__entries-heading">Learning path</h2>
+      <SeriesEntryList entries={resolvedEntries} />
+    </section>
+
+    {connections.length > 0 && (
+      <ConnectionList connections={connections} />
+    )}
+  </article>
+</SiteLayout>
+
+<style>
+  .series-layout {
+    max-width: 72ch;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .series-layout__header { margin-bottom: 1.5rem; }
+  .series-layout__collection {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .series-layout__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .series-layout__description {
+    font-size: 1.0625rem;
+    color: #475569;
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+  .series-layout__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.75rem;
+  }
+  .series-layout__count { font-size: 0.875rem; color: #64748b; }
+  .series-layout__intro { margin: 1rem 0 1.5rem; }
+  .series-layout__entries-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin: 0 0 0.75rem;
+  }
+</style>

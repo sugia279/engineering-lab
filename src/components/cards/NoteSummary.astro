@@ -1,0 +1,75 @@
+---
+/**
+ * NoteSummary — card for note listings, home, topics, related, series.
+ * Registry: Cards component, M6.
+ * Depends on: ContentStatus, PublicationDates, TagList (M5).
+ */
+import type { NoteSummary } from '../../types/content';
+import ContentStatus from '../metadata/ContentStatus.astro';
+import PublicationDates from '../metadata/PublicationDates.astro';
+import TagList from '../discovery/TagList.astro';
+
+interface Props {
+  note: NoteSummary;
+}
+
+const { note } = Astro.props;
+---
+
+<article class="note-summary">
+  <h3 class="note-summary__title">
+    <a href={note.url} class="note-summary__link">
+      {note.title}
+    </a>
+  </h3>
+  <p class="note-summary__description">{note.description}</p>
+  <footer class="note-summary__meta">
+    <ContentStatus status={note.maturity} />
+    <PublicationDates
+      publishedAt={note.publishedAt}
+      updatedAt={note.updatedAt}
+      compact
+    />
+    {note.readingTime > 0 && (
+      <span class="note-summary__reading-time">
+        · {note.readingTime} min read
+      </span>
+    )}
+    <TagList tags={note.tags} mode="linked" class="note-summary__tags" />
+  </footer>
+</article>
+
+<style>
+  .note-summary {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .note-summary:last-child { border-bottom: none; }
+  .note-summary__title { margin: 0 0 0.4rem; font-size: 1.05rem; font-weight: 600; }
+  .note-summary__link {
+    color: #1e293b;
+    text-decoration: none;
+  }
+  .note-summary__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .note-summary__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .note-summary__description {
+    color: #475569;
+    font-size: 0.9375rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+  }
+  .note-summary__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+  .note-summary__reading-time { white-space: nowrap; }
+  .note-summary__tags { margin-left: 0.25rem; }
+</style>

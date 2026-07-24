@@ -1,0 +1,120 @@
+---
+/**
+ * SeriesEntryList — ordered article/note sequence on a series landing page.
+ * Registry: Series component, M6.
+ * Depends on: ResolvedSeriesEntry type, URL utility.
+ */
+import type { ResolvedSeriesEntry } from '../../types/content';
+
+interface Props {
+  entries: readonly ResolvedSeriesEntry[];
+  currentId?: string;
+}
+
+const { entries, currentId } = Astro.props;
+---
+
+{
+  entries.length > 0 && (
+    <nav aria-label="Series entries" class="series-entry-list">
+      <ol class="series-entry-list__items">
+        {entries.map((entry) => {
+          const isCurrent = entry.id === currentId;
+          return (
+            <li
+              class={`series-entry-list__item${isCurrent ? ' series-entry-list__item--current' : ''}`}
+              aria-current={isCurrent ? 'true' : undefined}
+            >
+              <span class="series-entry-list__position" aria-hidden="true">
+                {entry.position}
+              </span>
+              <div class="series-entry-list__content">
+                <a
+                  href={entry.url}
+                  class="series-entry-list__link"
+                  aria-label={`${entry.position}. ${entry.title}${isCurrent ? ' (current)' : ''}`}
+                >
+                  {entry.title}
+                </a>
+                <span class="series-entry-list__type">
+                  {entry.collection === 'articles' ? 'Article' : 'Note'}
+                </span>
+                <p class="series-entry-list__description">{entry.description}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .series-entry-list { margin: 1.5rem 0; }
+  .series-entry-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .series-entry-list__item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #fff;
+  }
+  .series-entry-list__item--current {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+  .series-entry-list__position {
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 50%;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .series-entry-list__item--current .series-entry-list__position {
+    background: #3b82f6;
+    color: #fff;
+  }
+  .series-entry-list__content { flex: 1; min-width: 0; }
+  .series-entry-list__link {
+    font-weight: 600;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    display: block;
+    margin-bottom: 0.2rem;
+    word-break: break-word;
+  }
+  .series-entry-list__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .series-entry-list__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .series-entry-list__type {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  .series-entry-list__description {
+    font-size: 0.875rem;
+    color: #475569;
+    margin: 0.25rem 0 0;
+    line-height: 1.5;
+  }
+</style>

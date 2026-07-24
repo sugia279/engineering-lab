@@ -1,0 +1,53 @@
+---
+/**
+ * RelatedContentList — cross-type related entries via resolved ContentSummary.
+ * Registry: Discovery component, M7.
+ */
+import type { ContentSummary } from '../../types/content';
+import ArticleSummary from '../cards/ArticleSummary.astro';
+import NoteSummary from '../cards/NoteSummary.astro';
+import ProjectSummary from '../cards/ProjectSummary.astro';
+import SeriesSummary from '../cards/SeriesSummary.astro';
+
+interface Props {
+  items: ContentSummary[];
+  heading?: string;
+}
+
+const { items, heading = 'Related content' } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <section class="related-list" aria-label={heading}>
+      <h2 class="related-list__heading">{heading}</h2>
+      <ul class="related-list__items" role="list">
+        {items.map((item) => (
+          <li class="related-list__item">
+            {item.kind === 'article' && <ArticleSummary article={item} />}
+            {item.kind === 'note' && <NoteSummary note={item} />}
+            {item.kind === 'project' && <ProjectSummary project={item} />}
+            {item.kind === 'series' && <SeriesSummary series={item} />}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .related-list { margin: 2.5rem 0; }
+  .related-list__heading {
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin: 0 0 0.75rem;
+  }
+  .related-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

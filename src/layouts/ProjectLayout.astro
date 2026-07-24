@@ -1,0 +1,117 @@
+---
+/**
+ * ProjectLayout — project case study with facts, prose body, and related projects.
+ * Registry: Layout, M8. Composes SiteLayout.
+ */
+import type { ProjectViewModel, ContentSummary } from '../types/content';
+import type { ProjectFacts as ProjectFactsType } from '../types/content';
+import type { ResolvedConnection } from '../types/graph';
+import type { SEOData } from '../types/seo';
+import type { Breadcrumb } from '../types/navigation';
+import SiteLayout from './SiteLayout.astro';
+import ProjectFacts from '../components/project/ProjectFacts.astro';
+import PublicationDates from '../components/metadata/PublicationDates.astro';
+import TagList from '../components/discovery/TagList.astro';
+import Prose from '../components/content/Prose.astro';
+import TableOfContents from '../components/content/TableOfContents.astro';
+import RelatedContentList from '../components/discovery/RelatedContentList.astro';
+import ConnectionList from '../components/graph/ConnectionList.astro';
+import { buildBreadcrumbStructuredData } from '../utils/seo';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  project: ProjectViewModel;
+  seo: SEOData;
+  headings?: Heading[];
+  relatedContent?: ContentSummary[];
+  connections?: ResolvedConnection[];
+  breadcrumbs?: Breadcrumb[];
+}
+
+const {
+  project,
+  seo,
+  headings = [],
+  relatedContent = [],
+  connections = [],
+  breadcrumbs = [],
+} = Astro.props;
+
+const facts: ProjectFactsType = project.facts;
+
+const structuredData = breadcrumbs.length > 0
+  ? buildBreadcrumbStructuredData(breadcrumbs)
+  : seo.structuredData;
+---
+
+<SiteLayout seo={seo} structuredData={structuredData}>
+  <article class="project-layout">
+    <header class="project-layout__header">
+      <p class="project-layout__collection">Project</p>
+      <h1 class="project-layout__title">{project.title}</h1>
+      <p class="project-layout__description">{project.description}</p>
+      <div class="project-layout__meta">
+        <PublicationDates publishedAt={project.publishedAt} updatedAt={project.updatedAt} />
+      </div>
+      <TagList tags={project.tags} mode="linked" />
+    </header>
+
+    <ProjectFacts facts={facts} />
+
+    {headings.length > 0 && (
+      <aside class="project-layout__toc" aria-label="Table of contents">
+        <TableOfContents headings={headings} />
+      </aside>
+    )}
+
+    <Prose class="project-layout__body">
+      <slot />
+    </Prose>
+
+    {connections.length > 0 && (
+      <ConnectionList connections={connections} />
+    )}
+
+    {relatedContent.length > 0 && (
+      <RelatedContentList items={relatedContent} heading="Related projects" />
+    )}
+  </article>
+</SiteLayout>
+
+<style>
+  .project-layout {
+    max-width: 72ch;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .project-layout__header { margin-bottom: 1.5rem; }
+  .project-layout__collection {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .project-layout__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .project-layout__description {
+    font-size: 1.0625rem;
+    color: #475569;
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+  .project-layout__meta { margin-bottom: 0.75rem; }
+  .project-layout__toc { margin: 1rem 0; }
+  .project-layout__body { margin-top: 1rem; }
+</style>

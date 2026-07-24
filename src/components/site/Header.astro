@@ -1,0 +1,54 @@
+---
+/**
+ * Header — site header composing SiteIdentity, PrimaryNavigation, MobileNavigation.
+ * Registry: Site component, M7.
+ */
+import SiteIdentity from './SiteIdentity.astro';
+import PrimaryNavigation from './PrimaryNavigation.astro';
+import MobileNavigation from './MobileNavigation.astro';
+import { primaryNavigation } from '../../config/navigation';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '' } = Astro.props;
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <SiteIdentity />
+    <div class="site-header__desktop-nav">
+      <PrimaryNavigation items={primaryNavigation} currentPath={currentPath} />
+    </div>
+    <div class="site-header__mobile-nav">
+      <MobileNavigation items={primaryNavigation} currentPath={currentPath} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    border-bottom: 1px solid #e2e8f0;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .site-header__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .site-header__desktop-nav { display: none; }
+  .site-header__mobile-nav { display: flex; }
+
+  @media (min-width: 768px) {
+    .site-header__desktop-nav { display: flex; }
+    .site-header__mobile-nav { display: none; }
+  }
+</style>

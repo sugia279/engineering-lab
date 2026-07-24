@@ -1,0 +1,106 @@
+---
+/**
+ * GraphNodeDetails — selected node identity, domains, description, and connections.
+ * Registry: Graph component, M7. Updated by graph-explorer controller.
+ */
+import type { GraphNode, ResolvedConnection } from '../../types/graph';
+import ConnectionList from './ConnectionList.astro';
+import { getDomainLabel } from '../../config/domains';
+
+interface Props {
+  node?: GraphNode;
+  connections?: ResolvedConnection[];
+  emptyPrompt?: string;
+}
+
+const {
+  node,
+  connections = [],
+  emptyPrompt = 'Select a node in the graph to explore its connections.',
+} = Astro.props;
+---
+
+<section
+  id="graph-node-details"
+  class="graph-node-details"
+  aria-label="Selected node details"
+>
+  {node ? (
+    <div class="graph-node-details__content">
+      <p class="graph-node-details__collection">{node.collection}</p>
+      <h2 class="graph-node-details__title">
+        <a href={node.url} class="graph-node-details__link">
+          {node.title}
+        </a>
+      </h2>
+      {node.domains.length > 0 && (
+        <ul class="graph-node-details__domains" aria-label="Domains">
+          {node.domains.map((d) => (
+            <li class="graph-node-details__domain">{getDomainLabel(d)}</li>
+          ))}
+        </ul>
+      )}
+      <p class="graph-node-details__description">{node.description}</p>
+      <ConnectionList connections={connections} heading="Connections" selectedNodeId={node.id} />
+    </div>
+  ) : (
+    <p class="graph-node-details__empty">{emptyPrompt}</p>
+  )}
+</section>
+
+<style>
+  .graph-node-details {
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #fff;
+    min-height: 10rem;
+  }
+  .graph-node-details__collection {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+  }
+  .graph-node-details__title { margin: 0 0 0.5rem; font-size: 1.1rem; }
+  .graph-node-details__link {
+    color: #1e293b;
+    text-decoration: none;
+  }
+  .graph-node-details__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .graph-node-details__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .graph-node-details__domains {
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .graph-node-details__domain {
+    font-size: 0.75rem;
+    padding: 0.15em 0.5em;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-radius: 4px;
+  }
+  .graph-node-details__description {
+    font-size: 0.9375rem;
+    color: #475569;
+    margin: 0 0 1rem;
+    line-height: 1.55;
+  }
+  .graph-node-details__empty {
+    color: #94a3b8;
+    font-size: 0.9375rem;
+    text-align: center;
+    padding: 2rem 0;
+    margin: 0;
+  }
+</style>

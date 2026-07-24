@@ -1,0 +1,36 @@
+---
+/**
+ * 404 — GitHub Pages compatible not-found recovery page.
+ * Renders as 404.html at the project base.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import EmptyState from '../components/discovery/EmptyState.astro';
+import { buildSEOData } from '../utils/seo';
+import { buildUrl } from '../utils/url';
+
+const seo = buildSEOData({
+  title: 'Page not found',
+  description: 'The requested page could not be found.',
+  path: '404',
+  kind: 'error',
+  noIndex: true,
+});
+---
+
+<SiteLayout seo={seo}>
+  <div class="not-found">
+    <EmptyState
+      message="Page not found. The URL may have changed or the content may have moved."
+      actionLabel="Return home"
+      actionHref={buildUrl('/')}
+    />
+  </div>
+</SiteLayout>
+
+<style>
+  .not-found {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 4rem 1.25rem;
+  }
+</style>

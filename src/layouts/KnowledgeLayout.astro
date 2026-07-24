@@ -1,0 +1,157 @@
+---
+/**
+ * KnowledgeLayout — shared reading layout for articles AND notes.
+ * Registry: Layout, M8. Composes SiteLayout.
+ */
+import type { ArticleViewModel, NoteViewModel, ContentSummary } from '../types/content';
+import type { ResolvedConnection } from '../types/graph';
+import type { SEOData } from '../types/seo';
+import type { Breadcrumb } from '../types/navigation';
+import SiteLayout from './SiteLayout.astro';
+import PublicationDates from '../components/metadata/PublicationDates.astro';
+import ContentStatus from '../components/metadata/ContentStatus.astro';
+import TagList from '../components/discovery/TagList.astro';
+import Prose from '../components/content/Prose.astro';
+import TableOfContents from '../components/content/TableOfContents.astro';
+import RelatedContentList from '../components/discovery/RelatedContentList.astro';
+import ConnectionList from '../components/graph/ConnectionList.astro';
+import SeriesNavigation from '../components/series/SeriesNavigation.astro';
+import { buildBreadcrumbStructuredData } from '../utils/seo';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  entry: ArticleViewModel | NoteViewModel;
+  seo: SEOData;
+  headings?: Heading[];
+  relatedContent?: ContentSummary[];
+  connections?: ResolvedConnection[];
+  breadcrumbs?: Breadcrumb[];
+}
+
+const {
+  entry,
+  seo,
+  headings = [],
+  relatedContent = [],
+  connections = [],
+  breadcrumbs = [],
+} = Astro.props;
+
+const isNote = entry.collection === 'notes';
+const noteEntry = isNote ? (entry as NoteViewModel) : undefined;
+
+const showTOC =
+  entry.collection === 'articles'
+    ? (entry as ArticleViewModel).showTableOfContents && headings.length > 0
+    : headings.length > 0;
+
+const structuredData = breadcrumbs.length > 0
+  ? buildBreadcrumbStructuredData(breadcrumbs)
+  : seo.structuredData;
+---
+
+<SiteLayout seo={seo} structuredData={structuredData}>
+  <article class="knowledge-layout">
+    <header class="knowledge-layout__header">
+      <p class="knowledge-layout__collection">
+        {entry.collection === 'articles' ? 'Article' : 'Note'}
+      </p>
+
+      <h1 class="knowledge-layout__title">{entry.title}</h1>
+
+      <p class="knowledge-layout__description">{entry.description}</p>
+
+      <div class="knowledge-layout__meta">
+        {isNote && noteEntry && (
+          <ContentStatus status={noteEntry.maturity} />
+        )}
+        <PublicationDates
+          publishedAt={entry.publishedAt}
+          updatedAt={entry.updatedAt}
+        />
+        {entry.collection === 'articles' && (
+          <span class="knowledge-layout__reading-time">
+            · {(entry as ArticleViewModel).readingTime} min read
+          </span>
+        )}
+      </div>
+
+      <TagList tags={entry.tags} mode="linked" />
+    </header>
+
+    {showTOC && (
+      <aside class="knowledge-layout__toc" aria-label="Table of contents">
+        <TableOfContents headings={headings} />
+      </aside>
+    )}
+
+    <Prose class="knowledge-layout__body">
+      <slot />
+    </Prose>
+
+    {entry.seriesContext && (
+      <SeriesNavigation
+        seriesTitle={entry.seriesContext.seriesTitle}
+        seriesUrl={entry.seriesContext.seriesUrl}
+        previous={entry.seriesContext.previous}
+        next={entry.seriesContext.next}
+      />
+    )}
+
+    {connections.length > 0 && (
+      <ConnectionList connections={connections} />
+    )}
+
+    {relatedContent.length > 0 && (
+      <RelatedContentList items={relatedContent} />
+    )}
+  </article>
+</SiteLayout>
+
+<style>
+  .knowledge-layout {
+    max-width: 72ch;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .knowledge-layout__header { margin-bottom: 2rem; }
+  .knowledge-layout__collection {
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+  .knowledge-layout__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+  }
+  .knowledge-layout__description {
+    font-size: 1.0625rem;
+    color: #475569;
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+  .knowledge-layout__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .knowledge-layout__reading-time {
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+  .knowledge-layout__toc { margin-bottom: 1.5rem; }
+  .knowledge-layout__body { margin-top: 1rem; }
+</style>

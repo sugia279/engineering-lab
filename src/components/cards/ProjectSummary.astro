@@ -1,0 +1,90 @@
+---
+/**
+ * ProjectSummary — card for project listings, home, topics, related.
+ * Registry: Cards component, M6.
+ * Depends on: ContentStatus (M5).
+ */
+import type { ProjectSummary } from '../../types/content';
+import ContentStatus from '../metadata/ContentStatus.astro';
+
+interface Props {
+  project: ProjectSummary;
+}
+
+const { project } = Astro.props;
+
+// Show first 3 skills to keep card compact
+const visibleSkills = project.skills.slice(0, 3);
+const remainingCount = project.skills.length - visibleSkills.length;
+---
+
+<article class="project-summary">
+  <h3 class="project-summary__title">
+    <a href={project.url} class="project-summary__link">
+      {project.title}
+    </a>
+  </h3>
+  <p class="project-summary__description">{project.description}</p>
+  <footer class="project-summary__meta">
+    <ContentStatus status={project.status} />
+    {visibleSkills.length > 0 && (
+      <ul class="project-summary__skills" aria-label="Skills">
+        {visibleSkills.map((skill) => (
+          <li class="project-summary__skill">{skill}</li>
+        ))}
+        {remainingCount > 0 && (
+          <li class="project-summary__skill project-summary__skill--more">
+            +{remainingCount} more
+          </li>
+        )}
+      </ul>
+    )}
+  </footer>
+</article>
+
+<style>
+  .project-summary {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .project-summary:last-child { border-bottom: none; }
+  .project-summary__title { margin: 0 0 0.4rem; font-size: 1.05rem; font-weight: 600; }
+  .project-summary__link {
+    color: #1e293b;
+    text-decoration: none;
+  }
+  .project-summary__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .project-summary__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .project-summary__description {
+    color: #475569;
+    font-size: 0.9375rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+  }
+  .project-summary__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .project-summary__skills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+  .project-summary__skill {
+    font-size: 0.75rem;
+    padding: 0.15em 0.5em;
+    background: #f0f9ff;
+    color: #0369a1;
+    border-radius: 4px;
+  }
+  .project-summary__skill--more { background: #f1f5f9; color: #64748b; }
+</style>

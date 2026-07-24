@@ -4,6 +4,9 @@ node_modules/
 # Astro build output
 dist/
 
+# Pagefind generated search index (post-build output)
+dist/pagefind/
+
 # Astro generated types
 .astro/
 

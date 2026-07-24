@@ -1,0 +1,99 @@
+---
+/**
+ * SearchForm — static search input with no-JavaScript GET fallback.
+ * Registry: Discovery component, M7.
+ */
+import { buildUrl } from '../../utils/url';
+
+interface Props {
+  initialQuery?: string;
+  label?: string;
+  resultTargetId?: string;
+  statusTargetId?: string;
+}
+
+const {
+  initialQuery = '',
+  label = 'Search',
+  resultTargetId = 'search-results',
+  statusTargetId = 'search-status',
+} = Astro.props;
+
+const actionUrl = buildUrl('/search/');
+---
+
+<search aria-label={label} class="search-form">
+  <form
+    action={actionUrl}
+    method="get"
+    class="search-form__form"
+    role="search"
+    data-result-target={resultTargetId}
+    data-status-target={statusTargetId}
+  >
+    <label for="search-input" class="search-form__label">{label}</label>
+    <div class="search-form__row">
+      <input
+        id="search-input"
+        type="search"
+        name="q"
+        value={initialQuery}
+        class="search-form__input"
+        placeholder="Search articles, notes, projects…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit" class="search-form__submit" aria-label="Submit search">
+        Search
+      </button>
+    </div>
+  </form>
+  <slot name="help" />
+</search>
+
+<style>
+  .search-form { width: 100%; }
+  .search-form__label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+  .search-form__row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  .search-form__input {
+    flex: 1;
+    padding: 0.5rem 0.875rem;
+    font-size: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.375rem;
+    color: #1e293b;
+    background: #fff;
+    min-width: 0;
+  }
+  .search-form__input:focus {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-color: #3b82f6;
+  }
+  .search-form__submit {
+    padding: 0.5rem 1rem;
+    background: #1d4ed8;
+    color: #fff;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .search-form__submit:hover { background: #1e40af; }
+  .search-form__submit:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+</style>

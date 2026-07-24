@@ -6,7 +6,10 @@
 
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import type { ContentSummary, ArticleSummary, NoteSummary, ProjectSummary, SeriesSummary, Tag } from '../../types/content';
+import type {
+  ContentSummary, ArticleSummary, NoteSummary, ProjectSummary, SeriesSummary, Tag,
+  ArticleViewModel, NoteViewModel, ProjectViewModel, SeriesContext, ProjectFacts,
+} from '../../types/content';
 import { createTag, deduplicateTags, sortTags } from '../../utils/tag';
 import { entryUrl } from '../../utils/url';
 import { calculateReadingTime } from '../../utils/reading-time';
@@ -149,4 +152,92 @@ export function toContentSummary(entry: AnyEntry): ContentSummary {
   if (entry.collection === 'notes') return toNoteSummary(entry);
   if (entry.collection === 'projects') return toProjectSummary(entry);
   return toSeriesSummary(entry as SeriesEntry);
+}
+
+// ---------------------------------------------------------------------------
+// Full view model derivation helpers (consumed by detail routes)
+// ---------------------------------------------------------------------------
+
+export function toArticleViewModel(
+  entry: ArticleEntry,
+  seriesContext?: SeriesContext,
+): ArticleViewModel {
+  const tags: Tag[] = entry.data.tags.map((t: string) => createTag(t));
+  return {
+    id: entry.id,
+    graphNodeId: `articles:${entry.id}`,
+    collection: 'articles',
+    title: entry.data.title,
+    description: entry.data.description,
+    slug: entry.id,
+    url: entryUrl('articles', entry.id),
+    publishedAt: entry.data.publishedAt,
+    updatedAt: entry.data.updatedAt,
+    domains: entry.data.domains as readonly string[],
+    tags,
+    image: entry.data.image,
+    canonicalUrl: entry.data.canonicalUrl,
+    draft: entry.data.draft,
+    featured: entry.data.featured,
+    showTableOfContents: entry.data.showTableOfContents,
+    readingTime: calculateReadingTime(entry.body ?? '').minutes,
+    seriesContext,
+  };
+}
+
+export function toNoteViewModel(
+  entry: NoteEntry,
+  seriesContext?: SeriesContext,
+): NoteViewModel {
+  const tags: Tag[] = entry.data.tags.map((t: string) => createTag(t));
+  return {
+    id: entry.id,
+    graphNodeId: `notes:${entry.id}`,
+    collection: 'notes',
+    title: entry.data.title,
+    description: entry.data.description,
+    slug: entry.id,
+    url: entryUrl('notes', entry.id),
+    publishedAt: entry.data.publishedAt,
+    updatedAt: entry.data.updatedAt,
+    domains: entry.data.domains as readonly string[],
+    tags,
+    image: entry.data.image,
+    canonicalUrl: entry.data.canonicalUrl,
+    draft: entry.data.draft,
+    maturity: entry.data.maturity,
+    readingTime: calculateReadingTime(entry.body ?? '').minutes,
+    seriesContext,
+  };
+}
+
+export function toProjectViewModel(entry: ProjectEntry): ProjectViewModel {
+  const tags: Tag[] = entry.data.tags.map((t: string) => createTag(t));
+  const facts: ProjectFacts = {
+    status: entry.data.status,
+    role: entry.data.role,
+    period: entry.data.period,
+    skills: entry.data.skills,
+    tools: entry.data.tools,
+    repositoryUrl: entry.data.repositoryUrl,
+    liveUrl: entry.data.liveUrl,
+  };
+  return {
+    id: entry.id,
+    graphNodeId: `projects:${entry.id}`,
+    collection: 'projects',
+    title: entry.data.title,
+    description: entry.data.description,
+    slug: entry.id,
+    url: entryUrl('projects', entry.id),
+    publishedAt: entry.data.publishedAt,
+    updatedAt: entry.data.updatedAt,
+    domains: entry.data.domains as readonly string[],
+    tags,
+    image: entry.data.image,
+    canonicalUrl: entry.data.canonicalUrl,
+    draft: entry.data.draft,
+    featured: entry.data.featured,
+    facts,
+  };
 }

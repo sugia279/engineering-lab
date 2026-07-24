@@ -1,0 +1,34 @@
+---
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import TopicLink from '../../components/discovery/TopicLink.astro';
+import { getAllTags } from '../../lib/content/queries';
+import { buildSEOData } from '../../utils/seo';
+
+const tags = await getAllTags();
+
+const seo = buildSEOData({
+  title: 'Topics',
+  description: 'Browse all topics across articles, notes, projects, and series.',
+  path: 'topics/',
+  kind: 'listing',
+});
+---
+
+<ListingLayout seo={seo} title="Topics" description="Browse all topics across articles, notes, projects, and series." itemCount={tags.length} showCollectionNav={false}>
+  {tags.length > 0 && (
+    <div class="topics-grid">
+      {tags.map((tag) => (
+        <TopicLink tag={tag} count={tag.count} />
+      ))}
+    </div>
+  )}
+</ListingLayout>
+
+<style>
+  .topics-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+</style>

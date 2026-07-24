@@ -1,0 +1,67 @@
+---
+/**
+ * Footer — site footer with social links and copyright.
+ * Registry: Site component, M7.
+ */
+import ExternalLink from '../content/ExternalLink.astro';
+import { siteConfig } from '../../config/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p class="site-footer__copy">
+      © {year} {siteConfig.author}
+    </p>
+    {siteConfig.socialLinks.length > 0 && (
+      <ul class="site-footer__links" role="list" aria-label="Social links">
+        {siteConfig.socialLinks.map((link) => (
+          <li>
+            <ExternalLink href={link.url} newTab class="site-footer__link">
+              {link.service}
+            </ExternalLink>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+    margin-top: auto;
+  }
+  .site-footer__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .site-footer__copy { margin: 0; color: #64748b; font-size: 0.875rem; }
+  .site-footer__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .site-footer__link {
+    font-size: 0.875rem;
+    color: #64748b;
+    text-decoration: none;
+  }
+  .site-footer__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .site-footer__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+</style>

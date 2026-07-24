@@ -7,6 +7,7 @@ import type { NavigationItem } from '../types/navigation';
 
 /** Ordered primary navigation items. */
 export const primaryNavigation: readonly NavigationItem[] = [
+  { label: 'Resume', href: '/', matchPattern: '/__home__' },
   { label: 'Articles', href: '/articles/', matchPattern: '/articles' },
   { label: 'Notes', href: '/notes/', matchPattern: '/notes' },
   { label: 'Projects', href: '/projects/', matchPattern: '/projects' },

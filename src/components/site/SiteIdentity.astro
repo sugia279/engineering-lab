@@ -1,0 +1,35 @@
+---
+/**
+ * SiteIdentity — site name/logo linking to the home page.
+ * Registry: Site component, M7.
+ */
+import { siteConfig } from '../../config/site';
+import { buildUrl } from '../../utils/url';
+
+const homeUrl = buildUrl('/');
+---
+
+<a href={homeUrl} class="site-identity" aria-label={`${siteConfig.name} — home`}>
+  <span class="site-identity__name">{siteConfig.name}</span>
+</a>
+
+<style>
+  .site-identity {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .site-identity__name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+  }
+  .site-identity:hover .site-identity__name { color: #1d4ed8; }
+  .site-identity:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+</style>

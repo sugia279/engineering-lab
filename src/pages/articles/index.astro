@@ -1,0 +1,22 @@
+---
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import ArticleSummary from '../../components/cards/ArticleSummary.astro';
+import { getPublishedArticles, toArticleSummary } from '../../lib/content/queries';
+import { sortEntries } from '../../lib/content/sort';
+import { buildSEOData } from '../../utils/seo';
+
+const articles = await getPublishedArticles();
+const sorted = sortEntries(articles, 'newest');
+const summaries = sorted.map(toArticleSummary);
+
+const seo = buildSEOData({
+  title: 'Articles',
+  description: 'Long-form engineering writing, tutorials, and knowledge essays.',
+  path: 'articles/',
+  kind: 'listing',
+});
+---
+
+<ListingLayout seo={seo} title="Articles" description="Long-form engineering writing, tutorials, and knowledge essays." itemCount={summaries.length} activeCollection="articles">
+  {summaries.map((a) => <ArticleSummary article={a} />)}
+</ListingLayout>

@@ -1,0 +1,104 @@
+---
+/**
+ * SearchResults — static containers for loading/results/empty/error states.
+ * Registry: Discovery component, M7. No Pagefind logic here.
+ */
+import type { SearchQueryState } from '../../types/search';
+import EmptyState from './EmptyState.astro';
+import { buildUrl } from '../../utils/url';
+
+interface Props {
+  state: SearchQueryState;
+}
+
+const { state } = Astro.props;
+const homeUrl = buildUrl('/');
+---
+
+<section id="search-results" class="search-results" aria-live="polite" aria-label="Search results">
+  <div id="search-status" class="search-results__status" aria-live="polite" role="status">
+    {state.status === 'loading' && <span>Searching…</span>}
+    {state.status === 'success' && state.resultCount > 0 && (
+      <span>{state.resultCount} result{state.resultCount !== 1 ? 's' : ''} for <strong>"{state.query}"</strong></span>
+    )}
+  </div>
+
+  {state.status === 'error' && (
+    <EmptyState
+      message="Search is unavailable. Browse content below."
+      actionLabel="Go home"
+      actionHref={homeUrl}
+    />
+  )}
+
+  {state.status === 'success' && state.resultCount === 0 && (
+    <EmptyState
+      message={`No results for "${state.query}". Try different keywords.`}
+      actionLabel="Browse all content"
+      actionHref={buildUrl('/articles/')}
+    />
+  )}
+
+  {state.status === 'idle' && !state.query && (
+    <p class="search-results__hint">Enter a search term above to get started.</p>
+  )}
+
+  <ul id="search-result-list" class="search-results__list" role="list">
+    {state.results.map((result) => (
+      <li class="search-results__item">
+        <a href={result.url} class="search-results__link">{result.title}</a>
+        <p class="search-results__excerpt">{result.excerpt}</p>
+        <span class="search-results__collection">{result.collection}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .search-results { margin-top: 1.5rem; }
+  .search-results__status {
+    font-size: 0.9375rem;
+    color: #64748b;
+    min-height: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .search-results__hint { color: #94a3b8; font-size: 0.9375rem; }
+  .search-results__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .search-results__item {
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .search-results__item:last-child { border-bottom: none; }
+  .search-results__link {
+    font-weight: 600;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 1rem;
+  }
+  .search-results__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .search-results__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .search-results__excerpt {
+    color: #475569;
+    font-size: 0.9375rem;
+    margin: 0.25rem 0;
+    line-height: 1.55;
+  }
+  .search-results__collection {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+</style>

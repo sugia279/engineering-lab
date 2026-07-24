@@ -1,0 +1,57 @@
+---
+/**
+ * Search — static shell with SearchForm and empty SearchResults.
+ * Pagefind controller binds in M10.
+ */
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import SearchForm from '../../components/discovery/SearchForm.astro';
+import SearchResults from '../../components/discovery/SearchResults.astro';
+import { buildSEOData } from '../../utils/seo';
+import type { SearchQueryState } from '../../types/search';
+
+const query = Astro.url.searchParams.get('q') ?? '';
+
+const initialState: SearchQueryState = {
+  query,
+  status: 'idle',
+  resultCount: 0,
+  results: [],
+};
+
+const seo = buildSEOData({
+  title: 'Search',
+  description: 'Search articles, notes, projects, and series.',
+  path: 'search/',
+  kind: 'search',
+  noIndex: true,
+});
+---
+
+<SiteLayout seo={seo}>
+  <div class="search-page">
+    <header class="search-page__header">
+      <h1 class="search-page__title">Search</h1>
+    </header>
+    <SearchForm initialQuery={query} label="Search the garden" />
+    <SearchResults state={initialState} />
+  </div>
+</SiteLayout>
+
+<script>
+  import '../../components/discovery/pagefind-search.ts';
+</script>
+
+<style>
+  .search-page {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .search-page__header { margin-bottom: 1.5rem; }
+  .search-page__title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+  }
+</style>

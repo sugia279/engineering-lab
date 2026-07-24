@@ -10,7 +10,7 @@ import { sortTags } from '../../utils/tag';
 type TagListMode = 'linked' | 'static';
 
 interface Props {
-  tags: Tag[];
+  tags: readonly Tag[];
   mode?: TagListMode;
   class?: string;
 }

@@ -1,0 +1,91 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import GraphExplorer from '../../components/graph/GraphExplorer.astro';
+import { getAllPublishedEntries } from '../../lib/content/queries';
+import { buildGraphManifest, resolveEntryConnections } from '../../lib/content/graph';
+import { buildSEOData } from '../../utils/seo';
+import { buildUrl } from '../../utils/url';
+import type { GraphQueryState, GraphNode, ResolvedConnection } from '../../types/graph';
+
+const allEntries = await getAllPublishedEntries();
+const manifest = buildGraphManifest(allEntries);
+
+// Parse query state from URL (canonical remains /graph/)
+const selectedNodeId = Astro.url.searchParams.get('node') ?? undefined;
+const domainFilter = (Astro.url.searchParams.get('domain') ?? undefined) as GraphQueryState['domainFilter'];
+const collectionFilter = (Astro.url.searchParams.get('collection') ?? undefined) as GraphQueryState['collectionFilter'];
+const connectionTypeFilter = (Astro.url.searchParams.get('type') ?? undefined) as GraphQueryState['connectionTypeFilter'];
+
+const queryState: GraphQueryState = {
+  selectedNode: selectedNodeId,
+  domainFilter,
+  collectionFilter,
+  connectionTypeFilter,
+};
+
+// Resolve selected node and its connections for static fallback
+let selectedNode: GraphNode | undefined;
+let selectedConnections: ResolvedConnection[] = [];
+
+if (selectedNodeId) {
+  selectedNode = manifest.nodes.find((n) => n.id === selectedNodeId);
+  const sourceEntry = allEntries.find(
+    (e) => `${e.collection}:${e.id}` === selectedNodeId,
+  );
+  if (sourceEntry) {
+    selectedConnections = resolveEntryConnections(sourceEntry, allEntries);
+  }
+}
+
+const manifestUrl = buildUrl('/graph/graph.json');
+
+const seo = buildSEOData({
+  title: 'Knowledge Graph',
+  description: 'Explore connections across all published knowledge entries.',
+  path: 'graph/',
+  kind: 'graph',
+  noIndex: false,
+});
+---
+
+<SiteLayout seo={seo}>
+  <div class="graph-page">
+    <header class="graph-page__header">
+      <h1 class="graph-page__title">Knowledge Graph</h1>
+      <p class="graph-page__description">
+        Explore semantic connections across {manifest.nodes.length} published {manifest.nodes.length === 1 ? 'entry' : 'entries'}.
+      </p>
+    </header>
+    <GraphExplorer
+      manifestUrl={manifestUrl}
+      queryState={queryState}
+      manifest={manifest}
+      selectedNode={selectedNode}
+      selectedConnections={selectedConnections}
+    />
+  </div>
+</SiteLayout>
+
+<script>
+  import '../../components/graph/graph-explorer.ts';
+</script>
+
+<style>
+  .graph-page {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .graph-page__header { margin-bottom: 1.5rem; }
+  .graph-page__title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.5rem;
+  }
+  .graph-page__description {
+    color: #475569;
+    font-size: 1rem;
+    margin: 0;
+  }
+</style>

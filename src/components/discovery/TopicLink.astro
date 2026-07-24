@@ -1,0 +1,56 @@
+---
+/**
+ * TopicLink — single topic destination with optional entry count.
+ * Registry: Discovery component, M7.
+ */
+import type { Tag } from '../../types/content';
+import { topicUrl } from '../../utils/url';
+
+interface Props {
+  tag: Tag;
+  count?: number;
+}
+
+const { tag, count } = Astro.props;
+const href = topicUrl(tag.slug);
+const label = count !== undefined
+  ? `${tag.label} (${count} ${count === 1 ? 'entry' : 'entries'})`
+  : tag.label;
+---
+
+<a href={href} class="topic-link" aria-label={label}>
+  <span class="topic-link__label">{tag.label}</span>
+  {count !== undefined && (
+    <span class="topic-link__count" aria-hidden="true">{count}</span>
+  )}
+</a>
+
+<style>
+  .topic-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    color: #334155;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .topic-link:hover { border-color: #3b82f6; color: #1d4ed8; }
+  .topic-link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+  .topic-link__count {
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 0.75rem;
+    padding: 0.1em 0.45em;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+</style>

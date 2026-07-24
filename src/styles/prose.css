@@ -4,16 +4,16 @@
  */
 
 .prose {
-  --prose-body: theme(colors.neutral.800);
-  --prose-headings: theme(colors.neutral.900);
-  --prose-lead: theme(colors.neutral.600);
-  --prose-links: theme(colors.blue.700);
-  --prose-code: theme(colors.neutral.900);
-  --prose-code-bg: theme(colors.neutral.100);
-  --prose-pre-bg: theme(colors.neutral.900);
-  --prose-pre-code: theme(colors.neutral.100);
-  --prose-borders: theme(colors.neutral.200);
-  --prose-quote-border: theme(colors.blue.400);
+  --prose-body: #404040;
+  --prose-headings: #171717;
+  --prose-lead: #525252;
+  --prose-links: #1d4ed8;
+  --prose-code: #171717;
+  --prose-code-bg: #f5f5f5;
+  --prose-pre-bg: #171717;
+  --prose-pre-code: #f5f5f5;
+  --prose-borders: #e5e5e5;
+  --prose-quote-border: #60a5fa;
 
   color: var(--prose-body);
   max-width: 72ch;

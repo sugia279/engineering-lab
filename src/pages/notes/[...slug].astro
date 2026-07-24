@@ -1,0 +1,74 @@
+---
+import type { GetStaticPaths } from 'astro';
+import KnowledgeLayout from '../../layouts/KnowledgeLayout.astro';
+import { getPublishedNotes, getPublishedArticles, getPublishedSeries, toNoteViewModel, toContentSummary } from '../../lib/content/queries';
+import { resolveEntryConnections } from '../../lib/content/graph';
+import { resolveSeries, deriveSeriesContext } from '../../lib/content/series';
+import { buildSEOData } from '../../utils/seo';
+import type { NoteEntry } from '../../lib/content/queries';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const notes = await getPublishedNotes();
+  return notes.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+interface Props { entry: NoteEntry; }
+const { entry } = Astro.props as unknown as Props;
+const { Content, headings } = await entry.render();
+
+const [allArticles, allNotes, allSeries] = await Promise.all([
+  getPublishedArticles(),
+  getPublishedNotes(),
+  getPublishedSeries(),
+]);
+
+// Find if this note belongs to any series (series is canonical source for notes)
+let seriesCtx;
+const containingSeries = allSeries.find((s) =>
+  s.data.entries.some((e: { collection: string; id: string }) => e.collection === 'notes' && e.id === entry.id),
+);
+if (containingSeries) {
+  const aMap = new Map(allArticles.map((a) => [a.id, a]));
+  const nMap = new Map(allNotes.map((n) => [n.id, n]));
+  const resolved = resolveSeries(containingSeries, aMap, nMap);
+  if ('viewModel' in resolved) {
+    seriesCtx = deriveSeriesContext(
+      containingSeries.id,
+      containingSeries.data.title,
+      resolved.viewModel.entries,
+      entry.id,
+    );
+  }
+}
+
+const viewModel = toNoteViewModel(entry, seriesCtx);
+const allEntries = [...allArticles, ...allNotes];
+const connections = resolveEntryConnections(entry, allEntries);
+const relatedContent = connections
+  .filter((c) => c.direction === 'outgoing' || c.direction === 'symmetric')
+  .map((c) => {
+    const related = allEntries.find(
+      (e) => `${e.collection}:${e.id}` === c.targetNodeId,
+    );
+    return related ? toContentSummary(related) : null;
+  })
+  .filter((x): x is NonNullable<typeof x> => x !== null);
+
+const seo = buildSEOData({
+  title: viewModel.title,
+  description: viewModel.description,
+  path: `notes/${entry.id}/`,
+  kind: 'note',
+  publishedAt: viewModel.publishedAt,
+  updatedAt: viewModel.updatedAt,
+  tags: entry.data.tags as string[],
+  canonicalOverride: entry.data.canonicalUrl,
+});
+---
+
+<KnowledgeLayout entry={viewModel} seo={seo} headings={headings} connections={connections} relatedContent={relatedContent}>
+  <Content />
+</KnowledgeLayout>

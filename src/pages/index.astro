@@ -1,19 +1,37 @@
 ---
-import '../styles/global.css';
+/**
+ * Home / Resume - default landing page embeds the resume HTML.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { buildSEOData } from '../utils/seo';
+import { buildUrl } from '../utils/url';
+import { siteConfig } from '../config/site';
+
+const resumeUrl = buildUrl('resume/SuDuyHien_Resume_Updated.html');
+
+const seo = buildSEOData({
+  title: siteConfig.name,
+  description: siteConfig.description,
+  path: '/',
+  kind: 'home',
+});
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Engineering Lab</title>
-  </head>
-  <body class="min-h-screen bg-neutral-50 text-neutral-900">
-    <main class="mx-auto max-w-2xl px-4 py-16">
-      <h1 class="text-3xl font-bold">Engineering Lab</h1>
-      <p class="mt-4 text-lg text-neutral-600">
-        Public Personal Knowledge Garden and Living Portfolio
-      </p>
-    </main>
-  </body>
-</html>
+<SiteLayout seo={seo}>
+  <iframe
+    src={resumeUrl}
+    title={`${siteConfig.author} - Resume`}
+    class="resume-frame"
+    loading="eager"
+  ></iframe>
+</SiteLayout>
+
+<style>
+  .resume-frame {
+    display: block;
+    width: 100%;
+    height: calc(100svh - 56px);
+    border: none;
+    background: #fff;
+  }
+</style>

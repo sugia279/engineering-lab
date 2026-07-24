@@ -1,0 +1,22 @@
+---
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import SeriesSummary from '../../components/cards/SeriesSummary.astro';
+import { getPublishedSeries, toSeriesSummary } from '../../lib/content/queries';
+import { sortEntries } from '../../lib/content/sort';
+import { buildSEOData } from '../../utils/seo';
+
+const allSeries = await getPublishedSeries();
+const sorted = sortEntries(allSeries, 'newest');
+const summaries = sorted.map(toSeriesSummary);
+
+const seo = buildSEOData({
+  title: 'Series',
+  description: 'Curated ordered learning paths across topics.',
+  path: 'series/',
+  kind: 'listing',
+});
+---
+
+<ListingLayout seo={seo} title="Series" description="Curated ordered learning paths across topics." itemCount={summaries.length} activeCollection="series">
+  {summaries.map((s) => <SeriesSummary series={s} />)}
+</ListingLayout>

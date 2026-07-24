@@ -1,0 +1,91 @@
+---
+/**
+ * About — professional profile and platform context.
+ * Static route: no collection loading required.
+ */
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ExternalLink from '../components/content/ExternalLink.astro';
+import Prose from '../components/content/Prose.astro';
+import { buildSEOData } from '../utils/seo';
+import { buildUrl } from '../utils/url';
+import { siteConfig } from '../config/site';
+
+const seo = buildSEOData({
+  title: 'About',
+  description: `About ${siteConfig.author} and this public knowledge garden.`,
+  path: 'about/',
+  kind: 'about',
+});
+---
+
+<SiteLayout seo={seo}>
+  <div class="about-page">
+    <header class="about-page__header">
+      <h1 class="about-page__title">About</h1>
+      <a
+        href={buildUrl('resume/SuDuyHien_Resume_Updated.html')}
+        class="about-page__resume-btn"
+      >
+        View Resume
+      </a>
+    </header>
+    <Prose>
+      <p>
+        This is the public knowledge garden of <strong>{siteConfig.author}</strong> —
+        a place for engineering insights, evolving notes, project case studies,
+        and curated learning paths.
+      </p>
+      <p>
+        The knowledge graph connects ideas across engineering, artificial intelligence,
+        music, reading and literature, and philosophy and life.
+      </p>
+      <h2>Links</h2>
+      <ul>
+        {siteConfig.socialLinks.map((link) => (
+          <li>
+            <ExternalLink href={link.url} newTab>{link.service}</ExternalLink>
+          </li>
+        ))}
+      </ul>
+    </Prose>
+  </div>
+</SiteLayout>
+
+<style>
+  .about-page {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+  .about-page__header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .about-page__title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+  }
+  .about-page__resume-btn {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: #1d4ed8;
+    color: #fff;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    white-space: nowrap;
+  }
+  .about-page__resume-btn:hover { background: #1e40af; }
+  .about-page__resume-btn:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+  }
+</style>

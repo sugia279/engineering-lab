@@ -1,0 +1,64 @@
+---
+/**
+ * Breadcrumbs — hierarchical route context navigation.
+ * Registry: Discovery component, M7.
+ */
+import type { Breadcrumb } from '../../types/navigation';
+
+interface Props {
+  items: Breadcrumb[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <nav aria-label="Breadcrumb" class="breadcrumbs">
+      <ol class="breadcrumbs__list">
+        {items.map((crumb, i) => (
+          <li class="breadcrumbs__item">
+            {i > 0 && <span class="breadcrumbs__sep" aria-hidden="true">›</span>}
+            {crumb.current ? (
+              <span class="breadcrumbs__current" aria-current="page">
+                {crumb.label}
+              </span>
+            ) : (
+              <a href={crumb.href} class="breadcrumbs__link">
+                {crumb.label}
+              </a>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .breadcrumbs { margin-bottom: 1rem; }
+  .breadcrumbs__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+  .breadcrumbs__item { display: flex; align-items: center; gap: 0.25rem; }
+  .breadcrumbs__sep { color: #94a3b8; }
+  .breadcrumbs__link {
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+  .breadcrumbs__link:hover { text-decoration: underline; }
+  .breadcrumbs__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .breadcrumbs__current { color: #1e293b; font-weight: 500; }
+</style>

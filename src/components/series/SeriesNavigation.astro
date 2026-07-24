@@ -1,0 +1,132 @@
+---
+/**
+ * SeriesNavigation — previous/next navigation for an article or note within a series.
+ * Registry: Series component, M6.
+ * Depends on: SeriesContext, ResolvedSeriesEntry types, URL utility.
+ */
+import type { ResolvedSeriesEntry } from '../../types/content';
+
+interface Props {
+  seriesTitle: string;
+  seriesUrl: string;
+  previous?: ResolvedSeriesEntry;
+  next?: ResolvedSeriesEntry;
+}
+
+const { seriesTitle, seriesUrl, previous, next } = Astro.props;
+---
+
+{
+  (previous || next) && (
+    <nav aria-label={`Navigation within series: ${seriesTitle}`} class="series-nav">
+      <p class="series-nav__label">
+        Part of{' '}
+        <a href={seriesUrl} class="series-nav__series-link">
+          {seriesTitle}
+        </a>
+      </p>
+      <div class="series-nav__links">
+        {previous ? (
+          <a href={previous.url} class="series-nav__link series-nav__link--prev" rel="prev">
+            <span class="series-nav__direction" aria-hidden="true">←</span>
+            <span class="series-nav__meta">
+              <span class="series-nav__label-text">Previous</span>
+              <span class="series-nav__title">{previous.title}</span>
+            </span>
+          </a>
+        ) : (
+          <span class="series-nav__placeholder" aria-hidden="true" />
+        )}
+
+        {next ? (
+          <a href={next.url} class="series-nav__link series-nav__link--next" rel="next">
+            <span class="series-nav__meta">
+              <span class="series-nav__label-text">Next</span>
+              <span class="series-nav__title">{next.title}</span>
+            </span>
+            <span class="series-nav__direction" aria-hidden="true">→</span>
+          </a>
+        ) : (
+          <span class="series-nav__placeholder" aria-hidden="true" />
+        )}
+      </div>
+    </nav>
+  )
+}
+
+<style>
+  .series-nav {
+    margin: 2rem 0;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+  }
+  .series-nav__label {
+    font-size: 0.8125rem;
+    color: #64748b;
+    margin: 0 0 0.75rem;
+  }
+  .series-nav__series-link {
+    color: #1d4ed8;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .series-nav__series-link:hover { text-decoration: none; }
+  .series-nav__links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .series-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+  .series-nav__link:hover { border-color: #3b82f6; }
+  .series-nav__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+  }
+  .series-nav__link--next { justify-content: flex-end; }
+  .series-nav__meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .series-nav__link--next .series-nav__meta { align-items: flex-end; }
+  .series-nav__label-text {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .series-nav__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+  }
+  .series-nav__direction {
+    font-size: 1.1rem;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+  .series-nav__placeholder { display: block; }
+
+  @media (max-width: 500px) {
+    .series-nav__links { grid-template-columns: 1fr; }
+    .series-nav__title { max-width: none; }
+  }
+</style>

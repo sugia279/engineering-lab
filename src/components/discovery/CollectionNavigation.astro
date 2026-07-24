@@ -1,0 +1,70 @@
+---
+/**
+ * CollectionNavigation — nav links for articles, notes, projects, series.
+ * Registry: Discovery component, M7.
+ */
+import type { NavigationItem } from '../../types/navigation';
+import { buildUrl } from '../../utils/url';
+
+interface Props {
+  items: NavigationItem[];
+  activeCollection?: string;
+}
+
+const { items, activeCollection = '' } = Astro.props;
+---
+
+<nav aria-label="Collection navigation" class="coll-nav">
+  <ul class="coll-nav__list" role="list">
+    {items.map((item) => {
+      const active = activeCollection && item.matchPattern
+        ? activeCollection === item.matchPattern.replace(/^\//, '').replace(/\/$/, '')
+        : false;
+      return (
+        <li>
+          <a
+            href={buildUrl(item.href)}
+            class={`coll-nav__link${active ? ' coll-nav__link--active' : ''}`}
+            aria-current={active ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>
+
+<style>
+  .coll-nav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .coll-nav__link {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    text-decoration: none;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    white-space: nowrap;
+  }
+  .coll-nav__link:hover { border-color: #3b82f6; color: #1d4ed8; }
+  .coll-nav__link--active {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #3b82f6;
+    font-weight: 600;
+  }
+  .coll-nav__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import ProjectSummary from '../../components/cards/ProjectSummary.astro';
+import { getPublishedProjects, toProjectSummary } from '../../lib/content/queries';
+import { sortEntries } from '../../lib/content/sort';
+import { buildSEOData } from '../../utils/seo';
+
+const projects = await getPublishedProjects();
+const sorted = sortEntries(projects, 'newest');
+const summaries = sorted.map(toProjectSummary);
+
+const seo = buildSEOData({
+  title: 'Projects',
+  description: 'Professional and creative project case studies.',
+  path: 'projects/',
+  kind: 'listing',
+});
+---
+
+<ListingLayout seo={seo} title="Projects" description="Professional and creative project case studies." itemCount={summaries.length} activeCollection="projects">
+  {summaries.map((p) => <ProjectSummary project={p} />)}
+</ListingLayout>

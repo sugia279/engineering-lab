@@ -1,0 +1,67 @@
+---
+import type { GetStaticPaths } from 'astro';
+import SeriesLayout from '../../layouts/SeriesLayout.astro';
+import { getPublishedSeries, getPublishedArticles, getPublishedNotes, getAllPublishedEntries } from '../../lib/content/queries';
+import { resolveSeries } from '../../lib/content/series';
+import { resolveEntryConnections } from '../../lib/content/graph';
+import { createTag } from '../../utils/tag';
+import { entryUrl } from '../../utils/url';
+import { buildSEOData } from '../../utils/seo';
+import type { SeriesEntry } from '../../lib/content/queries';
+import type { SeriesViewModel } from '../../types/content';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const allSeries = await getPublishedSeries();
+  return allSeries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+};
+
+interface Props { entry: SeriesEntry; }
+const { entry } = Astro.props as unknown as Props;
+const { Content } = await entry.render();
+
+const [allArticles, allNotes, allEntries] = await Promise.all([
+  getPublishedArticles(),
+  getPublishedNotes(),
+  getAllPublishedEntries(),
+]);
+
+const aMap = new Map(allArticles.map((a) => [a.id, a]));
+const nMap = new Map(allNotes.map((n) => [n.id, n]));
+const resolved = resolveSeries(entry, aMap, nMap);
+
+const resolvedEntries = 'viewModel' in resolved ? resolved.viewModel.entries : [];
+
+const tags = entry.data.tags.map((t: string) => createTag(t));
+const seriesViewModel: SeriesViewModel = {
+  id: entry.id,
+  graphNodeId: `series:${entry.id}`,
+  collection: 'series',
+  title: entry.data.title,
+  description: entry.data.description,
+  slug: entry.id,
+  url: entryUrl('series', entry.id),
+  publishedAt: entry.data.publishedAt,
+  updatedAt: entry.data.updatedAt,
+  domains: entry.data.domains as readonly string[],
+  tags,
+  draft: entry.data.draft,
+  entries: resolvedEntries,
+};
+
+const connections = resolveEntryConnections(entry, allEntries);
+
+const seo = buildSEOData({
+  title: seriesViewModel.title,
+  description: seriesViewModel.description,
+  path: `series/${entry.id}/`,
+  kind: 'listing',
+  tags: entry.data.tags as string[],
+});
+---
+
+<SeriesLayout series={seriesViewModel} seo={seo} resolvedEntries={resolvedEntries} connections={connections}>
+  <Content />
+</SeriesLayout>

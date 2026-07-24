@@ -1,0 +1,50 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import ArticleSummary from '../../components/cards/ArticleSummary.astro';
+import NoteSummary from '../../components/cards/NoteSummary.astro';
+import ProjectSummary from '../../components/cards/ProjectSummary.astro';
+import SeriesSummary from '../../components/cards/SeriesSummary.astro';
+import { getAllTags, getEntriesByTag, toContentSummary } from '../../lib/content/queries';
+import { sortSummaries } from '../../lib/content/sort';
+import { buildSEOData } from '../../utils/seo';
+import type { ContentSummary } from '../../types/content';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const tags = await getAllTags();
+  return tags.map((tag) => ({
+    params: { tag: tag.slug },
+    props: { tagSlug: tag.slug, tagLabel: tag.label },
+  }));
+};
+
+interface Props { tagSlug: string; tagLabel: string; }
+const { tagSlug, tagLabel } = Astro.props as unknown as Props;
+
+const entries = await getEntriesByTag(tagSlug);
+const summaries = sortSummaries(entries.map(toContentSummary), 'newest');
+
+const seo = buildSEOData({
+  title: tagLabel,
+  description: `All content tagged with ${tagLabel}.`,
+  path: `topics/${tagSlug}/`,
+  kind: 'listing',
+});
+---
+
+<ListingLayout
+  seo={seo}
+  title={tagLabel}
+  description={`All content tagged with ${tagLabel}.`}
+  itemCount={summaries.length}
+  showCollectionNav={false}
+>
+  {summaries.map((item: ContentSummary) => (
+    <>
+      {item.kind === 'article' && <ArticleSummary article={item} />}
+      {item.kind === 'note' && <NoteSummary note={item} />}
+      {item.kind === 'project' && <ProjectSummary project={item} />}
+      {item.kind === 'series' && <SeriesSummary series={item} />}
+    </>
+  ))}
+</ListingLayout>

@@ -1,0 +1,108 @@
+---
+/**
+ * ListingLayout — collection and topic index pages.
+ * Registry: Layout, M8. Composes SiteLayout.
+ */
+import type { SEOData } from '../types/seo';
+import type { Breadcrumb, PaginationData } from '../types/navigation';
+import type { NavigationItem } from '../types/navigation';
+import SiteLayout from './SiteLayout.astro';
+import Breadcrumbs from '../components/discovery/Breadcrumbs.astro';
+import CollectionNavigation from '../components/discovery/CollectionNavigation.astro';
+import EmptyState from '../components/discovery/EmptyState.astro';
+import Pagination from '../components/discovery/Pagination.astro';
+import { primaryNavigation } from '../config/navigation';
+import { buildUrl } from '../utils/url';
+
+interface Props {
+  seo: SEOData;
+  title: string;
+  description: string;
+  itemCount: number;
+  breadcrumbs?: Breadcrumb[];
+  pagination?: PaginationData;
+  activeCollection?: string;
+  showCollectionNav?: boolean;
+}
+
+const {
+  seo,
+  title,
+  description,
+  itemCount,
+  breadcrumbs,
+  pagination,
+  activeCollection,
+  showCollectionNav = true,
+} = Astro.props;
+
+const collectionItems: NavigationItem[] = primaryNavigation.filter((n) =>
+  ['articles', 'notes', 'projects', 'series'].some(
+    (c) => n.matchPattern === `/${c}`,
+  ),
+);
+---
+
+<SiteLayout seo={seo}>
+  <div class="listing-layout">
+    {breadcrumbs && breadcrumbs.length > 0 && (
+      <div class="listing-layout__breadcrumbs">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+    )}
+
+    <header class="listing-layout__header">
+      <h1 class="listing-layout__title">{title}</h1>
+      <p class="listing-layout__description">{description}</p>
+    </header>
+
+    {showCollectionNav && (
+      <div class="listing-layout__collection-nav">
+        <CollectionNavigation items={collectionItems} activeCollection={activeCollection} />
+      </div>
+    )}
+
+    <slot name="filters" />
+
+    <section class="listing-layout__content" aria-label={`${title} — ${itemCount} ${itemCount === 1 ? 'entry' : 'entries'}`}>
+      {itemCount === 0 ? (
+        <EmptyState
+          message="Nothing published here yet."
+          actionLabel="Browse all content"
+          actionHref={buildUrl('/')}
+        />
+      ) : (
+        <slot />
+      )}
+    </section>
+
+    {pagination && pagination.totalPages > 1 && (
+      <Pagination pagination={pagination} />
+    )}
+  </div>
+</SiteLayout>
+
+<style>
+  .listing-layout {
+    max-width: 52rem;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 3rem;
+  }
+  .listing-layout__breadcrumbs { margin-bottom: 1rem; }
+  .listing-layout__header { margin-bottom: 1.5rem; }
+  .listing-layout__title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 0.5rem;
+    line-height: 1.2;
+  }
+  .listing-layout__description {
+    color: #475569;
+    font-size: 1.0625rem;
+    margin: 0;
+    line-height: 1.6;
+  }
+  .listing-layout__collection-nav { margin-bottom: 1.5rem; }
+  .listing-layout__content { margin-top: 1rem; }
+</style>

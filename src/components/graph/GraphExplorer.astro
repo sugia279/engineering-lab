@@ -1,0 +1,150 @@
+---
+/**
+ * GraphExplorer — static graph shell: controls, visual mount, node details, semantic fallback.
+ * Registry: Graph component, M7. Browser controller enhances the visual mount in M10.
+ */
+import type { GraphManifest, GraphQueryState, GraphNode, ResolvedConnection } from '../../types/graph';
+import GraphControls from './GraphControls.astro';
+import GraphNodeDetails from './GraphNodeDetails.astro';
+
+interface Props {
+  manifestUrl: string;
+  queryState: GraphQueryState;
+  manifest: GraphManifest;
+  selectedNode?: GraphNode;
+  selectedConnections?: ResolvedConnection[];
+}
+
+const {
+  manifestUrl,
+  queryState,
+  manifest,
+  selectedNode,
+  selectedConnections = [],
+} = Astro.props;
+---
+
+<div
+  class="graph-explorer"
+  data-manifest-url={manifestUrl}
+  id="graph-explorer"
+>
+  <GraphControls state={queryState} />
+
+  <!-- Visual canvas mount — enhanced by graph-explorer.ts in M10 -->
+  <div
+    id="graph-canvas"
+    class="graph-explorer__canvas"
+    aria-label="Interactive graph visualization"
+    role="img"
+    aria-describedby="graph-fallback-desc"
+  >
+    <p id="graph-fallback-desc" class="graph-explorer__canvas-fallback">
+      Graph visualization requires JavaScript. Use the list below to explore connections.
+    </p>
+  </div>
+
+  <GraphNodeDetails
+    node={selectedNode}
+    connections={selectedConnections}
+  />
+
+  <!-- Always-available semantic fallback -->
+  <section class="graph-explorer__fallback" aria-label="All graph connections">
+    <h2 class="graph-explorer__fallback-heading">
+      All connections ({manifest.edges.length})
+    </h2>
+    {manifest.nodes.length === 0 ? (
+      <p class="graph-explorer__empty">No published entries in the graph yet.</p>
+    ) : (
+      <ul class="graph-explorer__node-list" role="list">
+        {manifest.nodes.map((node) => (
+          <li class="graph-explorer__node-item">
+            <a href={node.url} class="graph-explorer__node-link">
+              <span class="graph-explorer__node-collection">{node.collection}</span>
+              {node.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</div>
+
+<style>
+  .graph-explorer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .graph-explorer__canvas {
+    width: 100%;
+    min-height: 420px;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .graph-explorer__canvas-fallback {
+    color: #94a3b8;
+    font-size: 0.9375rem;
+    text-align: center;
+    padding: 1rem;
+    max-width: 30rem;
+    margin: 0;
+  }
+  /* Hide text fallback when enhanced (added by controller) */
+  .graph-explorer__canvas.is-enhanced .graph-explorer__canvas-fallback {
+    display: none;
+  }
+  .graph-explorer__fallback { margin-top: 0.5rem; }
+  .graph-explorer__fallback-heading {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 0 0 0.75rem;
+  }
+  .graph-explorer__empty { color: #94a3b8; font-size: 0.9375rem; }
+  .graph-explorer__node-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 0.5rem;
+  }
+  .graph-explorer__node-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    background: #fff;
+  }
+  .graph-explorer__node-link {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 0.875rem;
+    text-decoration: none;
+    color: #1e293b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    gap: 0.15rem;
+  }
+  .graph-explorer__node-link:hover { color: #1d4ed8; background: #f8fafc; border-radius: 0.375rem; }
+  .graph-explorer__node-link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 0.375rem;
+  }
+  .graph-explorer__node-collection {
+    font-size: 0.6875rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+</style>

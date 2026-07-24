@@ -1,0 +1,22 @@
+---
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import NoteSummary from '../../components/cards/NoteSummary.astro';
+import { getPublishedNotes, toNoteSummary } from '../../lib/content/queries';
+import { sortEntries } from '../../lib/content/sort';
+import { buildSEOData } from '../../utils/seo';
+
+const notes = await getPublishedNotes();
+const sorted = sortEntries(notes, 'newest');
+const summaries = sorted.map(toNoteSummary);
+
+const seo = buildSEOData({
+  title: 'Notes',
+  description: 'Short observations, references, and evolving knowledge.',
+  path: 'notes/',
+  kind: 'listing',
+});
+---
+
+<ListingLayout seo={seo} title="Notes" description="Short observations, references, and evolving knowledge." itemCount={summaries.length} activeCollection="notes">
+  {summaries.map((n) => <NoteSummary note={n} />)}
+</ListingLayout>

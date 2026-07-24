@@ -1,0 +1,79 @@
+---
+/**
+ * ArticleSummary — card for article listings, home, topics, related, series.
+ * Registry: Cards component, M6.
+ * Depends on: PublicationDates, TagList (M5).
+ */
+import type { ArticleSummary } from '../../types/content';
+import PublicationDates from '../metadata/PublicationDates.astro';
+import TagList from '../discovery/TagList.astro';
+
+interface Props {
+  article: ArticleSummary;
+}
+
+const { article } = Astro.props;
+---
+
+<article class="article-summary">
+  <h3 class="article-summary__title">
+    <a href={article.url} class="article-summary__link">
+      {article.title}
+    </a>
+  </h3>
+  <p class="article-summary__description">{article.description}</p>
+  <footer class="article-summary__meta">
+    <PublicationDates
+      publishedAt={article.publishedAt}
+      updatedAt={article.updatedAt}
+      compact
+    />
+    {article.readingTime > 0 && (
+      <span class="article-summary__reading-time">
+        · {article.readingTime} min read
+      </span>
+    )}
+    {article.featured && (
+      <span class="article-summary__featured" aria-label="Featured article">
+        ★
+      </span>
+    )}
+    <TagList tags={article.tags} mode="linked" class="article-summary__tags" />
+  </footer>
+</article>
+
+<style>
+  .article-summary {
+    padding: 1.25rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .article-summary:last-child { border-bottom: none; }
+  .article-summary__title { margin: 0 0 0.4rem; font-size: 1.1rem; font-weight: 600; }
+  .article-summary__link {
+    color: #1e293b;
+    text-decoration: none;
+  }
+  .article-summary__link:hover { color: #1d4ed8; text-decoration: underline; }
+  .article-summary__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .article-summary__description {
+    color: #475569;
+    font-size: 0.9375rem;
+    margin: 0 0 0.5rem;
+    line-height: 1.55;
+  }
+  .article-summary__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.8125rem;
+    color: #64748b;
+  }
+  .article-summary__reading-time { white-space: nowrap; }
+  .article-summary__featured { color: #f59e0b; margin-left: 0.25rem; }
+  .article-summary__tags { margin-left: 0.25rem; }
+</style>

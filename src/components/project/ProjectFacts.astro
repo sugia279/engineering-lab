@@ -1,0 +1,137 @@
+---
+/**
+ * ProjectFacts — project status, role, period, skills, tools, and optional links.
+ * Registry: Project component, M6.
+ * Depends on: ExternalLink (M5), date utility.
+ */
+import type { ProjectFacts } from '../../types/content';
+import ExternalLink from '../content/ExternalLink.astro';
+import { formatPeriod } from '../../utils/date';
+
+interface Props {
+  facts: ProjectFacts;
+}
+
+const { facts } = Astro.props;
+
+const periodLabel = formatPeriod(facts.period.start, facts.period.end);
+---
+
+<dl class="project-facts">
+  <div class="project-facts__row">
+    <dt class="project-facts__label">Status</dt>
+    <dd class="project-facts__value project-facts__value--status project-facts__value--status-{facts.status}">
+      {facts.status.charAt(0).toUpperCase() + facts.status.slice(1)}
+    </dd>
+  </div>
+
+  <div class="project-facts__row">
+    <dt class="project-facts__label">Role</dt>
+    <dd class="project-facts__value">{facts.role}</dd>
+  </div>
+
+  <div class="project-facts__row">
+    <dt class="project-facts__label">Period</dt>
+    <dd class="project-facts__value">{periodLabel}</dd>
+  </div>
+
+  {facts.skills.length > 0 && (
+    <div class="project-facts__row">
+      <dt class="project-facts__label">Skills</dt>
+      <dd class="project-facts__value">
+        <ul class="project-facts__list">
+          {facts.skills.map((skill) => (
+            <li>{skill}</li>
+          ))}
+        </ul>
+      </dd>
+    </div>
+  )}
+
+  {facts.tools.length > 0 && (
+    <div class="project-facts__row">
+      <dt class="project-facts__label">Tools</dt>
+      <dd class="project-facts__value">
+        <ul class="project-facts__list project-facts__list--inline">
+          {facts.tools.map((tool) => (
+            <li>{tool}</li>
+          ))}
+        </ul>
+      </dd>
+    </div>
+  )}
+
+  {facts.repositoryUrl && (
+    <div class="project-facts__row">
+      <dt class="project-facts__label">Repository</dt>
+      <dd class="project-facts__value">
+        <ExternalLink href={facts.repositoryUrl} newTab>
+          View source
+        </ExternalLink>
+      </dd>
+    </div>
+  )}
+
+  {facts.liveUrl && (
+    <div class="project-facts__row">
+      <dt class="project-facts__label">Live</dt>
+      <dd class="project-facts__value">
+        <ExternalLink href={facts.liveUrl} newTab>
+          View project
+        </ExternalLink>
+      </dd>
+    </div>
+  )}
+</dl>
+
+<style>
+  .project-facts {
+    display: grid;
+    gap: 0;
+    margin: 1.5rem 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    font-size: 0.9375rem;
+  }
+  .project-facts__row {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .project-facts__row:last-child { border-bottom: none; }
+  .project-facts__label {
+    padding: 0.6rem 0.875rem;
+    background: #f8fafc;
+    font-weight: 600;
+    color: #64748b;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    align-self: start;
+  }
+  .project-facts__value {
+    padding: 0.6rem 0.875rem;
+    color: #1e293b;
+  }
+  .project-facts__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .project-facts__list--inline {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .project-facts__list--inline li {
+    background: #f1f5f9;
+    padding: 0.1em 0.5em;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: #334155;
+  }
+</style>
