@@ -1,0 +1,67 @@
+---
+/**
+ * Callout — semantic callout block for MDX content.
+ * Registry: MDX component, M5.
+ * Variants: note | tip | warning | danger
+ */
+type CalloutVariant = 'note' | 'tip' | 'warning' | 'danger';
+
+interface Props {
+  variant?: CalloutVariant;
+  title?: string;
+}
+
+const { variant = 'note', title } = Astro.props;
+
+const icons: Record<CalloutVariant, string> = {
+  note: 'ℹ',
+  tip: '💡',
+  warning: '⚠',
+  danger: '⛔',
+};
+
+const labels: Record<CalloutVariant, string> = {
+  note: 'Note',
+  tip: 'Tip',
+  warning: 'Warning',
+  danger: 'Danger',
+};
+
+const icon = icons[variant];
+const defaultTitle = labels[variant];
+---
+
+<aside class={`callout callout--${variant}`} aria-label={title ?? defaultTitle}>
+  <p class="callout__header">
+    <span class="callout__icon" aria-hidden="true">{icon}</span>
+    <span class="callout__title">{title ?? defaultTitle}</span>
+  </p>
+  <div class="callout__body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-left: 4px solid currentColor;
+  }
+  .callout--note  { background: #eff6ff; color: #1d4ed8; }
+  .callout--tip   { background: #f0fdf4; color: #15803d; }
+  .callout--warning { background: #fffbeb; color: #b45309; }
+  .callout--danger  { background: #fff1f2; color: #be123c; }
+
+  .callout__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+  }
+  .callout__icon { font-size: 1rem; }
+  .callout__body { color: inherit; }
+  .callout__body :global(p:last-child) { margin-bottom: 0; }
+</style>

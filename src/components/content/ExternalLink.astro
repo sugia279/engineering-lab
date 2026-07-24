@@ -1,0 +1,23 @@
+---
+/**
+ * ExternalLink — secure external anchor with optional new-context announcement.
+ * Registry: Content component, M5.
+ */
+interface Props {
+  href: string;
+  newTab?: boolean;
+  class?: string;
+}
+
+const { href, newTab = false, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  rel={newTab ? 'noopener noreferrer external' : 'external'}
+  target={newTab ? '_blank' : undefined}
+  class={className}
+>
+  <slot />
+  {newTab && <span class="sr-only">(opens in new tab)</span>}
+</a>

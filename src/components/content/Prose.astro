@@ -1,0 +1,19 @@
+---
+/**
+ * Prose — semantic reading container with MDX typography scope.
+ * Registry: Content component, M5.
+ */
+import '../../styles/prose.css';
+
+interface Props {
+  wide?: boolean;
+  class?: string;
+}
+
+const { wide = false, class: className } = Astro.props;
+const classes = ['prose', wide && 'prose--wide', className].filter(Boolean).join(' ');
+---
+
+<div class={classes}>
+  <slot />
+</div>

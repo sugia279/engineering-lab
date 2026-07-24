@@ -1,0 +1,82 @@
+---
+/**
+ * TableOfContents — in-page navigation from Astro-extracted headings.
+ * Registry: Content component, M5.
+ */
+import { normalizeSlug } from '../../utils/slug';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  label?: string;
+  maxDepth?: number;
+}
+
+const { headings, label = 'On this page', maxDepth = 3 } = Astro.props;
+
+const filtered = headings.filter(
+  (h) => h.depth >= 2 && h.depth <= maxDepth,
+);
+---
+
+{
+  filtered.length > 0 && (
+    <nav aria-label={label} class="toc">
+      <p class="toc__label">{label}</p>
+      <ol class="toc__list">
+        {filtered.map((h) => (
+          <li
+            class={`toc__item toc__item--depth-${h.depth}`}
+            style={`padding-left: ${(h.depth - 2) * 1}rem`}
+          >
+            <a href={`#${normalizeSlug(h.slug)}`} class="toc__link">
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    font-size: 0.875rem;
+    border-left: 2px solid var(--color-border, #e5e7eb);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .toc__label {
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: var(--color-muted, #6b7280);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .toc__item {
+    margin: 0.25rem 0;
+  }
+  .toc__link {
+    color: var(--color-link, #1d4ed8);
+    text-decoration: none;
+  }
+  .toc__link:hover {
+    text-decoration: underline;
+  }
+  .toc__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+</style>

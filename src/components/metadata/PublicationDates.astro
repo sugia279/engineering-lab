@@ -1,0 +1,46 @@
+---
+/**
+ * PublicationDates — publication and optional revision dates.
+ * Registry: Metadata component, M5.
+ */
+import { formatDate, isoDateTime } from '../../utils/date';
+
+interface Props {
+  publishedAt: Date;
+  updatedAt?: Date;
+  compact?: boolean;
+}
+
+const { publishedAt, updatedAt, compact = false } = Astro.props;
+
+const publishedLabel = compact ? formatDate(publishedAt, 'en-US').replace(/,?\s*\d{4}$/, (m) => m) : formatDate(publishedAt);
+const updatedLabel = updatedAt ? (compact ? formatDate(updatedAt, 'en-US').replace(/,?\s*\d{4}$/, (m) => m) : formatDate(updatedAt)) : null;
+---
+
+<div class={`pub-dates${compact ? ' pub-dates--compact' : ''}`}>
+  <time datetime={isoDateTime(publishedAt)} class="pub-dates__published">
+    <span class="pub-dates__prefix">Published </span>
+    {publishedLabel}
+  </time>
+  {
+    updatedLabel && updatedAt && (
+      <time datetime={isoDateTime(updatedAt)} class="pub-dates__updated">
+        <span class="pub-dates__prefix"> · Updated </span>
+        {updatedLabel}
+      </time>
+    )
+  }
+</div>
+
+<style>
+  .pub-dates {
+    font-size: 0.875rem;
+    color: #6b7280;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.25rem;
+    align-items: center;
+  }
+  .pub-dates--compact { font-size: 0.8125rem; }
+  .pub-dates__prefix { font-weight: 500; }
+</style>

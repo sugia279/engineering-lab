@@ -1,0 +1,45 @@
+---
+/**
+ * HeadingAnchor — copyable fragment anchor for identified content headings.
+ * Registry: Content component, M5.
+ */
+interface Props {
+  id: string;
+  label?: string;
+}
+
+const { id, label = `Link to section: ${id}` } = Astro.props;
+---
+
+<a
+  href={`#${id}`}
+  aria-label={label}
+  class="heading-anchor"
+  tabindex="0"
+>
+  <span aria-hidden="true">#</span>
+</a>
+
+<style>
+  .heading-anchor {
+    opacity: 0;
+    margin-left: 0.5ch;
+    text-decoration: none;
+    color: inherit;
+    font-weight: normal;
+    font-size: 0.85em;
+    border-radius: 2px;
+  }
+
+  .heading-anchor:focus-visible {
+    opacity: 1;
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  :global(h2:hover) .heading-anchor,
+  :global(h3:hover) .heading-anchor,
+  :global(h4:hover) .heading-anchor {
+    opacity: 1;
+  }
+</style>

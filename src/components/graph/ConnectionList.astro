@@ -1,0 +1,153 @@
+---
+/**
+ * ConnectionList — grouped typed semantic relationships with direction, context, and links.
+ * Registry: Graph component, M5.
+ * Covers all seven connection types, incoming/outgoing/symmetric, empty/isolated states.
+ * No JavaScript required.
+ */
+import type { ResolvedConnection, ConnectionType } from '../../types/graph';
+
+interface Props {
+  connections: ResolvedConnection[];
+  heading?: string;
+  selectedNodeId?: string;
+}
+
+const { connections, heading = 'Related knowledge', selectedNodeId } = Astro.props;
+
+// Group by connection type
+const typeLabels: Record<ConnectionType, string> = {
+  'prerequisite': 'Prerequisites',
+  'explains': 'Explains',
+  'extends': 'Extensions',
+  'contrasts': 'Contrasts with',
+  'applies-to': 'Applied to',
+  'derived-from': 'Derived from',
+  'related': 'Related',
+};
+
+const directionLabels: Record<string, string> = {
+  outgoing: 'references',
+  incoming: 'referenced by',
+  symmetric: 'connected to',
+};
+
+type GroupedConnections = Map<ConnectionType, ResolvedConnection[]>;
+
+const grouped: GroupedConnections = new Map();
+const typeOrder: ConnectionType[] = [
+  'prerequisite', 'explains', 'extends', 'contrasts',
+  'applies-to', 'derived-from', 'related',
+];
+
+for (const conn of connections) {
+  const group = grouped.get(conn.type) ?? [];
+  group.push(conn);
+  grouped.set(conn.type, group);
+}
+
+const orderedTypes = typeOrder.filter((t) => grouped.has(t));
+---
+
+{
+  connections.length > 0 && (
+    <section class="connection-list" aria-label={heading}>
+      <h2 class="connection-list__heading">{heading}</h2>
+
+      {orderedTypes.map((type) => {
+        const group = grouped.get(type)!;
+        return (
+          <div class="connection-list__group">
+            <h3 class="connection-list__type">{typeLabels[type]}</h3>
+            <ul class="connection-list__items">
+              {group.map((conn) => (
+                <li class="connection-list__item">
+                  <a href={conn.target.url} class="connection-list__link">
+                    {conn.target.title}
+                  </a>
+                  <span class="connection-list__meta">
+                    <span class="connection-list__collection">{conn.target.collection}</span>
+                    <span class="connection-list__direction">
+                      · {directionLabels[conn.direction]}
+                    </span>
+                  </span>
+                  {conn.context && (
+                    <p class="connection-list__context">{conn.context}</p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </section>
+  )
+}
+
+{
+  connections.length === 0 && selectedNodeId && (
+    <section class="connection-list connection-list--empty" aria-label={heading}>
+      <p class="connection-list__empty">No connections for this entry.</p>
+    </section>
+  )
+}
+
+<style>
+  .connection-list {
+    margin: 2rem 0;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+  }
+  .connection-list__heading {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: #1e293b;
+  }
+  .connection-list__group { margin-bottom: 1rem; }
+  .connection-list__group:last-child { margin-bottom: 0; }
+  .connection-list__type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin: 0 0 0.4rem;
+  }
+  .connection-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .connection-list__item { display: flex; flex-direction: column; gap: 0.125rem; }
+  .connection-list__link {
+    font-weight: 500;
+    color: #1d4ed8;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-word;
+  }
+  .connection-list__link:hover { text-decoration: none; }
+  .connection-list__link:focus-visible {
+    outline: 2px solid #1d4ed8;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .connection-list__meta {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+  .connection-list__context {
+    font-size: 0.8125rem;
+    color: #475569;
+    font-style: italic;
+    margin: 0;
+  }
+  .connection-list--empty { background: transparent; border-style: dashed; }
+  .connection-list__empty { color: #94a3b8; font-size: 0.875rem; margin: 0; }
+</style>
