@@ -214,3 +214,9 @@ as the sole recipient. Multiple helpers, AI assignment and payments can wait unt
 there is evidence people use the basic request/result workflow. Private requests
 need an authenticated backend and private storage; public GitHub Issues cannot
 provide that privacy even when hidden from the website.
+## Home photographs
+
+The three supplied home photographs are stored in `src/assets/home/`, directly
+after the welcome tagline. Astro generates responsive WebP variants at build
+time, retaining the full portrait compositions. Image descriptions are bilingual.
+
