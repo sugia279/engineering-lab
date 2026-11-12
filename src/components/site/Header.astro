@@ -7,7 +7,9 @@ import SiteIdentity from './SiteIdentity.astro';
 import PrimaryNavigation from './PrimaryNavigation.astro';
 import MobileNavigation from './MobileNavigation.astro';
 import { primaryNavigation } from '../../config/navigation';
-import { buildUrl } from '../../utils/url';
+import { buildUrl, entryUrl } from '../../utils/url';
+import { getPublishedArticles } from '../../lib/content/queries';
+import { getArticleFolders } from '../../lib/content/article-folders';
 
 interface Props {
   currentPath?: string;
@@ -15,6 +17,17 @@ interface Props {
 
 const { currentPath = '' } = Astro.props;
 const searchUrl = buildUrl('/search/');
+const folders = getArticleFolders(await getPublishedArticles());
+const decodedPath = decodeURI(currentPath);
+const navigation = primaryNavigation.map((item) => item.href === '/articles/' ? {
+  ...item,
+  children: folders.map((folder) => ({
+    label: folder.title,
+    href: `/articles/folders/${folder.id}/`,
+    matchPattern: folder.articles.some((article) => decodedPath === entryUrl('articles', article.id))
+      ? currentPath : undefined,
+  })),
+} : item);
 ---
 
 <header class="topbar">
@@ -61,9 +74,9 @@ const searchUrl = buildUrl('/search/');
 
 <aside id="sidebar" class="sidebar" aria-label="Main navigation">
   <div class="sidebar__desktop-nav">
-    <PrimaryNavigation items={primaryNavigation} currentPath={currentPath} />
+    <PrimaryNavigation items={navigation} currentPath={currentPath} />
   </div>
-  <MobileNavigation items={primaryNavigation} currentPath={currentPath} />
+  <MobileNavigation items={navigation} currentPath={currentPath} />
 </aside>
 
 <script>

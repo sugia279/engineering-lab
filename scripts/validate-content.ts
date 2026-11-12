@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import { z } from 'zod';
+import { normalizeImportedArticle } from '../src/lib/content/imported-articles';
 
 // ---------------------------------------------------------------------------
 // Schema (mirrors content.config.ts; no astro:content import here)
@@ -64,6 +65,7 @@ const articleSchema = sharedSchema.extend({
   showTableOfContents: z.boolean().optional().default(true),
   series: z.string().optional(),
   seriesOrder: z.number().int().positive().optional(),
+  chapterOrder: z.number().int().positive().optional(),
 }).refine((d) => (d.series !== undefined) === (d.seriesOrder !== undefined), {
   message: 'series and seriesOrder must both be present or both be absent',
 });
@@ -138,7 +140,7 @@ function loadCollection(
       collection,
       id,
       nodeId: `${collection}:${id}`,
-      data,
+      data: (collection === 'articles' ? normalizeImportedArticle(data) : data) as Record<string, unknown>,
       draft: Boolean(data['draft']),
       filePath: fullPath,
     });

@@ -6,6 +6,7 @@ import { resolveEntryConnections } from '../../lib/content/graph';
 import { resolveSeries, deriveSeriesContext } from '../../lib/content/series';
 import { buildSEOData } from '../../utils/seo';
 import type { ArticleEntry } from '../../lib/content/queries';
+import { getArticleFolders, articleFolderContext } from '../../lib/content/article-folders';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const articles = await getPublishedArticles();
@@ -44,6 +45,10 @@ if (entry.data.series) {
   }
 }
 
+if (!seriesCtx) {
+  const folder = getArticleFolders(allArticles).find((folder) => folder.articles.some((article) => article.id === entry.id));
+  if (folder) seriesCtx = articleFolderContext(folder, entry.id);
+}
 const viewModel = toArticleViewModel(entry, seriesCtx);
 const allEntries = [...allArticles, ...allNotes];
 const connections = resolveEntryConnections(entry, allEntries);

@@ -8,6 +8,7 @@ export interface NavigationItem {
   readonly href: string;
   readonly matchPattern?: string;
   readonly external?: boolean;
+  readonly children?: readonly NavigationItem[];
 }
 
 /** Breadcrumb for a single ancestor or current page. */
