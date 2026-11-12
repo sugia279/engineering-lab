@@ -10,6 +10,7 @@
 
 import cytoscape from 'cytoscape';
 import type { Core, NodeDefinition, EdgeDefinition, ElementDefinition } from 'cytoscape';
+import { clientCopy, clientUrl, escapeHtml } from '../../lib/client-locale';
 
 // ---------------------------------------------------------------------------
 // Manifest types (mirrors GraphManifest from src/types/graph.ts)
@@ -217,21 +218,21 @@ function updateDetailsPanel(
   function connectionItem(_e: ManifestEdge, targetId: string): string {
     const target = nodeMap.get(targetId);
     if (!target) return '';
-    return `<li><a href="${target.url}" class="graph-node-details__link">${target.title}</a>
+    return `<li><a href="${escapeHtml(clientUrl(target.url))}" class="graph-node-details__link">${escapeHtml(target.title)}</a>
       <span class="graph-node-details__collection"> · ${target.collection}</span></li>`;
   }
 
   const connectionHtml = [
     ...(outgoing.length
-      ? [`<h4 style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0.25rem">Outgoing</h4>`,
+      ? [`<h4 style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0.25rem">${clientCopy('Outgoing', 'Liên kết đi')}</h4>`,
          `<ul style="list-style:none;padding:0;margin:0">${outgoing.map((e) => connectionItem(e, e.target)).join('')}</ul>`]
       : []),
     ...(incoming.length
-      ? [`<h4 style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0.25rem">Incoming</h4>`,
+      ? [`<h4 style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0.25rem">${clientCopy('Incoming', 'Liên kết đến')}</h4>`,
          `<ul style="list-style:none;padding:0;margin:0">${incoming.map((e) => connectionItem(e, e.source)).join('')}</ul>`]
       : []),
     ...(symmetric.length
-      ? [`<h4 style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0.25rem">Related</h4>`,
+      ? [`<h4 style="font-size:0.75rem;color:#64748b;margin:0.5rem 0 0.25rem">${clientCopy('Related', 'Có liên quan')}</h4>`,
          `<ul style="list-style:none;padding:0;margin:0">${symmetric.map((e) => connectionItem(e, e.target)).join('')}</ul>`]
       : []),
   ].join('');
@@ -240,10 +241,10 @@ function updateDetailsPanel(
     <div class="graph-node-details__content">
       <p class="graph-node-details__collection">${node.collection}</p>
       <h2 class="graph-node-details__title">
-        <a href="${node.url}" class="graph-node-details__link">${node.title}</a>
+        <a href="${escapeHtml(clientUrl(node.url))}" class="graph-node-details__link">${escapeHtml(node.title)}</a>
       </h2>
-      <p class="graph-node-details__description">${node.description}</p>
-      ${connectionHtml || '<p class="graph-node-details__empty">No connections for this entry.</p>'}
+      <p class="graph-node-details__description">${escapeHtml(node.description)}</p>
+      ${connectionHtml || `<p class="graph-node-details__empty">${clientCopy('No connections for this entry.', 'Mục này chưa có liên kết tri thức.')}</p>`}
     </div>
   `;
 }

@@ -33,6 +33,8 @@ interface PagefindAPI {
 // ---------------------------------------------------------------------------
 
 const BASE = import.meta.env.BASE_URL as string;
+const vi = document.documentElement.lang === 'vi';
+const copy = (english: string, vietnamese: string) => vi ? vietnamese : english;
 
 function getStatusEl(): HTMLElement | null {
   return document.getElementById('search-status');
@@ -57,18 +59,19 @@ function renderResults(results: PagefindResultData[]): void {
   el.innerHTML = '';
 
   if (results.length === 0) {
-    setStatus('No results found.');
+    setStatus(copy('No results found.', 'Không tìm thấy kết quả.'));
     return;
   }
 
-  setStatus(`${results.length} result${results.length !== 1 ? 's' : ''}`);
+  setStatus(vi ? `${results.length} kết quả` : `${results.length} result${results.length !== 1 ? 's' : ''}`);
   for (const r of results) {
     const li = document.createElement('li');
     li.className = 'search-results__item';
-    li.innerHTML = `
-      <a href="${r.url}" class="search-results__link">${r.title}</a>
-      <p class="search-results__excerpt">${r.excerpt}</p>
-    `;
+    const link = document.createElement('a');
+    link.href = r.url; link.className = 'search-results__link'; link.textContent = r.title;
+    const excerpt = document.createElement('p');
+    excerpt.className = 'search-results__excerpt'; excerpt.textContent = r.excerpt.replace(/<\/?mark>/g, '');
+    li.append(link, excerpt);
     el.appendChild(li);
   }
 }
@@ -94,12 +97,12 @@ async function initSearch(): Promise<void> {
     pagefind = (await import(/* @vite-ignore */ `${BASE}pagefind/pagefind.js`)) as PagefindAPI;
     await pagefind.init();
   } catch {
-    setStatus('Search index is not available. Please build the site first.');
+    setStatus(copy('Search is temporarily unavailable.', 'Tìm kiếm tạm thời chưa sẵn sàng.'));
     return;
   }
 
-  const form = document.querySelector<HTMLFormElement>('form[role="search"]');
   const input = document.getElementById('search-input') as HTMLInputElement | null;
+  const form = input?.closest('form');
   if (!form || !input) return;
 
   async function runSearch(query: string): Promise<void> {
@@ -109,13 +112,13 @@ async function initSearch(): Promise<void> {
       clearResults();
       return;
     }
-    setStatus('Searching…');
+    setStatus(copy('Searching…', 'Đang tìm…'));
     try {
       const { results } = await pagefind.search(trimmed);
       const data = await Promise.all(results.slice(0, 30).map((r) => r.data()));
       renderResults(data);
     } catch {
-      setStatus('Search failed. Please try again.');
+      setStatus(copy('Search failed. Please try again.', 'Tìm kiếm chưa thành công. Bạn thử lại nhé.'));
       clearResults();
     }
   }

@@ -6,6 +6,7 @@ import { getPublishedArticles, toArticleSummary } from '../../../lib/content/que
 import { getArticleFolders, type ArticleFolder } from '../../../lib/content/article-folders';
 import { buildSEOData } from '../../../utils/seo';
 import { buildUrl } from '../../../utils/url';
+import { localeFromPath } from '../../../lib/i18n';
 
 export const getStaticPaths: GetStaticPaths = async () =>
   getArticleFolders(await getPublishedArticles()).map((folder) => ({
@@ -14,16 +15,17 @@ export const getStaticPaths: GetStaticPaths = async () =>
 
 interface Props { folder: ArticleFolder; }
 const { folder } = Astro.props;
-const description = `${folder.articles.length} chương, sắp xếp theo thứ tự chương.`;
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const description = vi ? `${folder.articles.length} chương, sắp xếp theo thứ tự chương.` : `${folder.articles.length} chapters, in chapter order.`;
 const seo = buildSEOData({
-  title: folder.title, description, path: `articles/folders/${folder.id}/`, kind: 'listing',
+  title: folder.title, description, path: `${folder.isNovel ? 'novels' : 'articles/folders'}/${folder.id}/`, kind: 'listing',
 });
 ---
 
 <ListingLayout seo={seo} title={folder.title} description={description}
   itemCount={folder.articles.length} activeCollection="articles"
   breadcrumbs={[
-    { label: 'Articles', href: buildUrl('articles/') },
+    { label: folder.isNovel ? 'Novels' : 'Articles', href: buildUrl(folder.isNovel ? 'novels/' : 'articles/') },
     { label: folder.title, current: true },
   ]}>
   {folder.articles.map((article) => <ArticleSummary article={toArticleSummary(article)} />)}

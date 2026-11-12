@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://sugia279.github.io/engineering-lab/sitemap-index.xml

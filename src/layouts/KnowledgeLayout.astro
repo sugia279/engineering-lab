@@ -17,6 +17,8 @@ import RelatedContentList from '../components/discovery/RelatedContentList.astro
 import ConnectionList from '../components/graph/ConnectionList.astro';
 import SeriesNavigation from '../components/series/SeriesNavigation.astro';
 import { buildBreadcrumbStructuredData } from '../utils/seo';
+import { buildUrl } from '../utils/url';
+import { localeFromPath } from '../lib/i18n';
 
 interface Heading {
   depth: number;
@@ -43,6 +45,7 @@ const {
 } = Astro.props;
 
 const isNote = entry.collection === 'notes';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
 const noteEntry = isNote ? (entry as NoteViewModel) : undefined;
 
 const showTOC =
@@ -93,6 +96,10 @@ const structuredData = breadcrumbs.length > 0
     <Prose class="knowledge-layout__body">
       <slot />
     </Prose>
+    <aside class="reader-message" aria-label="Reader comments">
+      <p>{vi ? 'Nội dung được giữ theo ngôn ngữ gốc. Có điều muốn trao đổi với Hiển?' : 'Content is kept in its original language. Have a comment or question for Hien?'}</p>
+      <a href={buildUrl('guestbook/') + '?context=' + encodeURIComponent(Astro.url.pathname)}>{vi ? 'Bình luận / gửi lời nhắn →' : 'Comment / leave a message →'}</a>
+    </aside>
 
     {entry.seriesContext && (
       <SeriesNavigation
@@ -114,6 +121,8 @@ const structuredData = breadcrumbs.length > 0
 </SiteLayout>
 
 <style>
+  .reader-message { margin: 2rem 0; padding: 1rem; background: #f0fdfa; border-radius: 0.5rem; color: #134e4a; }
+  .reader-message a { text-decoration: underline; font-weight: 600; }
   .knowledge-layout {
     max-width: 72ch;
     margin: 0 auto;

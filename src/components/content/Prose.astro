@@ -14,6 +14,6 @@ const { wide = false, class: className } = Astro.props;
 const classes = ['prose', wide && 'prose--wide', className].filter(Boolean).join(' ');
 ---
 
-<div class={classes}>
+<div class={classes} data-original-content>
   <slot />
 </div>

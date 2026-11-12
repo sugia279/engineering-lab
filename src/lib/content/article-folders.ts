@@ -7,6 +7,7 @@ export interface ArticleFolder {
   readonly title: string;
   readonly url: string;
   readonly articles: ArticleEntry[];
+  readonly isNovel: boolean;
 }
 
 /** ASCII route segments; retain the original directory name as the display title. */
@@ -39,10 +40,13 @@ export function getArticleFolders(articles: readonly ArticleEntry[]): ArticleFol
     const owner = slugOwners.get(id);
     if (owner && owner !== directory) throw new Error(`Article folder URL collision: ${owner} / ${directory}`);
     slugOwners.set(id, directory);
+    const isNovel = folder.articles.some((entry) => entry.data.chapterOrder !== undefined
+      && entry.data.domains?.includes('reading-literature'));
     return {
       id,
       title: folder.title,
-      url: buildUrl('articles/folders', id, '/'),
+      url: buildUrl(isNovel ? 'novels' : 'articles/folders', id, '/'),
+      isNovel,
       articles: folder.articles.sort((a, b) =>
         (a.data.chapterOrder ?? Number.MAX_SAFE_INTEGER) - (b.data.chapterOrder ?? Number.MAX_SAFE_INTEGER)
         || a.id.localeCompare(b.id, 'vi', { numeric: true })),

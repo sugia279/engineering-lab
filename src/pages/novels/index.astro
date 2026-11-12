@@ -1,0 +1,18 @@
+---
+import ListingLayout from '../../layouts/ListingLayout.astro';
+import { getPublishedArticles } from '../../lib/content/queries';
+import { getArticleFolders } from '../../lib/content/article-folders';
+import { buildSEOData } from '../../utils/seo';
+import { localeFromPath } from '../../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const novels = getArticleFolders(await getPublishedArticles()).filter((folder) => folder.isNovel);
+const description = vi ? 'Những câu chuyện dài, đọc theo từng chương.' : 'Long stories, one chapter at a time.';
+const seo = buildSEOData({ title: 'Novels', description, path: 'novels/', kind: 'listing' });
+---
+<ListingLayout seo={seo} title="Novels" description={description} itemCount={novels.length} showCollectionNav={false}>
+  <div class="room-grid">{novels.map((novel) => (
+    <a href={novel.url} class="room-card"><p class="eyebrow">{vi ? 'TIỂU THUYẾT' : 'NOVEL'}</p>
+      <h2 data-original-content>{novel.title}</h2><p>{novel.articles.length} {vi ? 'chương · Mở danh sách chương →' : 'chapters · Browse chapters →'}</p>
+    </a>
+  ))}</div>
+</ListingLayout>

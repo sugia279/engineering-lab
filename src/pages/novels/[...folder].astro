@@ -1,0 +1,11 @@
+---
+import type { GetStaticPaths } from 'astro';
+import FolderPage from '../articles/folders/[...folder].astro';
+import { getPublishedArticles } from '../../lib/content/queries';
+import { getArticleFolders, type ArticleFolder } from '../../lib/content/article-folders';
+export const getStaticPaths: GetStaticPaths = async () => getArticleFolders(await getPublishedArticles())
+  .filter((folder) => folder.isNovel).map((folder) => ({ params: { folder: folder.id }, props: { folder } }));
+interface Props { folder: ArticleFolder; }
+const { folder } = Astro.props;
+---
+<FolderPage folder={folder} />

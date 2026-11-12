@@ -10,6 +10,7 @@ import { primaryNavigation } from '../../config/navigation';
 import { buildUrl, entryUrl } from '../../utils/url';
 import { getPublishedArticles } from '../../lib/content/queries';
 import { getArticleFolders } from '../../lib/content/article-folders';
+import { localeFromPath, localeUrl } from '../../lib/i18n';
 
 interface Props {
   currentPath?: string;
@@ -17,15 +18,17 @@ interface Props {
 
 const { currentPath = '' } = Astro.props;
 const searchUrl = buildUrl('/search/');
-const folders = getArticleFolders(await getPublishedArticles());
-const decodedPath = decodeURI(currentPath);
-const navigation = primaryNavigation.map((item) => item.href === '/articles/' ? {
+const locale = localeFromPath(currentPath);
+const notFound = currentPath.includes('/404');
+const folders = getArticleFolders(await getPublishedArticles()).filter((folder) => folder.isNovel);
+const decodedPath = decodeURI(localeUrl(currentPath, 'vi'));
+const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
   ...item,
   children: folders.map((folder) => ({
     label: folder.title,
-    href: `/articles/folders/${folder.id}/`,
+    href: `/novels/${folder.id}/`,
     matchPattern: folder.articles.some((article) => decodedPath === entryUrl('articles', article.id))
-      ? currentPath : undefined,
+      ? localeUrl(currentPath, 'vi') : undefined,
   })),
 } : item);
 ---
@@ -70,6 +73,10 @@ const navigation = primaryNavigation.map((item) => item.href === '/articles/' ? 
       </button>
     </div>
   </form>
+  <nav class="language-switch" aria-label="Language">
+    <a href={notFound ? buildUrl('404.html') : localeUrl(currentPath, 'vi')} hreflang="vi" lang="vi" aria-current={locale === 'vi' ? 'true' : undefined} data-locale-link>VI</a>
+    <a href={notFound ? buildUrl('en/404/') : localeUrl(currentPath, 'en')} hreflang="en" lang="en" aria-current={locale === 'en' ? 'true' : undefined} data-locale-link>EN</a>
+  </nav>
 </header>
 
 <aside id="sidebar" class="sidebar" aria-label="Main navigation">
@@ -99,6 +106,9 @@ const navigation = primaryNavigation.map((item) => item.href === '/articles/' ? 
 </script>
 
 <style>
+  .language-switch { display: flex; gap: 0.25rem; margin-left: auto; flex-shrink: 0; }
+  .language-switch a { color: #cbd5e1; padding: 0.4rem; border-radius: 0.25rem; font-size: 0.8rem; text-decoration: none; }
+  .language-switch a[aria-current] { background: #334155; color: #fff; font-weight: 700; }
   .topbar {
     grid-area: topbar;
     position: sticky;
@@ -139,7 +149,7 @@ const navigation = primaryNavigation.map((item) => item.href === '/articles/' ? 
     outline-offset: 2px;
   }
 
-  .topbar__search { flex: 1; max-width: 600px; }
+  .topbar__search { flex: 1; max-width: 600px; min-width: 0; }
   .topbar__search-wrap { position: relative; display: flex; align-items: center; }
   .topbar__search-icon {
     position: absolute;

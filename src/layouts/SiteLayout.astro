@@ -11,6 +11,8 @@ import SkipLink from '../components/site/SkipLink.astro';
 import Header from '../components/site/Header.astro';
 import Footer from '../components/site/Footer.astro';
 import '../styles/global.css';
+import { localeFromPath, localeUrl } from '../lib/i18n';
+import { siteConfig } from '../config/site';
 
 interface Props {
   seo: SEOData;
@@ -19,12 +21,23 @@ interface Props {
 }
 
 const { seo, structuredData, currentPath = Astro.url.pathname } = Astro.props;
+const locale = localeFromPath(currentPath);
+const notFound = currentPath.includes('/404');
+const localizedSeo = { ...seo,
+  canonical: notFound ? `${siteConfig.origin}${siteConfig.base}${locale === 'en' ? 'en/404/' : '404.html'}` : new URL(seo.canonical).origin === siteConfig.origin ? siteConfig.origin + localeUrl(new URL(seo.canonical).pathname, locale) : seo.canonical,
+  openGraph: { ...seo.openGraph, url: siteConfig.origin + localeUrl(new URL(seo.openGraph.url).pathname, locale) },
+};
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
-    <DocumentHead seo={seo} />
+    <DocumentHead seo={localizedSeo} />
+    {!notFound && <>
+      <link rel="alternate" hreflang="vi" href={siteConfig.origin + localeUrl(currentPath, 'vi')} data-locale-link />
+      <link rel="alternate" hreflang="en" href={siteConfig.origin + localeUrl(currentPath, 'en')} data-locale-link />
+      <link rel="alternate" hreflang="x-default" href={siteConfig.origin + localeUrl(currentPath, 'vi')} data-locale-link />
+    </>}
     {structuredData && <StructuredData data={structuredData} />}
   </head>
   <body class="app-shell">

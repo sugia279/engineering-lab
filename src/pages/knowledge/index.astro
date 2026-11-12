@@ -1,0 +1,24 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { buildSEOData } from '../../utils/seo';
+import { buildUrl } from '../../utils/url';
+import { localeFromPath } from '../../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const types = [
+  ['articles/', 'Articles', vi ? 'Bài viết hoàn chỉnh: hướng dẫn, phân tích và kinh nghiệm có đầu có cuối.' : 'Complete writing: tutorials, analysis, and experience explained in depth.'],
+  ['notes/', 'Notes', vi ? 'Ghi chú ngắn: ý tưởng, mẹo và những điều đang tìm hiểu; có thể cập nhật dần.' : 'Short notes: ideas, tips, and working knowledge that can evolve over time.'],
+  ['series/', 'Series', vi ? 'Chuỗi bài có thứ tự, chẳng hạn học Playwright từ cơ bản đến nâng cao.' : 'Ordered learning paths, such as a sequence of Playwright tutorials.'],
+  ['topics/', 'Topics', vi ? 'Các nhãn chủ đề để tìm nội dung liên quan, dù chúng thuộc loại nào.' : 'Topic labels for finding related content across different formats.'],
+  ['graph/', 'Graph', vi ? 'Bản đồ nối các ý tưởng; hữu ích khi muốn khám phá sâu các mối liên hệ.' : 'A map of connected ideas for exploring deeper relationships.'],
+];
+const seo = buildSEOData({ title: 'Knowledge', description: vi ? 'Ghi chép, bài viết và những hành trình học hỏi của Hiển.' : 'Hien’s notes, writing, and learning paths.', path: 'knowledge/', kind: 'listing' });
+---
+<SiteLayout seo={seo}>
+  <div class="room">
+    <p class="eyebrow">{vi ? 'HỌC & CHIA SẺ' : 'LEARN & SHARE'}</p><h1>Knowledge</h1>
+    <p class="room-intro">{seo.description}</p>
+    <div class="room-grid">{types.map(([path, title, description]) => (
+      <a class="room-card" href={buildUrl(path!)}><h2>{title}</h2><p>{description}</p></a>
+    ))}</div>
+  </div>
+</SiteLayout>

@@ -4,15 +4,17 @@
  */
 
 import type { SiteConfig } from '../types/site';
+import { base, repository } from '../../site-settings.mjs';
+export { repository };
 
 export const siteConfig: SiteConfig = {
-  name: 'Engineering Lab',
+  name: "Hien's Nha",
   description:
-    'Public Personal Knowledge Garden and Living Portfolio — exploring engineering, AI, music, reading, and philosophy.',
+    'A home for Hien’s knowledge, projects, stories, music, and friends.',
   author: 'Su Duy Hien',
-  language: 'en',
+  language: 'vi',
   origin: 'https://sugia279.github.io',
-  base: '/engineering-lab/',
+  base,
   socialLinks: [
     {
       service: 'GitHub',

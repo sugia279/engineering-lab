@@ -11,7 +11,7 @@ import Breadcrumbs from '../components/discovery/Breadcrumbs.astro';
 import CollectionNavigation from '../components/discovery/CollectionNavigation.astro';
 import EmptyState from '../components/discovery/EmptyState.astro';
 import Pagination from '../components/discovery/Pagination.astro';
-import { primaryNavigation } from '../config/navigation';
+import { collectionNavigation } from '../config/navigation';
 import { buildUrl } from '../utils/url';
 
 interface Props {
@@ -36,11 +36,7 @@ const {
   showCollectionNav = true,
 } = Astro.props;
 
-const collectionItems: NavigationItem[] = primaryNavigation.filter((n) =>
-  ['articles', 'notes', 'projects', 'series'].some(
-    (c) => n.matchPattern === `/${c}`,
-  ),
-);
+const collectionItems: NavigationItem[] = collectionNavigation;
 ---
 
 <SiteLayout seo={seo}>

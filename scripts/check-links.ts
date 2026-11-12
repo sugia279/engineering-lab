@@ -9,7 +9,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const DIST = path.resolve(import.meta.dirname, '..', 'dist');
-const BASE = '/engineering-lab/';
+import { base as BASE } from '../site-settings.mjs';
+const escapedBase = BASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const errors: string[] = [];
 let checkedCount = 0;
 
@@ -32,7 +33,7 @@ function findHtmlFiles(dir: string): string[] {
 /** Extract internal link hrefs from HTML content */
 function extractInternalHrefs(html: string): string[] {
   const hrefs: string[] = [];
-  const matches = html.matchAll(/href="(\/engineering-lab\/[^"#?]*)"/g);
+  const matches = html.matchAll(new RegExp('href="(' + escapedBase + '[^"#?]*)"', 'g'));
   for (const m of matches) {
     if (m[1]) hrefs.push(m[1]);
   }
@@ -42,7 +43,7 @@ function extractInternalHrefs(html: string): string[] {
 /** Extract internal asset src attributes */
 function extractInternalSrcs(html: string): string[] {
   const srcs: string[] = [];
-  const matches = html.matchAll(/src="(\/engineering-lab\/[^"]+)"/g);
+  const matches = html.matchAll(new RegExp('src="(' + escapedBase + '[^"]+)"', 'g'));
   for (const m of matches) {
     if (m[1]) srcs.push(m[1]);
   }
@@ -51,9 +52,9 @@ function extractInternalSrcs(html: string): string[] {
 
 /** Resolve an internal URL to a dist/ file path */
 function urlToFilePath(internalUrl: string): string {
-  const rel = internalUrl.replace(BASE, '');
+  const rel = decodeURIComponent(internalUrl.replace(BASE, '')).replace(/&amp;/g, '&');
   // Check index.html for directory URLs
-  if (!rel.includes('.')) {
+  if (rel.endsWith('/') || !rel.includes('.')) {
     return path.join(DIST, rel, 'index.html');
   }
   return path.join(DIST, rel);
