@@ -6,12 +6,12 @@
   "message": "Test chức năng",
   "htmlUrl": "https://github.com/sugia279/hiens-nha/issues/3",
   "createdAt": "2026-11-12T08:44:28Z",
-  "updatedAt": "2026-11-12T09:17:33Z",
+  "updatedAt": "2026-11-12T09:27:58Z",
   "author": {
     "login": "sugia279",
     "htmlUrl": "https://github.com/sugia279"
   },
-  "approved": false,
+  "approved": true,
   "deleted": false,
   "comments": []
 }
