@@ -1,0 +1,37 @@
+---
+/**
+ * Home / Resume - default landing page embeds the resume HTML.
+ */
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { buildSEOData } from '../../utils/seo';
+import { buildUrl } from '../../utils/url';
+import { siteConfig } from '../../config/site';
+
+const resumeUrl = buildUrl('resume/SuDuyHien_Resume_Updated.html');
+
+const seo = buildSEOData({
+  title: 'Resume',
+  description: siteConfig.description,
+  path: 'resume/',
+  kind: 'home',
+});
+---
+
+<SiteLayout seo={seo}>
+  <iframe
+    src={resumeUrl}
+    title={`${siteConfig.author} - Resume`}
+    class="resume-frame"
+    loading="eager"
+  ></iframe>
+</SiteLayout>
+
+<style>
+  .resume-frame {
+    display: block;
+    width: 100%;
+    height: calc(100svh - 56px);
+    border: none;
+    background: #fff;
+  }
+</style>

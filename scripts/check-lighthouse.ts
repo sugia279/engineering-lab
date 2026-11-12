@@ -79,7 +79,7 @@ for (const file of htmlFiles) {
   check(/<title>[^<]+<\/title>/i.test(content), `<title> present: ${rel}`);
   check(/<meta\s[^>]*name="description"/i.test(content), `meta description: ${rel}`);
   check(/<link\s[^>]*rel="canonical"/i.test(content), `canonical link: ${rel}`, true);
-  check(/lang="en"/i.test(content), `lang="en": ${rel}`);
+  check(content.includes(`lang="${rel.startsWith('en/') ? 'en' : 'vi'}"`), `Correct document language: ${rel}`);
   check(/name="viewport"/i.test(content), `viewport meta: ${rel}`);
 }
 
@@ -96,8 +96,8 @@ check(
 );
 
 // 4. Accessibility indicator — iframe has title
-const homeHtml = readText('index.html');
-check(/<iframe[^>]+title="[^"]+"/i.test(homeHtml), 'Resume iframe has title attribute');
+const homeHtml = readText('resume/index.html');
+check(/<iframe[^>]+title="[^"]+"/i.test(homeHtml), 'Resume iframe has title attribute on resume page');
 
 // 5. Infrastructure
 check(fs.existsSync(path.join(DIST, 'robots.txt')), 'robots.txt exists');

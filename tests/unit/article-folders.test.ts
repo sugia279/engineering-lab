@@ -1,3 +1,5 @@
+import { siteConfig } from '../../src/config/site';
+const BASE = siteConfig.base;
 import { describe, expect, it } from 'vitest';
 import { normalizeImportedArticle } from '../../src/lib/content/imported-articles';
 import { articleFolderContext, getArticleFolders } from '../../src/lib/content/article-folders';
@@ -49,7 +51,7 @@ describe('article directory discovery', () => {
   it('uses the source title, stable ASCII folder route, and numeric chapter order', () => {
     const [folder] = getArticleFolders([chapter(10), chapter(2), chapter(1)]);
     expect(folder?.title).toBe(title);
-    expect(folder?.url).toBe('/engineering-lab/articles/folders/nha-co-tien-the-bat-thuong-co-ay-cung-la-nguoi-xuyen-khong/');
+    expect(folder?.url).toBe(`${BASE}articles/folders/nha-co-tien-the-bat-thuong-co-ay-cung-la-nguoi-xuyen-khong/`);
     expect(folder?.articles.map((entry) => entry.data.chapterOrder)).toEqual([1, 2, 10]);
   });
 

@@ -1,0 +1,84 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { buildSEOData } from '../../utils/seo';
+import { repository } from '../../config/site';
+import { localeFromPath } from '../../lib/i18n';
+import { guestMessages } from '../../lib/guestbook';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const issueUrl = `https://github.com/${repository}/issues/new?template=guestbook.md`;
+const displayTitle = (title: string) => title.replace(/^\[Hien's Nha\]\s*/, '');
+const seo = buildSEOData({ title: 'Guestbook', description: vi ? 'Gửi lời nhắn, bình luận hoặc một điều muốn nhờ Hiển.' : 'Leave a message, comment, or request for Hien.', path: 'guestbook/', kind: 'listing' });
+---
+<SiteLayout seo={seo}>
+  <div class="room guestbook">
+    <p class="eyebrow">{vi ? 'GHÉ CHƠI, ĐỂ LẠI VÀI DÒNG' : 'SAY HELLO, LEAVE A NOTE'}</p><h1>Guestbook</h1><p class="room-intro">{seo.description}</p>
+    <p class="guestbook-notice">{vi ? 'Lời nhắn được gửi công khai qua GitHub và lưu thành file. Bạn cần đăng nhập GitHub và xác nhận gửi ở bước tiếp theo; điền form này chưa lưu lời nhắn. Đừng gửi thông tin riêng tư. Hiển duyệt trước khi lời nhắn xuất hiện ở đây.' : 'Messages are public on GitHub and archived to files. A GitHub account is required; confirm submission on the next page. Filling this form does not save a message yet. Please keep private information out. Hien approves messages before they appear here.'}</p>
+    <form id="guestbook-form" action={issueUrl} method="get" data-repository={repository}>
+      <label for="guest-kind">{vi ? 'Bạn muốn gửi điều gì?' : 'What would you like to share?'}</label>
+      <select id="guest-kind" name="kind"><option value="message">{vi ? 'Lời nhắn / vài dòng về Hiển' : 'A message / a note about Hien'}</option><option value="comment">{vi ? 'Bình luận nội dung' : 'A content comment'}</option><option value="request">{vi ? 'Yêu cầu / nhờ giúp đỡ' : 'A request / help needed'}</option></select>
+      <label for="guest-name">{vi ? 'Tên muốn hiển thị (không bắt buộc)' : 'Display name (optional)'}</label><input id="guest-name" name="displayName" type="text" maxlength="80" autocomplete="nickname" />
+      <label for="guest-title">{vi ? 'Tiêu đề' : 'Subject'}</label><input id="guest-title" name="subject" type="text" required minlength="3" maxlength="120" />
+      <label for="guest-message">{vi ? 'Nội dung' : 'Message'}</label><textarea id="guest-message" name="message" required minlength="5" maxlength="4000" rows="6"></textarea>
+      <p id="guest-context" hidden></p>
+      <p id="guest-status" role="status"></p>
+      <button id="guest-submit" type="submit" class="button" disabled>{vi ? 'Tiếp tục trên GitHub →' : 'Continue on GitHub →'}</button>
+      <p><a href={issueUrl}>{vi ? 'Hoặc viết trực tiếp trên GitHub nếu nội dung dài' : 'Or write directly on GitHub for longer messages'}</a></p>
+      <noscript><p><a href={issueUrl}>{vi ? 'Mở GitHub để để lại lời nhắn' : 'Open GitHub to leave a message'}</a></p></noscript>
+    </form>
+    <section class="guestbook-entries" aria-labelledby="guestbook-messages"><h2 id="guestbook-messages">{vi ? 'Những lời nhắn đã duyệt' : 'Approved messages'}</h2>
+      {guestMessages.length ? guestMessages.map((message) => (
+        <article class="guest-message" data-original-content>
+          <h3>{displayTitle(message.title)}</h3>
+          <p class="guest-author"><a href={message.author.htmlUrl} rel="noopener noreferrer">@{message.author.login}</a> · <time datetime={message.createdAt}>{new Date(message.createdAt).toLocaleDateString(vi ? 'vi-VN' : 'en-US')}</time></p>
+          <p class="guest-body">{message.message}</p>
+          {message.comments.filter((comment) => comment.trusted).map((comment) => <blockquote><p class="guest-body">{comment.body}</p><cite>@{comment.author.login}</cite></blockquote>)}
+          <a href={message.htmlUrl} target="_blank" rel="noopener noreferrer">{vi ? 'Xem thảo luận / trả lời trên GitHub' : 'View discussion / reply on GitHub'}</a>
+        </article>
+      )) : <p>{vi ? 'Chưa có lời nhắn được duyệt. Bạn có thể là người ghé chơi đầu tiên.' : 'No approved messages yet. You could be the first to say hello.'}</p>}
+    </section>
+  </div>
+</SiteLayout>
+<script>
+  const form = document.querySelector<HTMLFormElement>('#guestbook-form');
+  if (form) {
+    const base = import.meta.env.BASE_URL;
+    const vi = document.documentElement.lang === 'vi';
+    let context = '';
+    const candidate = new URLSearchParams(location.search).get('context');
+    if (candidate) {
+      try { const url = new URL(candidate, location.origin); if (url.origin === location.origin && url.pathname.startsWith(base)) context = url.pathname; } catch { /* Ignore invalid page context. */ }
+    }
+    if (context) { const el = document.getElementById('guest-context')!; el.textContent = `${vi ? 'Trang đang bình luận' : 'Commenting on'}: ${context}`; el.hidden = false; }
+    (document.getElementById('guest-submit') as HTMLButtonElement).disabled = false;
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const title = String(data.get('subject') ?? '').trim();
+      const body = `<!-- hiens-nha:guestbook:v1 -->\n### Type\n${data.get('kind')}\n### Display name\n${String(data.get('displayName') ?? '').trim()}\n### Message\n${String(data.get('message') ?? '').trim()}\n### Page\n${context || '(general guestbook)'}\n`;
+      const url = new URL(`https://github.com/${form.dataset.repository}/issues/new`);
+      url.searchParams.set('title', `[Hien's Nha] ${title}`); url.searchParams.set('body', body);
+      if (url.toString().length > 7500) {
+        document.getElementById('guest-status')!.textContent = vi ? 'Nội dung quá dài để chuyển qua liên kết. Hãy dùng liên kết viết trực tiếp trên GitHub bên dưới; nội dung đang nhập vẫn được giữ ở đây.' : 'This message is too long for a transfer link. Use the direct GitHub link below; your text remains in this form.';
+        return;
+      }
+      location.assign(url.toString());
+    });
+  }
+</script>
+<style>
+  .guestbook { max-width: 52rem; }
+  .guestbook-notice { font-size: 0.9rem; border-left: 3px solid #0f766e; background: #f0fdfa; padding: 1rem; }
+  form { margin: 1.5rem 0; display: grid; gap: 0.6rem; }
+  label { font-weight: 600; margin-top: 0.5rem; }
+  input, textarea, select { width: 100%; padding: 0.7rem; border: 1px solid #94a3b8; border-radius: 0.4rem; background: #fff; color: #0f172a; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid #0f766e; outline-offset: 2px; }
+  button { justify-self: start; margin-top: 0.75rem; }
+  .guestbook-entries { margin-top: 3rem; }
+  .guest-message { padding: 1.25rem 0; border-bottom: 1px solid #e2e8f0; }
+  .guest-message h3 { font-size: 1.15rem; font-weight: 600; }
+  .guest-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .guest-author { font-size: 0.85rem; }
+  blockquote { border-left: 3px solid #99f6e4; padding-left: 1rem; margin: 1rem 0; }
+  .guest-message a { color: #0f766e; text-decoration: underline; }
+</style>

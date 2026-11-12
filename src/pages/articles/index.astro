@@ -7,8 +7,9 @@ import { buildSEOData } from '../../utils/seo';
 import { getArticleFolders } from '../../lib/content/article-folders';
 
 const articles = await getPublishedArticles();
-const folders = getArticleFolders(articles);
-const groupedIds = new Set(folders.flatMap((folder) => folder.articles.map((article) => article.id)));
+const allFolders = getArticleFolders(articles);
+const folders = allFolders.filter((folder) => !folder.isNovel);
+const groupedIds = new Set(allFolders.flatMap((folder) => folder.articles.map((article) => article.id)));
 const sorted = sortEntries(articles.filter((article) => !groupedIds.has(article.id)), 'newest');
 const summaries = sorted.map(toArticleSummary);
 

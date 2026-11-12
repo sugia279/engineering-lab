@@ -1,3 +1,5 @@
+import { siteConfig } from '../../src/config/site';
+const BASE = siteConfig.base;
 import { describe, it, expect } from 'vitest';
 import { buildSEOData, serializeStructuredData, buildBreadcrumbStructuredData } from '../../src/utils/seo';
 
@@ -5,13 +7,13 @@ describe('seo utility', () => {
   describe('buildSEOData', () => {
     it('builds home page SEO', () => {
       const seo = buildSEOData({
-        title: 'Engineering Lab',
+        title: "Hien's Nha",
         description: 'Knowledge garden',
         path: '/',
         kind: 'home',
       });
-      expect(seo.canonical).toBe('https://sugia279.github.io/engineering-lab/');
-      expect(seo.title).toContain('Engineering Lab');
+      expect(seo.canonical).toBe(`https://sugia279.github.io${BASE}`);
+      expect(seo.title).toContain("Hien's Nha");
       expect(seo.openGraph.type).toBe('website');
       expect(seo.robots).toBeUndefined();
     });
@@ -27,7 +29,7 @@ describe('seo utility', () => {
         tags: ['typescript', 'testing'],
       });
       expect(seo.canonical).toContain('/articles/my-article/');
-      expect(seo.title).toBe('My Article | Engineering Lab');
+      expect(seo.title).toBe("My Article | Hien's Nha");
       expect(seo.openGraph.type).toBe('article');
       expect(seo.openGraph.publishedTime).toContain('2026-01-15');
       expect(seo.openGraph.tags).toEqual(['typescript', 'testing']);

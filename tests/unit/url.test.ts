@@ -1,23 +1,25 @@
+import { siteConfig } from '../../src/config/site';
+const BASE = siteConfig.base;
 import { describe, it, expect } from 'vitest';
 import { buildUrl, canonicalUrl, entryUrl, topicUrl, paginatedUrl, getBase, getOrigin } from '../../src/utils/url';
 
 describe('url utility', () => {
   describe('buildUrl', () => {
     it('prepends the configured base', () => {
-      expect(buildUrl('articles')).toBe('/engineering-lab/articles');
+      expect(buildUrl('articles')).toBe(`${BASE}articles`);
     });
 
     it('handles trailing slashes', () => {
-      expect(buildUrl('articles', '/')).toBe('/engineering-lab/articles/');
+      expect(buildUrl('articles', '/')).toBe(`${BASE}articles/`);
     });
 
     it('normalizes duplicate slashes', () => {
-      expect(buildUrl('//articles//')).toBe('/engineering-lab/articles/');
+      expect(buildUrl('//articles//')).toBe(`${BASE}articles/`);
     });
 
     it('handles nested segments', () => {
       expect(buildUrl('notes', 'astro/base-paths', '/')).toBe(
-        '/engineering-lab/notes/astro/base-paths/',
+        `${BASE}notes/astro/base-paths/`,
       );
     });
 
@@ -26,24 +28,24 @@ describe('url utility', () => {
     });
 
     it('handles empty string to produce base', () => {
-      expect(buildUrl('')).toBe('/engineering-lab/');
+      expect(buildUrl('')).toBe(`${BASE}`);
     });
 
     it('handles root slash', () => {
-      expect(buildUrl('/')).toBe('/engineering-lab/');
+      expect(buildUrl('/')).toBe(`${BASE}`);
     });
   });
 
   describe('canonicalUrl', () => {
     it('produces absolute URL with origin', () => {
       expect(canonicalUrl('articles/my-post/')).toBe(
-        'https://sugia279.github.io/engineering-lab/articles/my-post/',
+        `https://sugia279.github.io${BASE}articles/my-post/`,
       );
     });
 
     it('produces home canonical', () => {
       expect(canonicalUrl('/')).toBe(
-        'https://sugia279.github.io/engineering-lab/',
+        `https://sugia279.github.io${BASE}`,
       );
     });
   });
@@ -51,38 +53,38 @@ describe('url utility', () => {
   describe('entryUrl', () => {
     it('builds collection entry URL', () => {
       expect(entryUrl('articles', 'my-post')).toBe(
-        '/engineering-lab/articles/my-post/',
+        `${BASE}articles/my-post/`,
       );
     });
 
     it('handles nested slugs', () => {
       expect(entryUrl('notes', 'astro/base-paths')).toBe(
-        '/engineering-lab/notes/astro/base-paths/',
+        `${BASE}notes/astro/base-paths/`,
       );
     });
   });
 
   describe('topicUrl', () => {
     it('builds topic URL', () => {
-      expect(topicUrl('typescript')).toBe('/engineering-lab/topics/typescript/');
+      expect(topicUrl('typescript')).toBe(`${BASE}topics/typescript/`);
     });
   });
 
   describe('paginatedUrl', () => {
     it('returns base for page 1', () => {
-      expect(paginatedUrl('articles/', 1)).toBe('/engineering-lab/articles/');
+      expect(paginatedUrl('articles/', 1)).toBe(`${BASE}articles/`);
     });
 
     it('appends page segment for page 2+', () => {
       expect(paginatedUrl('articles/', 3)).toBe(
-        '/engineering-lab/articles/page/3/',
+        `${BASE}articles/page/3/`,
       );
     });
   });
 
   describe('getBase and getOrigin', () => {
     it('returns configured base', () => {
-      expect(getBase()).toBe('/engineering-lab/');
+      expect(getBase()).toBe(`${BASE}`);
     });
 
     it('returns configured origin', () => {

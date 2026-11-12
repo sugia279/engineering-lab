@@ -17,12 +17,12 @@ const { note } = Astro.props;
 ---
 
 <article class="note-summary">
-  <h3 class="note-summary__title">
+  <h3 class="note-summary__title" data-original-content>
     <a href={note.url} class="note-summary__link">
       {note.title}
     </a>
   </h3>
-  <p class="note-summary__description">{note.description}</p>
+  <p class="note-summary__description" data-original-content>{note.description}</p>
   <footer class="note-summary__meta">
     <ContentStatus status={note.maturity} />
     <PublicationDates

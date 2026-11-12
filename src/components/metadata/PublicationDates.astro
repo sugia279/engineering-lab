@@ -4,6 +4,7 @@
  * Registry: Metadata component, M5.
  */
 import { formatDate, isoDateTime } from '../../utils/date';
+import { localeFromPath } from '../../lib/i18n';
 
 interface Props {
   publishedAt: Date;
@@ -13,8 +14,9 @@ interface Props {
 
 const { publishedAt, updatedAt, compact = false } = Astro.props;
 
-const publishedLabel = compact ? formatDate(publishedAt, 'en-US').replace(/,?\s*\d{4}$/, (m) => m) : formatDate(publishedAt);
-const updatedLabel = updatedAt ? (compact ? formatDate(updatedAt, 'en-US').replace(/,?\s*\d{4}$/, (m) => m) : formatDate(updatedAt)) : null;
+const locale = localeFromPath(Astro.url.pathname) === 'vi' ? 'vi-VN' : 'en-US';
+const publishedLabel = formatDate(publishedAt, locale);
+const updatedLabel = updatedAt ? formatDate(updatedAt, locale) : null;
 ---
 
 <div class={`pub-dates${compact ? ' pub-dates--compact' : ''}`}>

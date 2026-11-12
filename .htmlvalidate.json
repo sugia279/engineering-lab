@@ -1,8 +1,17 @@
 {
-  "extends": ["html-validate:recommended"],
+  "extends": [
+    "html-validate:recommended"
+  ],
   "elements": [
     "html5",
-    { "search": { "flow": true, "phrasing": true, "transparent": true, "attributes": {} } }
+    {
+      "search": {
+        "flow": true,
+        "phrasing": true,
+        "transparent": true,
+        "attributes": {}
+      }
+    }
   ],
   "rules": {
     "no-redundant-role": "off",
@@ -13,6 +22,24 @@
     "no-raw-characters": "error",
     "require-sri": "off",
     "no-inline-style": "off",
-    "long-title": "off"
+    "long-title": "off",
+    "valid-id": [
+      "error",
+      {
+        "relaxed": true
+      }
+    ],
+    "attribute-boolean-style": [
+      "error",
+      {
+        "style": "empty"
+      }
+    ],
+    "attribute-empty-style": [
+      "error",
+      {
+        "style": "empty"
+      }
+    ]
   }
 }

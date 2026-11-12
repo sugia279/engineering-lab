@@ -7,12 +7,26 @@ import type { NavigationItem } from '../types/navigation';
 
 /** Ordered primary navigation items. */
 export const primaryNavigation: readonly NavigationItem[] = [
-  { label: 'Resume', href: '/', matchPattern: '/__home__' },
+  { label: 'Home', href: '/', matchPattern: '/__home__' },
+  { label: 'Knowledge', href: '/knowledge/', matchPattern: '/knowledge', children: [
+    { label: 'Articles', href: '/articles/', matchPattern: '/articles' },
+    { label: 'Notes', href: '/notes/', matchPattern: '/notes' },
+    { label: 'Series', href: '/series/', matchPattern: '/series' },
+    { label: 'Topics', href: '/topics/', matchPattern: '/topics' },
+    { label: 'Graph', href: '/graph/', matchPattern: '/graph' },
+  ] },
+  { label: 'Novels', href: '/novels/', matchPattern: '/novels' },
+  { label: 'Music', href: '/music/', matchPattern: '/music' },
+  { label: 'Projects', href: '/projects/', matchPattern: '/projects' },
+  { label: 'Guestbook', href: '/guestbook/', matchPattern: '/guestbook' },
+  { label: 'About', href: '/about/', matchPattern: '/about', children: [
+    { label: 'Resume', href: '/resume/', matchPattern: '/resume' },
+  ] },
+];
+
+export const collectionNavigation: NavigationItem[] = [
   { label: 'Articles', href: '/articles/', matchPattern: '/articles' },
   { label: 'Notes', href: '/notes/', matchPattern: '/notes' },
-  { label: 'Projects', href: '/projects/', matchPattern: '/projects' },
   { label: 'Series', href: '/series/', matchPattern: '/series' },
-  { label: 'Topics', href: '/topics/', matchPattern: '/topics' },
-  { label: 'Graph', href: '/graph/', matchPattern: '/graph' },
-  { label: 'About', href: '/about/', matchPattern: '/about' },
+  { label: 'Projects', href: '/projects/', matchPattern: '/projects' },
 ];

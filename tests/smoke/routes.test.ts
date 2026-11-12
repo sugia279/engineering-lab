@@ -1,3 +1,5 @@
+import { siteConfig } from '../../src/config/site';
+const BASE = siteConfig.base;
 /**
  * Smoke tests — verify built artifact has all expected routes.
  * Requires a prior `npm run build` to populate dist/.
@@ -23,7 +25,7 @@ function html(relativePath: string): string {
 
 function hasBasePath(content: string): boolean {
   // Every internal link/asset should reference /engineering-lab/
-  return content.includes('/engineering-lab/');
+  return content.includes(`${BASE}`);
 }
 
 describe('dist/ artifact smoke tests (requires prior npm run build)', () => {
@@ -138,8 +140,8 @@ describe('dist/ artifact smoke tests (requires prior npm run build)', () => {
       it(`${page} has meta description`, () => {
         expect(html(page)).toMatch(/name="description"/i);
       });
-      it(`${page} has lang="en"`, () => {
-        expect(html(page)).toContain('lang="en"');
+      it(`${page} has lang="vi"`, () => {
+        expect(html(page)).toContain('lang="vi"');
       });
     }
 
@@ -162,7 +164,7 @@ describe('dist/ artifact smoke tests (requires prior npm run build)', () => {
     });
 
     it('resume iframe has title attribute', () => {
-      expect(html('index.html')).toMatch(/iframe[^>]+title="[^"]+"/i);
+      expect(html('resume/index.html')).toMatch(/iframe[^>]+title="[^"]+"/i);
     });
 
     it('skip link present on home page', () => {

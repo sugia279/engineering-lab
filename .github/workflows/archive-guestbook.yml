@@ -1,0 +1,50 @@
+name: Archive guestbook
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, deleted]
+  issue_comment:
+    types: [created, edited, deleted]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Guestbook issue number to re-sync
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  issues: write
+
+# Coalesce updates to one issue; different issue archives can safely rebase.
+concurrency:
+  group: archive-guestbook-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Archive issue and comments as JSON data
+        run: node scripts/archive-guestbook.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Commit changed archives
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/guestbook
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "chore: archive guestbook messages"
+          for attempt in 1 2 3 4; do
+            git pull --rebase origin main || exit 1
+            if git push origin HEAD:main; then exit 0; fi
+          done
+          exit 1

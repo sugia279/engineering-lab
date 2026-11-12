@@ -9,6 +9,8 @@ import Prose from '../components/content/Prose.astro';
 import { buildSEOData } from '../utils/seo';
 import { buildUrl } from '../utils/url';
 import { siteConfig } from '../config/site';
+import { localeFromPath } from '../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
 
 const seo = buildSEOData({
   title: 'About',
@@ -23,7 +25,7 @@ const seo = buildSEOData({
     <header class="about-page__header">
       <h1 class="about-page__title">About</h1>
       <a
-        href={buildUrl('resume/SuDuyHien_Resume_Updated.html')}
+        href={buildUrl('resume/')}
         class="about-page__resume-btn"
       >
         View Resume
@@ -31,15 +33,13 @@ const seo = buildSEOData({
     </header>
     <Prose>
       <p>
-        This is the public knowledge garden of <strong>{siteConfig.author}</strong> —
-        a place for engineering insights, evolving notes, project case studies,
-        and curated learning paths.
+        {vi ? 'Chào bạn, mình là Hiển — ' : 'Hello, I’m Hien — '}<strong>{siteConfig.author}</strong>.
+        {vi ? 'Hien’s Nha là nơi mình lưu lại những gì đang học, những thứ đang xây dựng và những điều mình yêu thích.' : 'Hien’s Nha is where I keep what I learn, what I build, and the things I love.'}
       </p>
       <p>
-        The knowledge graph connects ideas across engineering, artificial intelligence,
-        music, reading and literature, and philosophy and life.
+        {vi ? 'Bạn có thể ghé góc tri thức về kỹ thuật và AI, đọc truyện, nghe những bản đàn hoặc để lại vài dòng trong sổ lưu bút. Hồ sơ nghề nghiệp được đặt riêng để bạn dễ tìm khi cần.' : 'Visit the engineering and AI knowledge corner, read a story, listen to a performance, or leave a note in the guestbook. My professional resume has its own page.'}
       </p>
-      <h2>Links</h2>
+      <h2>{vi ? 'Liên kết' : 'Links'}</h2>
       <ul>
         {siteConfig.socialLinks.map((link) => (
           <li>

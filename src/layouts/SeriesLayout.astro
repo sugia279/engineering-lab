@@ -40,8 +40,8 @@ const structuredData = breadcrumbs.length > 0
   <article class="series-layout">
     <header class="series-layout__header">
       <p class="series-layout__collection">Series</p>
-      <h1 class="series-layout__title">{series.title}</h1>
-      <p class="series-layout__description">{series.description}</p>
+      <h1 class="series-layout__title" data-original-content>{series.title}</h1>
+      <p class="series-layout__description" data-original-content>{series.description}</p>
       <div class="series-layout__meta">
         <PublicationDates publishedAt={series.publishedAt} updatedAt={series.updatedAt} />
         <span class="series-layout__count">

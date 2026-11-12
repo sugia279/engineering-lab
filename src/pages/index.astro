@@ -1,37 +1,50 @@
 ---
-/**
- * Home / Resume - default landing page embeds the resume HTML.
- */
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { buildSEOData } from '../utils/seo';
 import { buildUrl } from '../utils/url';
 import { siteConfig } from '../config/site';
-
-const resumeUrl = buildUrl('resume/SuDuyHien_Resume_Updated.html');
-
-const seo = buildSEOData({
-  title: siteConfig.name,
-  description: siteConfig.description,
-  path: '/',
-  kind: 'home',
-});
+import { localeFromPath } from '../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const rooms = [
+  ['knowledge/', vi ? 'Góc tri thức' : 'Knowledge', vi ? 'Những điều học được, ghi lại và chia sẻ.' : 'Ideas learned, recorded, and shared.', '01'],
+  ['novels/', vi ? 'Tủ truyện' : 'Novels', vi ? 'Một chút tiên hiệp, một khoảng thời gian thảnh thơi.' : 'Stories to get lost in, one chapter at a time.', '02'],
+  ['music/', vi ? 'Âm nhạc' : 'Music', vi ? 'Học nhạc, chơi đàn và lưu lại những giai điệu.' : 'Learning, playing, and keeping the melodies.', '03'],
+  ['projects/', vi ? 'Dự án' : 'Projects', vi ? 'Những thứ Hiển đang làm và đã xây dựng.' : 'Things Hien builds and experiments with.', '04'],
+];
+const seo = buildSEOData({ title: siteConfig.name, description: siteConfig.description, path: '/', kind: 'home' });
 ---
-
 <SiteLayout seo={seo}>
-  <iframe
-    src={resumeUrl}
-    title={`${siteConfig.author} - Resume`}
-    class="resume-frame"
-    loading="eager"
-  ></iframe>
+  <div class="room home-room">
+    <header class="house-hero">
+      <p class="eyebrow">{vi ? 'NHÀ CỦA HIỂN' : 'HIEN’S HOME'}</p>
+      <h1>Hien's Nha<span>.</span></h1>
+      <p class="house-lead">{vi ? 'Một góc để học, làm, chơi và chia sẻ.' : 'A place to learn, build, play, and share.'}</p>
+      <p>{vi ? 'Mời bạn ghé chơi. Ở đây có những ghi chép, dự án, câu chuyện và âm nhạc mà Hiển yêu thích.' : 'Make yourself at home. Explore the notes, projects, stories, and music that Hien enjoys.'}</p>
+      <div class="house-actions">
+        <a class="button" href={buildUrl('guestbook/')}>{vi ? 'Để lại vài dòng cho Hiển' : 'Leave Hien a message'}</a>
+        <a href={buildUrl('about/')}>{vi ? 'Làm quen với Hiển →' : 'Meet Hien →'}</a>
+      </div>
+    </header>
+    <section class="room-grid" aria-label={vi ? 'Khám phá ngôi nhà' : 'Explore the house'}>
+      {rooms.map(([path, title, description, number]) => (
+        <a class="room-card" href={buildUrl(path!)}>
+          <span class="eyebrow">{number}</span><h2>{title}</h2><p>{description}</p>
+        </a>
+      ))}
+    </section>
+    <aside class="house-note" aria-label={vi ? 'Một lời nhắn từ Hiển' : 'A note from Hien'}>
+      <p class="eyebrow">{vi ? 'TIỆM NHỜ VẢ — TÍCH CÔNG ĐỨC' : 'A LITTLE HELP, A LITTLE GOOD KARMA'}</p>
+      <h2>{vi ? '“Việc của bạn, công đức của tui!”' : '“Your request, my good karma!”'}</h2>
+      <p>{vi ? 'Có ý tưởng, lời nhắn hay điều muốn nhờ? Ghé sổ lưu bút, Hiển sẽ đọc khi có thời gian.' : 'An idea, a note, or something you need help with? Leave it in the guestbook; Hien will read it when he can.'}</p>
+    </aside>
+  </div>
 </SiteLayout>
-
 <style>
-  .resume-frame {
-    display: block;
-    width: 100%;
-    height: calc(100svh - 56px);
-    border: none;
-    background: #fff;
-  }
+  .house-hero { padding: 2rem 0 2.5rem; max-width: 42rem; }
+  .house-hero h1 { font-size: clamp(2.75rem,7vw,4.75rem); font-weight: 800; letter-spacing: -0.055em; line-height: 1.1; margin: 0.5rem 0 1.25rem; }
+  .house-hero h1 span { color: #0f766e; }
+  .house-lead { font-size: 1.4rem; color: #134e4a; font-weight: 600; }
+  .house-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.25rem; margin-top: 1.5rem; }
+  .house-note { margin-top: 2rem; padding: 1.5rem; background: #f0fdfa; border-left: 3px solid #0f766e; border-radius: 0 0.75rem 0.75rem 0; }
+  .house-note h2 { font-size: 1.25rem; font-weight: 600; }
 </style>

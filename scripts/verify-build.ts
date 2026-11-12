@@ -1,3 +1,4 @@
+import { base as BASE } from '../site-settings.mjs';
 /**
  * Post-build artifact verification script.
  * Run via: npm run verify:build
@@ -26,7 +27,7 @@ function readText(rel: string): string {
 }
 
 function containsBasePath(content: string): boolean {
-  return content.includes('/engineering-lab/');
+  return content.includes(BASE);
 }
 
 // 1. dist/ must exist
@@ -94,7 +95,7 @@ for (const f of ['index.html', 'graph/index.html', 'search/index.html']) {
 
 // 10. No root-relative href without base (basic check)
 const homeHtml = readText('index.html');
-const badLinks = homeHtml.match(/href="\/(?!engineering-lab)[^"]+"/g) ?? [];
+const badLinks = [...homeHtml.matchAll(/href="(\/[^"]+)"/g)].filter((match) => !match[1]!.startsWith(BASE));
 check(badLinks.length === 0, 'No root-relative links missing base path in home');
 
 // Report
