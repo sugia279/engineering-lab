@@ -68,8 +68,7 @@ files to Git. Add a record to `src/data/music-performances.json`:
 ```
 
 Use an actual 11-character YouTube video ID, a real recording and a matching date.
-The site validates the URL and uses a privacy-enhanced embed. The initial list is
-empty, so no recording is fabricated or published on Hien's behalf.
+The site validates the URL and uses a privacy-enhanced embed. The supplied recording `l5WuCFObGGQ` is included. Its title is descriptive; its recording date and instrument are left unspecified until confirmed. `publishedAt` is optional.
 
 ## Guestbook and moderation
 
@@ -130,3 +129,52 @@ GitHub redirects repository URLs after a rename, but not the old project Pages U
 The new default site URL is `https://sugia279.github.io/hiens-nha/`. A custom domain
 can avoid future website URL changes. These decisions supersede the original
 engineering-only menu in the historical architecture documents.
+
+## Collapsible navigation and story genres
+
+Every branch is a native HTML disclosure, closed on each page load. Click the
+branch name (or press Enter/Space when focused) to expand it; choose **View all**
+inside to visit the parent page. Leaf links open their pages. Desktop and mobile
+share the same recursive component. The sidebar width toggle is independent.
+
+Story genres are defined in `src/config/novels.ts`: Xianxia / Tiên Hiệp, Manga,
+Fantasy / Kỳ ảo, and Mystery / Trinh thám. Assign new imported novels in
+`novelGenreByFolder` using their existing ASCII folder slug. Unassigned novels
+stay visible directly under Novels. Genre pages show an honest empty state.
+Chapter source files and existing URLs do not move. Music branches link to the
+knowledge and performance sections.
+
+## Approving a message and comments on the original page
+
+1. Open https://github.com/sugia279/hiens-nha/issues and select the message.
+2. In the **right sidebar → Labels**, select **guestbook-approved**. Adding this
+   text to the issue body (including its Page field) does **not** approve it.
+3. If missing, create it under **Issues → Labels → New label** using that exact name.
+4. Wait for **Archive guestbook**, then **Deploy to GitHub Pages** to succeed;
+   refresh the website. Removing the label withdraws the message after the same cycle.
+
+Every normal page now has its own comment list and inline form below the content.
+Messages whose Page field matches that page appear there and in the guestbook.
+Vietnamese/English URLs, Unicode encoding and trailing slashes share one page
+identity. Other-page and general guestbook messages do not appear in that list.
+Legacy JSON files are supported by reading their original Page field. Only approved
+issues and maintainer replies are rendered; visitor replies remain on GitHub.
+The visitor still confirms submission on GitHub, and publication waits for review
+and deployment. This is not an instant or anonymous comment backend.
+
+## Optional hosted backend later
+
+For the present interaction scope, keep the static frontend and MDX on GitHub
+Pages. A small future API can run on **Cloudflare Workers**, with **Cloudflare D1**
+providing a managed SQL database using SQLite semantics. Alternatively, a
+**Supabase** project can host PostgreSQL, Auth and Edge Functions together.
+These are proposals; no cloud project or paid resource has been created.
+
+Browser → HTTPS API → comments table. Public reads return only approved comments;
+writes create pending comments, moderation requires owner authentication. A
+stable content/page key independent of language connects each comment to its
+page. The API handles validation, abuse limits and permissions; database admin
+credentials never go in the static frontend. Dynamic comments are fetched by the
+browser, so approving them does not require rebuilding article pages. MDX remains
+the source of truth for authored content; interactions move to the database,
+with optional JSON exports for backup rather than two competing writable stores.

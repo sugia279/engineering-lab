@@ -6,6 +6,7 @@
 import SiteIdentity from './SiteIdentity.astro';
 import PrimaryNavigation from './PrimaryNavigation.astro';
 import MobileNavigation from './MobileNavigation.astro';
+import { novelGenres, genreForNovel } from '../../config/novels';
 import { primaryNavigation } from '../../config/navigation';
 import { buildUrl, entryUrl } from '../../utils/url';
 import { getPublishedArticles } from '../../lib/content/queries';
@@ -24,12 +25,16 @@ const folders = getArticleFolders(await getPublishedArticles()).filter((folder) 
 const decodedPath = decodeURI(localeUrl(currentPath, 'vi'));
 const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
   ...item,
-  children: folders.map((folder) => ({
-    label: folder.title,
-    href: `/novels/${folder.id}/`,
-    matchPattern: folder.articles.some((article) => decodedPath === entryUrl('articles', article.id))
-      ? localeUrl(currentPath, 'vi') : undefined,
-  })),
+  children: [
+    ...novelGenres.map((genre) => ({
+      label: genre.label, href: `/novels/genres/${genre.id}/`,
+      children: folders.filter((folder) => genreForNovel(folder.id) === genre.id).map((folder) => ({
+        label: folder.title, href: `/novels/${folder.id}/`,
+        matchPattern: folder.articles.some((article) => decodedPath === entryUrl('articles', article.id)) ? localeUrl(currentPath, 'vi') : undefined,
+      })),
+    })),
+    ...folders.filter((folder) => !genreForNovel(folder.id)).map((folder) => ({ label: folder.title, href: `/novels/${folder.id}/` })),
+  ],
 } : item);
 ---
 

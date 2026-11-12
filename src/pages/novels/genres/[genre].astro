@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ListingLayout from '../../../layouts/ListingLayout.astro';
+import { novelGenres, genreForNovel } from '../../../config/novels';
+import { getPublishedArticles } from '../../../lib/content/queries';
+import { getArticleFolders } from '../../../lib/content/article-folders';
+import { buildSEOData } from '../../../utils/seo';
+import { buildUrl } from '../../../utils/url';
+import { localeFromPath } from '../../../lib/i18n';
+export const getStaticPaths: GetStaticPaths = () => novelGenres.map((genre) => ({ params: { genre: genre.id }, props: { genre } }));
+interface Props { genre: typeof novelGenres[number]; }
+const { genre } = Astro.props;
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const novels = getArticleFolders(await getPublishedArticles()).filter((folder) => folder.isNovel && genreForNovel(folder.id) === genre.id);
+const seo = buildSEOData({ title: genre.label, description: genre.description, path: `novels/genres/${genre.id}/`, kind: 'listing' });
+---
+<ListingLayout seo={seo} title={genre.label} description={genre.description} itemCount={novels.length} showCollectionNav={false}>
+  <Fragment slot="empty"><p>{vi ? 'Chưa có truyện thuộc mục này.' : 'No stories in this category yet.'}</p><p><a href={buildUrl('novels/')}>{vi ? '← Tất cả truyện' : '← All stories'}</a></p></Fragment>
+  <p><a href={buildUrl('novels/')}>{vi ? '← Tất cả truyện' : '← All stories'}</a></p>
+  {novels.length ? <div class="room-grid">{novels.map((novel) => <a class="room-card" href={novel.url}><h2 data-original-content>{novel.title}</h2><p>{novel.articles.length} {vi ? 'chương' : 'chapters'}</p></a>)}</div> : <p>{vi ? 'Chưa có truyện thuộc mục này.' : 'No stories in this category yet.'}</p>}
+</ListingLayout>

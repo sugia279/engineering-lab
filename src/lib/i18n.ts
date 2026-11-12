@@ -14,6 +14,11 @@ export function localeUrl(path: string, locale: Locale): string {
 }
 
 export const viCopy: Record<string, string> = {
+  Xianxia: 'Tiên Hiệp', Fantasy: 'Kỳ ảo', Mystery: 'Trinh thám', Performances: 'Hiển chơi đàn', 'Music knowledge': 'Kiến thức âm nhạc',
+  'Cultivation and immortal adventures.': 'Hành trình tu luyện và những câu chuyện tiên hiệp.',
+  'Comics and graphic stories.': 'Truyện tranh và những câu chuyện qua hình vẽ.',
+  'Stories of imaginary worlds and magic.': 'Những thế giới tưởng tượng và phép thuật.',
+  'Mysteries and detective stories.': 'Những bí ẩn và câu chuyện phá án.',
   Home: 'Trang chủ', Knowledge: 'Góc tri thức', Novels: 'Tủ truyện', Music: 'Âm nhạc',
   Guestbook: 'Sổ lưu bút', About: 'Về Hiển', Resume: 'Hồ sơ', Articles: 'Bài viết',
   Notes: 'Ghi chú', Projects: 'Dự án', Series: 'Chuỗi bài', Topics: 'Chủ đề', Graph: 'Bản đồ tri thức',
