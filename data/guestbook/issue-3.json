@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "number": 3,
+  "title": "[Hien's Nha] Test",
+  "body": "<!-- hiens-nha:guestbook:v1 -->\n### Type\ncomment\n### Display name\nHiển\n### Message\nTest chức năng\n### Page\n(general guestbook)\n",
+  "message": "Test chức năng",
+  "htmlUrl": "https://github.com/sugia279/hiens-nha/issues/3",
+  "createdAt": "2026-11-12T08:44:28Z",
+  "updatedAt": "2026-11-12T08:44:28Z",
+  "author": {
+    "login": "sugia279",
+    "htmlUrl": "https://github.com/sugia279"
+  },
+  "approved": false,
+  "deleted": false,
+  "comments": []
+}
