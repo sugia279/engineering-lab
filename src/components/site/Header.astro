@@ -92,18 +92,8 @@ const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
 </aside>
 
 <script>
-  const STORAGE_KEY = 'sidebar-collapsed';
-  const shell = document.querySelector<HTMLElement>('.app-shell');
-  const toggle = document.getElementById('sidebar-toggle');
-
-  function setCollapsed(collapsed: boolean): void {
-    shell?.classList.toggle('is-collapsed', collapsed);
-    toggle?.setAttribute('aria-expanded', String(!collapsed));
-    localStorage.setItem(STORAGE_KEY, String(collapsed));
-  }
-
-  const saved = localStorage.getItem(STORAGE_KEY);
-  setCollapsed(saved === null ? window.matchMedia('(max-width: 767px)').matches : saved === 'true');
+  import { initSidebar } from './sidebar';
+  initSidebar();
   document.querySelectorAll<HTMLAnchorElement>('a[data-locale-link]').forEach((link) => {
     const target = new URL(link.href);
     target.search = window.location.search;
@@ -111,9 +101,7 @@ const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
     link.href = target.toString();
   });
 
-  toggle?.addEventListener('click', () => {
-    setCollapsed(!shell?.classList.contains('is-collapsed'));
-  });
+
 </script>
 
 <style>
