@@ -19,12 +19,12 @@ const remainingCount = project.skills.length - visibleSkills.length;
 ---
 
 <article class="project-summary">
-  <h3 class="project-summary__title">
+  <h3 class="project-summary__title" data-original-content>
     <a href={project.url} class="project-summary__link">
       {project.title}
     </a>
   </h3>
-  <p class="project-summary__description">{project.description}</p>
+  <p class="project-summary__description" data-original-content>{project.description}</p>
   <footer class="project-summary__meta">
     <ContentStatus status={project.status} />
     {visibleSkills.length > 0 && (

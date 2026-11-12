@@ -43,6 +43,11 @@ export const viCopy: Record<string, string> = {
   'Learning path': 'Thứ tự bài viết', 'Read article': 'Đọc bài viết', 'Read note': 'Đọc ghi chú',
   'Related content': 'Nội dung liên quan', 'Related Content': 'Nội dung liên quan',
   'Reader comments': 'Gửi bình luận cho Hiển',
+  articles: 'Bài viết', notes: 'Ghi chú', projects: 'Dự án', series: 'Chuỗi bài',
+  Prerequisites: 'Kiến thức cần trước', Explains: 'Giải thích', Extensions: 'Mở rộng',
+  Contrasts: 'Đối chiếu', 'Applied to': 'Áp dụng cho', 'Derived from': 'Phát triển từ',
+  'Contrasts with': 'Đối chiếu với', 'Related knowledge': 'Tri thức liên quan',
+  references: 'tham chiếu', 'referenced by': 'được tham chiếu bởi', 'connected to': 'liên kết với',
   'Featured': 'Nổi bật', 'Featured article': 'Bài viết nổi bật',
   Status: 'Trạng thái', Role: 'Vai trò', Period: 'Thời gian', Skills: 'Kỹ năng', Tools: 'Công cụ',
   Repository: 'Mã nguồn', Live: 'Website', Seed: 'Ý tưởng mới', Growing: 'Đang bổ sung',
@@ -79,7 +84,9 @@ export function ui(text: string, locale: Locale): string {
     ?? (key.startsWith("Hien's Nha — ") ? "Hien's Nha — Ngôi nhà của Hiển" : undefined)
     ?? (key.startsWith('All content tagged with ') ? key.replace('All content tagged with ', 'Nội dung có chủ đề ') : undefined)
     ?? (key.endsWith(" | Hien's Nha") && viCopy[key.split(' | ')[0]!] ? `${viCopy[key.split(' | ')[0]!]} | Hien's Nha` : undefined)
-    ?? (/^\d+ min read$/.test(key) ? key.replace(' min read', ' phút đọc') : undefined)
+    ?? (/^(?:·\s*)?\d+ min read$/.test(key) ? key.replace(' min read', ' phút đọc') : undefined)
+    ?? (/^\+\d+ more$/.test(key) ? key.replace(' more', ' nhãn khác') : undefined)
+    ?? (/^Explore semantic connections across \d+ published entries\.$/.test(key) ? key.replace('Explore semantic connections across ', 'Khám phá các liên kết tri thức giữa ').replace(' published entries.', ' nội dung đã đăng.') : undefined)
     ?? (/^All connections \(\d+\)$/.test(key) ? key.replace('All connections', 'Tất cả liên kết') : undefined);
   return translated ? text.replace(text.trim(), translated) : text;
 }

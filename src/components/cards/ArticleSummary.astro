@@ -16,12 +16,12 @@ const { article } = Astro.props;
 ---
 
 <article class="article-summary">
-  <h3 class="article-summary__title">
+  <h3 class="article-summary__title" data-original-content>
     <a href={article.url} class="article-summary__link">
       {article.title}
     </a>
   </h3>
-  <p class="article-summary__description">{article.description}</p>
+  <p class="article-summary__description" data-original-content>{article.description}</p>
   <footer class="article-summary__meta">
     <PublicationDates
       publishedAt={article.publishedAt}

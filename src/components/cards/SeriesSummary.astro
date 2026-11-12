@@ -15,12 +15,12 @@ const { series } = Astro.props;
 ---
 
 <article class="series-summary">
-  <h3 class="series-summary__title">
+  <h3 class="series-summary__title" data-original-content>
     <a href={series.url} class="series-summary__link">
       {series.title}
     </a>
   </h3>
-  <p class="series-summary__description">{series.description}</p>
+  <p class="series-summary__description" data-original-content>{series.description}</p>
   <footer class="series-summary__meta">
     <span class="series-summary__count" aria-label={`${series.entryCount} entries in series`}>
       {series.entryCount} {series.entryCount === 1 ? 'entry' : 'entries'}

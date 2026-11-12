@@ -65,9 +65,9 @@ const structuredData = breadcrumbs.length > 0
         {entry.collection === 'articles' ? 'Article' : 'Note'}
       </p>
 
-      <h1 class="knowledge-layout__title">{entry.title}</h1>
+      <h1 class="knowledge-layout__title" data-original-content>{entry.title}</h1>
 
-      <p class="knowledge-layout__description">{entry.description}</p>
+      <p class="knowledge-layout__description" data-original-content>{entry.description}</p>
 
       <div class="knowledge-layout__meta">
         {isNote && noteEntry && (

@@ -10,7 +10,7 @@
 
 import cytoscape from 'cytoscape';
 import type { Core, NodeDefinition, EdgeDefinition, ElementDefinition } from 'cytoscape';
-import { clientCopy, clientUrl, escapeHtml } from '../../lib/client-locale';
+import { clientCopy, clientUrl, escapeHtml, collectionLabel } from '../../lib/client-locale';
 
 // ---------------------------------------------------------------------------
 // Manifest types (mirrors GraphManifest from src/types/graph.ts)
@@ -219,7 +219,7 @@ function updateDetailsPanel(
     const target = nodeMap.get(targetId);
     if (!target) return '';
     return `<li><a href="${escapeHtml(clientUrl(target.url))}" class="graph-node-details__link">${escapeHtml(target.title)}</a>
-      <span class="graph-node-details__collection"> · ${target.collection}</span></li>`;
+      <span class="graph-node-details__collection"> · ${escapeHtml(collectionLabel(target.collection))}</span></li>`;
   }
 
   const connectionHtml = [
@@ -239,7 +239,7 @@ function updateDetailsPanel(
 
   detailsEl.innerHTML = `
     <div class="graph-node-details__content">
-      <p class="graph-node-details__collection">${node.collection}</p>
+      <p class="graph-node-details__collection">${escapeHtml(collectionLabel(node.collection))}</p>
       <h2 class="graph-node-details__title">
         <a href="${escapeHtml(clientUrl(node.url))}" class="graph-node-details__link">${escapeHtml(node.title)}</a>
       </h2>
