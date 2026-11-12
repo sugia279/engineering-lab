@@ -34,6 +34,8 @@ describe('Hien’s Nha rooms and language parity', () => {
       expect(en).toContain('Content is kept in its original language.');
       expect(en).toContain(`href="${base}en/novels/`);
       expect(en).toContain('Comment / leave a message');
+      expect(en).toContain('contextTitle=');
+      expect(en).toMatch(/class="knowledge-layout__collection"[^>]*>\s*Chapter/);
     }
   });
 
@@ -45,5 +47,11 @@ describe('Hien’s Nha rooms and language parity', () => {
     expect(page).toContain('template=guestbook.md');
     expect(page).not.toContain('GITHUB_TOKEN');
     expect(page).not.toContain('ghp_');
+  });
+
+  it('does not ship unresolved Vite preload markers in search or client modules', () => {
+    expect(html('search/index.html')).not.toContain('__VITE_PRELOAD__');
+    const scripts = readdirSync(resolve('dist/_astro')).filter((file) => file.endsWith('.js'));
+    for (const file of scripts) expect(html(`_astro/${file}`)).not.toContain('__VITE_PRELOAD__');
   });
 });

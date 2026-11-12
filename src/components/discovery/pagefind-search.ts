@@ -18,7 +18,7 @@ interface PagefindResult {
 
 interface PagefindResultData {
   url: string;
-  title: string;
+  title?: string;
   excerpt: string;
   meta?: Record<string, string>;
 }
@@ -68,7 +68,7 @@ function renderResults(results: PagefindResultData[]): void {
     const li = document.createElement('li');
     li.className = 'search-results__item';
     const link = document.createElement('a');
-    link.href = r.url; link.className = 'search-results__link'; link.textContent = r.title;
+    link.href = r.url; link.className = 'search-results__link'; link.textContent = r.meta?.title ?? r.title ?? r.url;
     const excerpt = document.createElement('p');
     excerpt.className = 'search-results__excerpt'; excerpt.textContent = r.excerpt.replace(/<\/?mark>/g, '');
     li.append(link, excerpt);

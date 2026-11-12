@@ -11,5 +11,8 @@ export default defineConfig({
   integrations: [mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],
+    // Keep client modules external so Vite resolves external dynamic-import
+    // preload markers before Astro emits the final pages (Pagefind runtime).
+    build: { assetsInlineLimit: 0 },
   },
 });

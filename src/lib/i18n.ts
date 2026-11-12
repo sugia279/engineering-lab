@@ -18,6 +18,7 @@ export const viCopy: Record<string, string> = {
   Guestbook: 'Sổ lưu bút', About: 'Về Hiển', Resume: 'Hồ sơ', Articles: 'Bài viết',
   Notes: 'Ghi chú', Projects: 'Dự án', Series: 'Chuỗi bài', Topics: 'Chủ đề', Graph: 'Bản đồ tri thức',
   Article: 'Bài viết', Note: 'Ghi chú', Project: 'Dự án', Search: 'Tìm kiếm',
+  Chapter: 'Chương',
   'Knowledge Graph': 'Bản đồ tri thức', 'View Resume': 'Xem hồ sơ', Links: 'Liên kết',
   'Long-form engineering writing, tutorials, and knowledge essays.': 'Bài viết chuyên sâu, hướng dẫn và những điều Hiển muốn chia sẻ.',
   'Evolving knowledge notes, ideas, and observations.': 'Ghi chép, ý tưởng và kiến thức được bổ sung theo thời gian.',

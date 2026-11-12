@@ -99,6 +99,12 @@ const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
 
   const saved = localStorage.getItem(STORAGE_KEY);
   setCollapsed(saved === null ? window.matchMedia('(max-width: 767px)').matches : saved === 'true');
+  document.querySelectorAll<HTMLAnchorElement>('a[data-locale-link]').forEach((link) => {
+    const target = new URL(link.href);
+    target.search = window.location.search;
+    target.hash = window.location.hash;
+    link.href = target.toString();
+  });
 
   toggle?.addEventListener('click', () => {
     setCollapsed(!shell?.classList.contains('is-collapsed'));

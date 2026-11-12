@@ -44,11 +44,17 @@ const seo = buildSEOData({ title: 'Guestbook', description: vi ? 'Gửi lời nh
     const base = import.meta.env.BASE_URL;
     const vi = document.documentElement.lang === 'vi';
     let context = '';
-    const candidate = new URLSearchParams(location.search).get('context');
+    const parameters = new URLSearchParams(location.search);
+    const candidate = parameters.get('context');
     if (candidate) {
       try { const url = new URL(candidate, location.origin); if (url.origin === location.origin && url.pathname.startsWith(base)) context = url.pathname; } catch { /* Ignore invalid page context. */ }
     }
-    if (context) { const el = document.getElementById('guest-context')!; el.textContent = `${vi ? 'Trang đang bình luận' : 'Commenting on'}: ${context}`; el.hidden = false; }
+    if (context) {
+      const label = parameters.get('contextTitle')?.slice(0, 200) || (vi ? 'Nội dung bạn vừa đọc' : 'The page you were reading');
+      const el = document.getElementById('guest-context')!;
+      el.textContent = `${vi ? 'Trang đang bình luận' : 'Commenting on'}: ${label}`; el.hidden = false;
+      (document.getElementById('guest-kind') as HTMLSelectElement).value = 'comment';
+    }
     (document.getElementById('guest-submit') as HTMLButtonElement).disabled = false;
     form.addEventListener('submit', (event) => {
       event.preventDefault();
