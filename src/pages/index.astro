@@ -1,10 +1,19 @@
 ---
+import { Image } from 'astro:assets';
+import portrait from '../assets/home/hien-at-cafe.jpg';
+import couple from '../assets/home/hien-and-wife.jpg';
+import family from '../assets/home/hien-family.jpg';
 import SiteLayout from '../layouts/SiteLayout.astro';
 import { buildSEOData } from '../utils/seo';
 import { buildUrl } from '../utils/url';
 import { siteConfig } from '../config/site';
 import { localeFromPath } from '../lib/i18n';
 const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const photos = [
+  { image: portrait, alt: vi ? 'Hiển ngồi bên cửa sổ tại quán cà phê' : 'Hien sitting by a cafe window' },
+  { image: couple, alt: vi ? 'Hiển cùng vợ giữa khung cảnh cây xanh và sương sớm' : 'Hien and his wife surrounded by greenery and mist' },
+  { image: family, alt: vi ? 'Gia đình Hiển chụp ảnh cùng nhau' : 'Hien and his family together' },
+];
 const rooms = [
   ['knowledge/', vi ? 'Góc tri thức' : 'Knowledge', vi ? 'Những điều học được, ghi lại và chia sẻ.' : 'Ideas learned, recorded, and shared.', '01'],
   ['novels/', vi ? 'Tủ truyện' : 'Novels', vi ? 'Một chút tiên hiệp, một khoảng thời gian thảnh thơi.' : 'Stories to get lost in, one chapter at a time.', '02'],
@@ -19,6 +28,9 @@ const seo = buildSEOData({ title: siteConfig.name, description: siteConfig.descr
       <p class="eyebrow">{vi ? 'NHÀ CỦA HIỂN' : 'HIEN’S HOME'}</p>
       <h1>Hien's Nha<span>.</span></h1>
       <p class="house-lead">{vi ? 'Một góc để học, làm, chơi và chia sẻ.' : 'A place to learn, build, play, and share.'}</p>
+      <div class="home-photos" role="group" aria-label={vi ? 'Một vài khoảnh khắc của Hiển và gia đình' : 'Moments with Hien and his family'}>
+        {photos.map((photo, index) => <Image src={photo.image} alt={photo.alt} width={800} widths={[240, 480, 800]} sizes="(max-width: 767px) 30vw, 240px" format="webp" quality={82} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />)}
+      </div>
       <p>{vi ? 'Mời bạn ghé chơi. Ở đây có những ghi chép, dự án, câu chuyện và âm nhạc mà Hiển yêu thích.' : 'Make yourself at home. Explore the notes, projects, stories, and music that Hien enjoys.'}</p>
       <div class="house-actions">
         <a class="button" href={buildUrl('guestbook/')}>{vi ? 'Để lại vài dòng cho Hiển' : 'Leave Hien a message'}</a>
@@ -40,6 +52,9 @@ const seo = buildSEOData({ title: siteConfig.name, description: siteConfig.descr
   </div>
 </SiteLayout>
 <style>
+  .home-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1.5rem 0; }
+  .home-photos :global(img) { display: block; width: 100%; height: auto; border-radius: .75rem; }
+  @media (max-width: 767px) { .home-photos { gap: .4rem; } }
   .house-hero { padding: 2rem 0 2.5rem; max-width: 42rem; }
   .house-hero h1 { font-size: clamp(2.75rem,7vw,4.75rem); font-weight: 800; letter-spacing: -0.055em; line-height: 1.1; margin: 0.5rem 0 1.25rem; }
   .house-hero h1 span { color: #0f766e; }
