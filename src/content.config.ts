@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { normalizeImportedArticle } from './lib/content/imported-articles';
 
 // ---------------------------------------------------------------------------
 // Shared fragments
@@ -61,11 +62,12 @@ const sharedSchema = z.object({
 
 const articles = defineCollection({
   type: 'content',
-  schema: sharedSchema.extend({
+  schema: z.preprocess(normalizeImportedArticle, sharedSchema.extend({
     featured: z.boolean().optional().default(false),
     showTableOfContents: z.boolean().optional().default(true),
     series: z.string().optional(),
     seriesOrder: z.number().int().positive().optional(),
+    chapterOrder: z.number().int().positive().optional(),
   }).refine(
     (data) => {
       const hasSeries = data.series !== undefined;
@@ -73,7 +75,7 @@ const articles = defineCollection({
       return hasSeries === hasOrder;
     },
     { message: 'series and seriesOrder must both be present or both be absent' },
-  ),
+  )),
 });
 
 // ---------------------------------------------------------------------------

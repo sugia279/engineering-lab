@@ -4,9 +4,12 @@ import ArticleSummary from '../../components/cards/ArticleSummary.astro';
 import { getPublishedArticles, toArticleSummary } from '../../lib/content/queries';
 import { sortEntries } from '../../lib/content/sort';
 import { buildSEOData } from '../../utils/seo';
+import { getArticleFolders } from '../../lib/content/article-folders';
 
 const articles = await getPublishedArticles();
-const sorted = sortEntries(articles, 'newest');
+const folders = getArticleFolders(articles);
+const groupedIds = new Set(folders.flatMap((folder) => folder.articles.map((article) => article.id)));
+const sorted = sortEntries(articles.filter((article) => !groupedIds.has(article.id)), 'newest');
 const summaries = sorted.map(toArticleSummary);
 
 const seo = buildSEOData({
@@ -17,6 +20,19 @@ const seo = buildSEOData({
 });
 ---
 
-<ListingLayout seo={seo} title="Articles" description="Long-form engineering writing, tutorials, and knowledge essays." itemCount={summaries.length} activeCollection="articles">
+<ListingLayout seo={seo} title="Articles" description="Long-form engineering writing, tutorials, and knowledge essays." itemCount={summaries.length + folders.length} activeCollection="articles">
+  {folders.map((folder) => (
+    <article class="article-folder">
+      <h2><a href={folder.url}>{folder.title}</a></h2>
+      <p>{folder.articles.length} chương · Mở danh sách chương</p>
+    </article>
+  ))}
   {summaries.map((a) => <ArticleSummary article={a} />)}
 </ListingLayout>
+
+<style>
+  .article-folder { margin: 1.5rem 0; padding: 1.25rem; border: 1px solid #cbd5e1; border-radius: 0.75rem; }
+  .article-folder h2 { margin: 0 0 0.5rem; font-size: 1.125rem; font-weight: 600; }
+  .article-folder a { color: #1d4ed8; }
+  .article-folder p { margin: 0; color: #475569; }
+</style>

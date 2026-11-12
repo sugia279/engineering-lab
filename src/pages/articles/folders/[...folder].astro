@@ -1,0 +1,30 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ListingLayout from '../../../layouts/ListingLayout.astro';
+import ArticleSummary from '../../../components/cards/ArticleSummary.astro';
+import { getPublishedArticles, toArticleSummary } from '../../../lib/content/queries';
+import { getArticleFolders, type ArticleFolder } from '../../../lib/content/article-folders';
+import { buildSEOData } from '../../../utils/seo';
+import { buildUrl } from '../../../utils/url';
+
+export const getStaticPaths: GetStaticPaths = async () =>
+  getArticleFolders(await getPublishedArticles()).map((folder) => ({
+    params: { folder: folder.id }, props: { folder },
+  }));
+
+interface Props { folder: ArticleFolder; }
+const { folder } = Astro.props;
+const description = `${folder.articles.length} chương, sắp xếp theo thứ tự chương.`;
+const seo = buildSEOData({
+  title: folder.title, description, path: `articles/folders/${folder.id}/`, kind: 'listing',
+});
+---
+
+<ListingLayout seo={seo} title={folder.title} description={description}
+  itemCount={folder.articles.length} activeCollection="articles"
+  breadcrumbs={[
+    { label: 'Articles', href: buildUrl('articles/') },
+    { label: folder.title, current: true },
+  ]}>
+  {folder.articles.map((article) => <ArticleSummary article={toArticleSummary(article)} />)}
+</ListingLayout>
