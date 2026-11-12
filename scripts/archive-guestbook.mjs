@@ -8,6 +8,7 @@ export function createArchive(issue, comments, deleted = false) {
   const body = deleted ? '' : (issue.body ?? '');
   return {
     version: 1, number: issue.number, title: issue.title,
+    contextPath: deleted ? undefined : body.match(/(?:^|\r?\n)### Page\r?\n([^\r\n]*)/)?.[1]?.trim(),
     body, message: body.match(/### Message\r?\n([\s\S]*?)(?:\r?\n### Page\r?\n|$)/)?.[1]?.trim() ?? body,
     htmlUrl: issue.html_url, createdAt: issue.created_at, updatedAt: issue.updated_at,
     author: { login: issue.user.login, htmlUrl: issue.user.html_url },

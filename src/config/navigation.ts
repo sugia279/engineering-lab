@@ -16,7 +16,10 @@ export const primaryNavigation: readonly NavigationItem[] = [
     { label: 'Graph', href: '/graph/', matchPattern: '/graph' },
   ] },
   { label: 'Novels', href: '/novels/', matchPattern: '/novels' },
-  { label: 'Music', href: '/music/', matchPattern: '/music' },
+  { label: 'Music', href: '/music/', matchPattern: '/music', children: [
+    { label: 'Music knowledge', href: '/music/#music-knowledge' },
+    { label: 'Performances', href: '/music/#music-performances' },
+  ] },
   { label: 'Projects', href: '/projects/', matchPattern: '/projects' },
   { label: 'Guestbook', href: '/guestbook/', matchPattern: '/guestbook' },
   { label: 'About', href: '/about/', matchPattern: '/about', children: [

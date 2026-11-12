@@ -1,4 +1,6 @@
 ---
+import { novelGenres } from '../../config/novels';
+import { buildUrl } from '../../utils/url';
 import ListingLayout from '../../layouts/ListingLayout.astro';
 import { getPublishedArticles } from '../../lib/content/queries';
 import { getArticleFolders } from '../../lib/content/article-folders';
@@ -10,6 +12,7 @@ const description = vi ? 'Những câu chuyện dài, đọc theo từng chươn
 const seo = buildSEOData({ title: 'Novels', description, path: 'novels/', kind: 'listing' });
 ---
 <ListingLayout seo={seo} title="Novels" description={description} itemCount={novels.length} showCollectionNav={false}>
+  <nav aria-label={vi ? 'Thể loại truyện' : 'Story categories'} class="room-grid">{novelGenres.map((genre) => <a class="room-card" href={buildUrl(`novels/genres/${genre.id}/`)}><h2>{genre.label}</h2><p>{genre.description}</p></a>)}</nav>
   <div class="room-grid">{novels.map((novel) => (
     <a href={novel.url} class="room-card"><p class="eyebrow">{vi ? 'TIỂU THUYẾT' : 'NOVEL'}</p>
       <h2 data-original-content>{novel.title}</h2><p>{novel.articles.length} {vi ? 'chương · Mở danh sách chương →' : 'chapters · Browse chapters →'}</p>

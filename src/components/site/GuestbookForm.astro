@@ -1,0 +1,62 @@
+---
+import { repository } from '../../config/site';
+import { localeFromPath } from '../../lib/i18n';
+interface Props { contextPath?: string; contextTitle?: string; }
+const { contextPath = '', contextTitle = '' } = Astro.props;
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const issueUrl = `https://github.com/${repository}/issues/new?template=guestbook.md`;
+---
+    <form id="guestbook-form" action={issueUrl} method="get" data-repository={repository} data-context={contextPath} data-context-title={contextTitle}>
+      <label for="guest-kind">{vi ? 'Bạn muốn gửi điều gì?' : 'What would you like to share?'}</label>
+      <select id="guest-kind" name="kind"><option value="message">{vi ? 'Lời nhắn / vài dòng về Hiển' : 'A message / a note about Hien'}</option><option value="comment">{vi ? 'Bình luận nội dung' : 'A content comment'}</option><option value="request">{vi ? 'Yêu cầu / nhờ giúp đỡ' : 'A request / help needed'}</option></select>
+      <label for="guest-name">{vi ? 'Tên muốn hiển thị (không bắt buộc)' : 'Display name (optional)'}</label><input id="guest-name" name="displayName" type="text" maxlength="80" autocomplete="nickname" />
+      <label for="guest-title">{vi ? 'Tiêu đề' : 'Subject'}</label><input id="guest-title" name="subject" type="text" required minlength="3" maxlength="120" />
+      <label for="guest-message">{vi ? 'Nội dung' : 'Message'}</label><textarea id="guest-message" name="message" required minlength="5" maxlength="4000" rows="6"></textarea>
+      <p id="guest-context" hidden></p>
+      <p id="guest-status" role="status"></p>
+      <button id="guest-submit" type="submit" class="button" disabled>{vi ? 'Tiếp tục trên GitHub →' : 'Continue on GitHub →'}</button>
+      <p><a href={issueUrl}>{vi ? 'Hoặc viết trực tiếp trên GitHub nếu nội dung dài' : 'Or write directly on GitHub for longer messages'}</a></p>
+      <noscript><p><a href={issueUrl}>{vi ? 'Mở GitHub để để lại lời nhắn' : 'Open GitHub to leave a message'}</a></p></noscript>
+    </form>
+<script>
+  const form = document.querySelector<HTMLFormElement>('#guestbook-form');
+  if (form) {
+    const base = import.meta.env.BASE_URL;
+    const vi = document.documentElement.lang === 'vi';
+    let context = form.dataset.context || '';
+    let contextTitle = form.dataset.contextTitle || ''; 
+    const parameters = new URLSearchParams(location.search);
+    const candidate = parameters.get('context');
+    if (!context && candidate) {
+      try { const url = new URL(candidate, location.origin); if (url.origin === location.origin && url.pathname.startsWith(base)) context = url.pathname; } catch { /* Ignore invalid page context. */ }
+    }
+    if (context) {
+      const label = contextTitle || parameters.get('contextTitle')?.slice(0, 200) || (vi ? 'Nội dung bạn vừa đọc' : 'The page you were reading');
+      const el = document.getElementById('guest-context')!;
+      el.textContent = `${vi ? 'Trang đang bình luận' : 'Commenting on'}: ${label}`; el.hidden = false;
+      (document.getElementById('guest-kind') as HTMLSelectElement).value = 'comment';
+    }
+    (document.getElementById('guest-submit') as HTMLButtonElement).disabled = false;
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const title = String(data.get('subject') ?? '').trim();
+      const body = `<!-- hiens-nha:guestbook:v1 -->\n### Type\n${data.get('kind')}\n### Display name\n${String(data.get('displayName') ?? '').trim()}\n### Message\n${String(data.get('message') ?? '').trim()}\n### Page\n${context || '(general guestbook)'}\n`;
+      const url = new URL(`https://github.com/${form.dataset.repository}/issues/new`);
+      url.searchParams.set('title', `[Hien's Nha] ${title}`); url.searchParams.set('body', body);
+      if (url.toString().length > 7500) {
+        document.getElementById('guest-status')!.textContent = vi ? 'Nội dung quá dài để chuyển qua liên kết. Hãy dùng liên kết viết trực tiếp trên GitHub bên dưới; nội dung đang nhập vẫn được giữ ở đây.' : 'This message is too long for a transfer link. Use the direct GitHub link below; your text remains in this form.';
+        return;
+      }
+      location.assign(url.toString());
+    });
+  }
+</script>
+<style>
+ form { margin: 1.5rem 0; display: grid; gap: .6rem; }
+ label { font-weight: 600; margin-top: .5rem; }
+ input, textarea, select { width: 100%; padding: .7rem; border: 1px solid #94a3b8; border-radius: .4rem; background: #fff; color: #0f172a; }
+ input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid #0f766e; outline-offset: 2px; }
+ button { justify-self: start; margin-top: .75rem; }
+</style>

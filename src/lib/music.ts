@@ -16,7 +16,7 @@ export function youtubeEmbed(value: string): string | undefined {
 
 export const performanceSchema = z.object({
   title: z.string().min(1), description: z.string().min(1),
-  publishedAt: z.string().refine((date) => Number.isFinite(Date.parse(date)), 'Invalid performance date'),
+  publishedAt: z.string().refine((date) => Number.isFinite(Date.parse(date)), 'Invalid performance date').optional(),
   youtubeUrl: z.string().refine((url) => Boolean(youtubeEmbed(url)), 'Use an HTTPS YouTube watch, share or Shorts URL'),
   instrument: z.enum(['guitar', 'piano', 'other']),
 });

@@ -62,11 +62,9 @@ const collectionItems: NavigationItem[] = collectionNavigation;
 
     <section class="listing-layout__content" aria-label={`${title} — ${itemCount} ${itemCount === 1 ? 'entry' : 'entries'}`}>
       {itemCount === 0 ? (
-        <EmptyState
-          message="Nothing published here yet."
-          actionLabel="Browse all content"
-          actionHref={buildUrl('/')}
-        />
+        <slot name="empty">
+          <EmptyState message="Nothing published here yet." actionLabel="Browse all content" actionHref={buildUrl('/')} />
+        </slot>
       ) : (
         <slot />
       )}

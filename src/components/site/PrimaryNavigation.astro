@@ -4,8 +4,7 @@
  * Registry: Site component, M7.
  */
 import type { NavigationItem } from '../../types/navigation';
-import { buildUrl } from '../../utils/url';
-import { localeUrl } from '../../lib/i18n';
+import NavigationBranch from './NavigationBranch.astro';
 
 interface Props {
   items: readonly NavigationItem[];
@@ -14,133 +13,14 @@ interface Props {
 }
 
 const { items, currentPath = '', ariaLabel = 'Primary navigation' } = Astro.props;
-const logicalPath = localeUrl(currentPath, 'vi');
 
-const navIcons: Record<string, string> = {
-  Resume: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
-  Articles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
-  Notes: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>',
-  Projects: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>',
-  Series: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
-  Topics: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
-  Graph: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
-  About: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-};
-
-navIcons.Home = navIcons.Resume!;
-navIcons.Knowledge = navIcons.Articles!;
-navIcons.Novels = navIcons.Series!;
-navIcons.Music = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13M9 8l12-2"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
-navIcons.Guestbook = navIcons.Notes!;
-
-function isActive(item: NavigationItem): boolean {
-  const homeUrl = buildUrl('/');
-  if (item.label === 'Home') {
-    return logicalPath === homeUrl || logicalPath === `${homeUrl}index.html`;
-  }
-  return (item.matchPattern ? logicalPath.includes(item.matchPattern) : false)
-    || Boolean(item.children?.some((child) => isActive(child)));
-}
 ---
 
 <nav aria-label={ariaLabel} class="primary-nav">
   <ul class="primary-nav__list">
-    {items.map((item) => {
-      const active = isActive(item);
-      const href = item.external ? item.href : buildUrl(item.href);
-      const icon = navIcons[item.label] ?? navIcons.About;
-      return (
-        <li class="primary-nav__item">
-          <a
-            href={href}
-            class={`primary-nav__link${active ? ' primary-nav__link--active' : ''}`}
-            aria-current={active ? 'page' : undefined}
-            rel={item.external ? 'external noopener noreferrer' : undefined}
-            target={item.external ? '_blank' : undefined}
-            title={item.label}
-          >
-            <span class="primary-nav__icon" aria-hidden="true" set:html={icon} />
-            <span class="primary-nav__label">{item.label}</span>
-          </a>
-          {item.children && item.children.length > 0 && (
-            <ul class="primary-nav__children">
-              {item.children.map((child) => {
-                const childHref = buildUrl(child.href);
-                const current = logicalPath === childHref;
-                const selected = current || isActive(child);
-                return (
-                  <li>
-                    <a href={childHref} title={child.label}
-                      class={`primary-nav__child${selected ? ' primary-nav__link--active' : ''}`}
-                      aria-current={current ? 'page' : undefined}>
-                      {child.label}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </li>
-      );
-    })}
+    {items.map((item) => <NavigationBranch item={item} currentPath={currentPath} />)}
   </ul>
 </nav>
-
 <style>
-  .primary-nav__list {
-    list-style: none;
-    margin: 0;
-    padding: 0.75rem 0;
-  }
-  .primary-nav__children { list-style: none; margin: 0; padding: 0; }
-  .primary-nav__child {
-    display: block;
-    padding: 0.625rem 1rem 0.625rem 2.75rem;
-    color: var(--sidebar-text);
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    text-decoration: none;
-    overflow-wrap: anywhere;
-  }
-  .primary-nav__child:hover { background: rgba(255, 255, 255, 0.06); color: #e2e8f0; }
-  .primary-nav__child:focus-visible { outline: 2px solid var(--sidebar-accent); outline-offset: -2px; }
-  :global(.app-shell.is-collapsed) .primary-nav__children { display: none; }
-  .primary-nav__link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-width: 0;
-    padding: 0.625rem 1rem;
-    font-size: 0.9375rem;
-    color: var(--sidebar-text);
-    text-decoration: none;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    transition: background 0.15s, color 0.15s;
-  }
-  .primary-nav__link:hover { background: rgba(255, 255, 255, 0.06); color: #e2e8f0; }
-  .primary-nav__link--active {
-    color: var(--sidebar-text-active);
-    background: rgba(59, 130, 246, 0.15);
-    border-right: 3px solid var(--sidebar-accent);
-  }
-  .primary-nav__link:focus-visible {
-    outline: 2px solid var(--sidebar-accent);
-    outline-offset: -2px;
-  }
-  .primary-nav__icon {
-    flex-shrink: 0;
-    display: flex;
-    width: 20px;
-    height: 20px;
-  }
-  .primary-nav__icon :global(svg) { width: 20px; height: 20px; }
-  .primary-nav__label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: opacity var(--transition), width var(--transition);
-  }
-  :global(.app-shell.is-collapsed) .primary-nav__label { opacity: 0; width: 0; }
-  :global(.app-shell.is-collapsed) .primary-nav__link { justify-content: center; padding-inline: 0.625rem; }
+  .primary-nav__list { list-style: none; margin: 0; padding: 0.75rem 0; }
 </style>

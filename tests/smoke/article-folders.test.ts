@@ -14,7 +14,7 @@ const html = (path: string) => readFileSync(resolve('dist', path), 'utf8');
 describe('published imported novel', () => {
   it('shows a nested menu item and a folder card in Articles', () => {
     const listing = html('novels/index.html');
-    expect(listing).toMatch(new RegExp(`class="primary-nav__children"[^>]*>[\\s\\S]*?href="${folderUrl}"`));
+    expect(listing).toMatch(new RegExp(`class="nav-children"[^>]*>[\\s\\S]*?href="${folderUrl}"`));
     expect(listing).toContain(title);
     expect(listing).toContain(`${chapters.length} chương`);
     expect(html('articles/index.html')).toContain('Verification-Gated Knowledge Promotion');
