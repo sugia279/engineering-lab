@@ -1,4 +1,5 @@
 ---
+import NavigationIcon from './NavigationIcon.astro';
 import type { NavigationItem } from '../../types/navigation';
 import { buildUrl } from '../../utils/url';
 import { localeUrl, localeFromPath, ui } from '../../lib/i18n';
@@ -17,27 +18,28 @@ const branch = item.children !== undefined;
 <li class="nav-node" style={`--depth:${depth}`}>
   {branch ? <details class="nav-branch">
     <summary class:list={['nav-row', { 'nav-row--active': active }]} title={ui(item.label, locale)}>
-      <span class="nav-marker" aria-hidden="true">›</span><span class="nav-label">{item.label}</span>
+      {depth < 2 && <NavigationIcon name={item.label} />}<span class="nav-label">{item.label}</span><span class="nav-marker" aria-hidden="true">›</span>
     </summary>
     <ul class="nav-children">
       <li><a class="nav-overview" href={href} aria-current={current ? 'page' : undefined}>{locale === 'vi' ? 'Xem tất cả' : 'View all'}<span class="sr-only">: {ui(item.label, locale)}</span></a></li>
       {item.children?.map((child) => <Astro.self item={child} currentPath={currentPath} depth={depth + 1} />)}
     </ul>
   </details> : <a class:list={['nav-row', { 'nav-row--active': active }]} href={href} title={ui(item.label, locale)} aria-current={current ? 'page' : undefined} rel={item.external ? 'noopener noreferrer' : undefined} target={item.external ? '_blank' : undefined}>
-    <span class="nav-marker" aria-hidden="true">·</span><span class="nav-label">{item.label}</span>
+    {depth < 2 ? <NavigationIcon name={item.label} /> : <span class="nav-bullet" aria-hidden="true">·</span>}<span class="nav-label">{item.label}</span>
   </a>}
 </li>
 <style>
   .nav-row { display: flex; align-items: flex-start; gap: .6rem; padding: .65rem 1rem .65rem calc(1rem + var(--depth) * .8rem); color: var(--sidebar-text); text-decoration: none; line-height: 1.45; cursor: pointer; font-size: .9rem; }
   summary { list-style: none; } summary::-webkit-details-marker { display: none; }
-  .nav-marker { flex: 0 0 1rem; text-align: center; font-size: 1.1rem; line-height: 1.2; transition: transform .15s; }
+  .nav-marker { flex: 0 0 1rem; margin-left: auto; text-align: center; font-size: 1.1rem; line-height: 1.2; transition: transform .15s; }
   details[open] > summary .nav-marker { transform: rotate(90deg); }
+  .nav-bullet { flex: 0 0 1.15rem; text-align: center; }
   .nav-label { overflow-wrap: anywhere; min-width: 0; }
   .nav-row:hover, .nav-overview:hover { background: #ffffff0f; color: #e2e8f0; }
   .nav-row--active { color: var(--sidebar-text-active); background: #3b82f626; box-shadow: inset -3px 0 var(--sidebar-accent); }
   .nav-children { list-style: none; padding: 0; margin: 0; }
-  .nav-overview { display: block; color: var(--sidebar-text); padding: .5rem 1rem .5rem calc(2.6rem + var(--depth) * .8rem); font-size: .8rem; text-decoration: none; }
+  .nav-overview { display: block; color: var(--sidebar-text); padding: .5rem 1rem .5rem calc(2.75rem + var(--depth) * .8rem); font-size: .8rem; text-decoration: none; }
   .nav-row:focus-visible, .nav-overview:focus-visible { outline: 2px solid var(--sidebar-accent); outline-offset: -2px; }
-  :global(.app-shell.is-collapsed) .nav-label, :global(.app-shell.is-collapsed) .nav-children { display: none; }
+  :global(.app-shell.is-collapsed) .nav-marker, :global(.app-shell.is-collapsed) .nav-label, :global(.app-shell.is-collapsed) .nav-children { display: none; }
   :global(.app-shell.is-collapsed) .nav-row { justify-content: center; padding-inline: .5rem; }
 </style>

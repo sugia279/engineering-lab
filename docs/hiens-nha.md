@@ -178,3 +178,39 @@ credentials never go in the static frontend. Dynamic comments are fetched by the
 browser, so approving them does not require rebuilding article pages. MDX remains
 the source of truth for authored content; interactions move to the database,
 with optional JSON exports for backup rather than two competing writable stores.
+
+## Sidebar icons and phone behavior
+
+First and second level navigation entries use decorative SVG icons from
+`NavigationIcon.astro`; disclosure arrows remain separate. All branches still
+start closed. The compact desktop sidebar keeps each top-level icon visible.
+
+At the phone breakpoint (viewport below 768px), an ordinary internal sidebar link
+closes the overlay, including same-page section links. Disclosure clicks, external
+links, downloads and modified/new-tab clicks do not close it. Tablet/laptop widths
+keep the sidebar open. Phone and desktop width preferences use separate storage
+keys, so dismissing the phone overlay does not collapse a later desktop view.
+
+## Proposal: Tiệm Nhờ Vả as a separate room
+
+This is a product proposal, not an implemented request tracker. Keep Guestbook for
+personal notes and page discussions. Give Tiệm Nhờ Vả its own navigation item and
+request lifecycle, rather than renaming and mixing the two.
+
+A first version would receive requests for Hien personally: requester, short title,
+what help is needed, expected result, optional desired date, and visibility.
+Each request gets an ID, a current status, dated progress updates and a result
+(link, file or written answer). Submission means pending review, not a promise to
+take the work. Hien explicitly accepts, postpones or declines it.
+
+Suggested statuses: New → Needs clarification → Accepted → In progress → Completed,
+with Paused, Declined and Cancelled alternatives. Show the next action and who it
+is waiting on. A requested date is a preference until Hien agrees to it. Limit
+accepted simultaneous requests to a small number (for example, three).
+
+For an eventual backend, requests and progress events should be separate from
+comments/guestbook data; result files can live in object storage. Start with Hien
+as the sole recipient. Multiple helpers, AI assignment and payments can wait until
+there is evidence people use the basic request/result workflow. Private requests
+need an authenticated backend and private storage; public GitHub Issues cannot
+provide that privacy even when hidden from the website.
