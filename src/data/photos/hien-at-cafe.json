@@ -1,0 +1,10 @@
+{
+  "id": "hien-at-cafe",
+  "title": "Một buổi cà phê",
+  "description": "Một khoảnh khắc thảnh thơi bên cửa sổ.",
+  "titleEn": "A quiet coffee break",
+  "descriptionEn": "A relaxed moment by the window.",
+  "album": "moments",
+  "image": "src/assets/home/hien-at-cafe.jpg",
+  "featuredOrder": 1
+}

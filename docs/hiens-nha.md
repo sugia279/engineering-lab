@@ -220,3 +220,52 @@ The three supplied home photographs are stored in `src/assets/home/`, directly
 after the welcome tagline. Astro generates responsive WebP variants at build
 time, retaining the full portrait compositions. Image descriptions are bilingual.
 
+
+## Photo albums, original-size viewer and owner upload
+
+**Photos / Hình ảnh** (`/photos/`) groups photographs into Family, Scenery and
+Moments. The three existing approved photographs are reused. Album metadata lives
+in `src/data/photos/<id>.json`, with original image assets in `src/assets/home/`
+or `src/assets/gallery/`. The build validates metadata and requires every asset
+reference to resolve. Images are never treated as MDX or executable HTML.
+
+Clicking an image on the homepage or in an album opens a native modal dialog with
+a dark background, an uncropped full-resolution image, a description and previous/
+next controls. The default view fits the screen without stretching. Original size
+1:1 permits scrolling around the original pixel dimensions. Escape, Close or the
+empty background dismisses the dialog and returns focus to the selected image.
+Without JavaScript the image links open the original file.
+
+### Add a photograph directly from the website
+
+1. Open **Photos → Add photo** (`/photos/upload/`).
+2. Create a GitHub **fine-grained personal access token** under your own GitHub
+   account: Resource owner `sugia279`, Only select repositories → `hiens-nha`,
+   Contents → Read and write. Set a short expiration. No other write permission
+   is needed. The page includes GitHub's token setup link and instructions.
+3. Paste the token into the owner connection form on your own device and connect.
+   Never send the token in guestbook messages or commit it to the repository.
+4. Choose one JPG, PNG or WebP (up to 15 MB), enter a title/description and choose
+   its album. Confirm public publication, then press **Publish photograph**.
+5. A success message means the original image and metadata were committed together.
+   Wait for **Deploy to GitHub Pages** to pass before refreshing the album.
+
+The token is held only in the uploader's in-memory session, sent only to
+`https://api.github.com` as an Authorization header and cleared on Disconnect or
+page exit. It is never put in URLs, storage, cookies, image metadata or commits.
+There is no shared token in the public JavaScript. GitHub enforces the token's
+repository permissions; the uploader additionally verifies the repository owner
+identity. Closing/reloading the page requires reconnecting.
+
+Image bytes and matching metadata are published in one Git commit, using the
+owner’s GitHub noreply address for the commit identity. Ref updates
+never use force; concurrent archive writes cause a bounded retry against the new
+parent. Errors preserve the form. Branch protection or insufficient token scope
+can block publication and must be reported rather than bypassed. New photographs
+go to albums, leaving the three featured homepage photographs unchanged.
+
+This owner-only uploader deliberately uses GitHub as its authenticated write API
+and file store. No separate backend/database or paid cloud project is required.
+A conventional login without personal tokens would be a later OAuth/backend
+integration. Album pages and the viewer support both VI and EN; newly authored
+captions retain their original language unless an English caption is supplied.

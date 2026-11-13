@@ -20,6 +20,12 @@ export const primaryNavigation: readonly NavigationItem[] = [
     { label: 'Music knowledge', href: '/music/#music-knowledge' },
     { label: 'Performances', href: '/music/#music-performances' },
   ] },
+  { label: 'Photos', href: '/photos/', matchPattern: '/photos', children: [
+    { label: 'Family', href: '/photos/#family' },
+    { label: 'Scenery', href: '/photos/#scenery' },
+    { label: 'Moments', href: '/photos/#moments' },
+    { label: 'Add photo', href: '/photos/upload/' },
+  ] },
   { label: 'Projects', href: '/projects/', matchPattern: '/projects' },
   { label: 'Guestbook', href: '/guestbook/', matchPattern: '/guestbook' },
   { label: 'About', href: '/about/', matchPattern: '/about', children: [

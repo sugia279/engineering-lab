@@ -5,7 +5,7 @@ import { siteConfig } from '../../src/config/site';
 
 const base = siteConfig.base;
 const html = (path: string) => readFileSync(resolve('dist', path), 'utf8');
-const views = ['', 'about/', 'resume/', 'knowledge/', 'novels/', 'music/', 'guestbook/', 'articles/', 'notes/', 'projects/', 'series/', 'topics/', 'search/', 'graph/'];
+const views = ['', 'about/', 'resume/', 'knowledge/', 'novels/', 'music/', 'photos/', 'photos/upload/', 'guestbook/', 'articles/', 'notes/', 'projects/', 'series/', 'topics/', 'search/', 'graph/'];
 
 describe('Hien’s Nha rooms and language parity', () => {
   for (const path of views) {
