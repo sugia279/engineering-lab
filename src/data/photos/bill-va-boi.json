@@ -1,0 +1,10 @@
+{
+  "id": "bill-va-boi",
+  "title": "Bill và Bối",
+  "description": "Một khoảnh khắc của Bill và Bối.",
+  "titleEn": "Bill and Boi",
+  "descriptionEn": "A moment with Bill and Boi.",
+  "album": "family",
+  "image": "src/assets/home/Bill-va-Boi.jpg",
+  "featuredOrder": 4
+}
