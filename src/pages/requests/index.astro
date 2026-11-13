@@ -1,0 +1,37 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import RequestForm from '../../components/requests/RequestForm.astro';
+import { requests } from '../../lib/request-data';
+import { requestStatuses, statusLabels } from '../../lib/requests.mjs';
+import { localeFromPath } from '../../lib/i18n';
+import { buildUrl } from '../../utils/url';
+import { buildSEOData } from '../../utils/seo';
+import { repository } from '../../config/site';
+const locale = localeFromPath(Astro.url.pathname); const vi = locale === 'vi';
+const labels = statusLabels[locale] as Record<string,string>;
+const categories = vi ? { technology: 'Công nghệ', creative: 'Sáng tạo', information: 'Tìm hiểu / tư vấn', other: 'Việc khác' } : { technology: 'Technology', creative: 'Creative', information: 'Information / advice', other: 'Other' };
+const seo = buildSEOData({ title: vi ? 'Tiệm Nhờ Vả' : 'Little Help Shop', description: vi ? 'Việc của bạn, công đức của tui! Gửi việc muốn nhờ Hiển và theo dõi tiến độ, kết quả.' : 'Your request, my good karma! Ask Hien for help and follow progress and results.', path: 'requests/', kind: 'listing' });
+---
+<SiteLayout seo={seo}><div class="room shop">
+<p class="eyebrow">{vi ? 'TIỆM NHỜ VẢ — TÍCH CÔNG ĐỨC' : 'A LITTLE HELP, A LITTLE GOOD KARMA'}</p><h1>{vi ? 'Tiệm Nhờ Vả' : 'Little Help Shop'}</h1><p class="room-intro">{vi ? 'Việc của bạn, công đức của tui!' : 'Your request, my good karma!'}</p>
+<p>{vi ? 'Người tiếp nhận: Hiển. Mỗi lời nhờ sẽ được xem xét theo khả năng và thời gian. Gửi yêu cầu hoặc chọn mức “Cần sớm” chưa có nghĩa Hiển đã nhận việc hay cam kết thời hạn.' : 'Handled by Hien, subject to availability and scope. Sending a request or selecting “Soon” does not mean acceptance or a deadline commitment.'}</p>
+<p><a class="button" href="#send-request">{vi ? 'Gửi nhờ vả →' : 'Send a request →'}</a> <a href={`https://github.com/${repository}/issues?q=is%3Aissue+%22hiens-nha%3Arequest%3Av1%22`}>{vi ? 'Tìm yêu cầu đang chờ duyệt trên GitHub' : 'Find requests awaiting publication on GitHub'}</a></p>
+<section aria-labelledby="request-board"><h2 id="request-board">{vi ? 'Bảng nhờ vả' : 'Request board'}</h2>
+<form id="request-filters"><label for="request-filter">{vi ? 'Trạng thái' : 'Status'}</label><select id="request-filter" name="status"><option value="">{vi ? 'Tất cả' : 'All'}</option>{requestStatuses.map(status => <option value={status}>{labels[status]}</option>)}</select><button type="submit">{vi ? 'Lọc' : 'Filter'}</button></form>
+<p id="request-count" role="status">{requests.length} {vi ? 'yêu cầu công khai' : 'published requests'}</p>
+{requests.length ? <div class="room-grid">{requests.map(item => <article class="room-card" data-request-status={item.status}>
+<p class="badge">{labels[item.status]} · #{item.number}</p><h3><a href={buildUrl(`requests/${item.number}/`)} data-original-content>{item.request.title}</a></h3>
+<p>{categories[item.request.category as keyof typeof categories]}</p><p data-original-content>{item.request.tags.map(tag => `#${tag}`).join(' ')}</p><p class="preview" data-original-content>{item.request.expectedResult}</p>
+<a href={buildUrl(`requests/${item.number}/`)}>{vi ? 'Xem tiến độ và kết quả →' : 'View progress and result →'}</a>
+</article>)}</div> : <p>{vi ? 'Tiệm đang mở cửa. Chưa có nhờ vả được duyệt công khai; bạn có thể gửi yêu cầu đầu tiên.' : 'The shop is open. No requests have been approved for publication yet; you can send the first one.'}</p>}
+</section><RequestForm />
+<p><a href={`https://github.com/${repository}/blob/main/docs/project/requests.md`}>{vi ? 'Hướng dẫn cho Hiển: duyệt, cập nhật trạng thái và kết quả' : 'Owner guide: approve and update progress and results'}</a></p>
+</div></SiteLayout>
+<script>
+const form = document.querySelector<HTMLFormElement>('#request-filters');
+if (form) {
+ const apply = () => { const selected = new FormData(form).get('status'); let count = 0; document.querySelectorAll<HTMLElement>('[data-request-status]').forEach(card => { card.hidden = Boolean(selected && card.dataset.requestStatus !== selected); if (!card.hidden) count++; }); document.getElementById('request-count')!.textContent = `${count} ${document.documentElement.lang === 'vi' ? 'yêu cầu công khai' : 'published requests'}`; };
+ form.addEventListener('submit', event => { event.preventDefault(); apply(); }); form.addEventListener('change', apply);
+}
+</script>
+<style>.shop { max-width: 58rem; } .badge { font-weight: 700; color: #0f766e; } section { margin-top: 2rem; } form { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; } select, button { padding: .5rem; border: 1px solid #94a3b8; border-radius: .4rem; } [hidden] { display: none; } .preview { white-space: pre-wrap; overflow-wrap: anywhere; }</style>

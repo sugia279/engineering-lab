@@ -32,6 +32,10 @@ export const primaryNavigation: readonly NavigationItem[] = [
     { label: 'Add photo', href: '/photos/upload/' },
   ] },
   { label: 'Projects', href: '/projects/', matchPattern: '/projects' },
+  { label: 'Help shop', href: '/requests/', matchPattern: '/requests', children: [
+    { label: 'Request board', href: '/requests/#request-board' },
+    { label: 'Send request', href: '/requests/#send-request' },
+  ] },
   { label: 'Guestbook', href: '/guestbook/', matchPattern: '/guestbook' },
   { label: 'About', href: '/about/', matchPattern: '/about', children: [
     { label: 'Resume', href: '/resume/', matchPattern: '/resume' },

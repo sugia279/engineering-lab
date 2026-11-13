@@ -31,6 +31,9 @@ paths['Music & Video'] = paths.Music!;
 paths['Favorite music'] = paths.Music!;
 paths['Favorite videos'] = paths.Performances!;
 paths['Share a link'] = '<path d="m10 13 4-4M8 16l-2 2a4 4 0 0 1-6-6l5-5a4 4 0 0 1 6 0m2 1 2-2a4 4 0 0 1 6 6l-5 5a4 4 0 0 1-6 0"/>';
+paths['Help shop'] = '<path d="M3 10h18l-2-7H5ZM5 10v11h14V10M9 21v-7h6v7"/>';
+paths['Request board'] = paths.Notes!;
+paths['Send request'] = '<path d="m3 3 18 9-18 9 4-9Zm4 9h14"/>';
 const icon = paths[name] ?? '<path d="M3 5h6l2 2h10v14H3Z"/>';
 ---
 <svg class="nav-icon" data-nav-icon={name} viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" set:html={icon} />

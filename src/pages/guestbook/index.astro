@@ -1,4 +1,5 @@
 ---
+import { buildUrl } from '../../utils/url';
 import GuestbookForm from '../../components/site/GuestbookForm.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { buildSEOData } from '../../utils/seo';
@@ -12,6 +13,7 @@ const seo = buildSEOData({ title: 'Guestbook', description: vi ? 'Gửi lời nh
   <div class="room guestbook">
     <p class="eyebrow">{vi ? 'GHÉ CHƠI, ĐỂ LẠI VÀI DÒNG' : 'SAY HELLO, LEAVE A NOTE'}</p><h1>Guestbook</h1><p class="room-intro">{seo.description}</p>
     <p class="guestbook-notice">{vi ? 'Lời nhắn được gửi công khai qua GitHub và lưu thành file. Bạn cần đăng nhập GitHub và xác nhận gửi ở bước tiếp theo; điền form này chưa lưu lời nhắn. Đừng gửi thông tin riêng tư. Hiển duyệt trước khi lời nhắn xuất hiện ở đây và tại trang được bình luận.' : 'Messages are public on GitHub and archived to files. A GitHub account is required; confirm submission on the next page. Filling this form does not save a message yet. Please keep private information out. Hien approves messages before they appear here and on the commented page.'}</p>
+    <p><a href={buildUrl('requests/')}>{vi ? 'Có việc muốn nhờ và cần theo dõi tiến độ? Ghé Tiệm Nhờ Vả →' : 'Need help and want to track progress? Visit the Little Help Shop →'}</a></p>
     <GuestbookForm />
     <section class="guestbook-entries" aria-labelledby="guestbook-messages"><h2 id="guestbook-messages">{vi ? 'Những lời nhắn đã duyệt' : 'Approved messages'}</h2>
       {guestMessages.length ? guestMessages.map((message) => (
