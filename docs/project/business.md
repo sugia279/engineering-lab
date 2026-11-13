@@ -2,6 +2,8 @@
 
 ## Các phòng trong nhà
 
+Thứ tự menu chính: Trang chủ → Âm nhạc & Video → Hình ảnh → Dự án → Sổ lưu bút → Tiệm Nhờ Vả → Góc tri thức → Tủ truyện → Về Hiển. Cấu hình tại `src/config/navigation.ts`, dùng chung cho VI/EN và desktop/mobile.
+
 | Chức năng | Hành vi và dữ liệu | Quy tắc phải giữ |
 | --- | --- | --- |
 | Trang chủ | Giới thiệu, phòng nội dung, ảnh nổi bật, link Tiệm Nhờ Vả | Chỉ ảnh có metadata + `featuredOrder` hiện ở Home; asset đơn lẻ chưa là bài ảnh |
