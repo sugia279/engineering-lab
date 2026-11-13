@@ -15,6 +15,8 @@ const vi = localeFromPath(Astro.url.pathname) === 'vi';
     <label for="media-url">{vi ? 'Liên kết YouTube hoặc Facebook' : 'YouTube or Facebook link'}</label>
     <input id="media-url" name="url" type="url" required maxlength="1000" placeholder="https://www.youtube.com/watch?v=…" aria-describedby="media-help" />
     <p id="media-help">{vi ? 'Hỗ trợ video, Shorts, Reels và liên kết chia sẻ video. Video riêng tư vẫn cần quyền xem trên nền tảng gốc.' : 'Supports videos, Shorts, Reels, and shared video links. Private videos still require access on the original platform.'}</p>
+    <label for="media-tags">Tags</label><input id="media-tags" type="text" name="tags" maxlength="490" placeholder="guitar, chill, cover" />
+    <p>{vi ? 'Tối đa 12 tag, cách nhau bằng dấu phẩy.' : 'Up to 12 tags, separated by commas.'}</p>
     <label for="media-description">{vi ? 'Mô tả / vì sao bạn thích (không bắt buộc)' : 'Description / why you like it (optional)'}</label>
     <textarea id="media-description" name="description" maxlength="1500" rows="4"></textarea>
     <p id="media-status" role="status"></p>
@@ -23,6 +25,7 @@ const vi = localeFromPath(Astro.url.pathname) === 'vi';
   </form>
 </section>
 <script>
+  import { parseTags } from '../../lib/submission-fields.mjs';
   import { normalizeMediaUrl, mediaMarker } from '../../lib/media-links.mjs';
   const form = document.querySelector<HTMLFormElement>('#media-form');
   if (form) {
@@ -42,7 +45,9 @@ const vi = localeFromPath(Astro.url.pathname) === 'vi';
       }
       const title = String(data.get('title')).trim();
       if (title.length < 3) { document.getElementById('media-status')!.textContent = vi ? 'Tiêu đề cần ít nhất 3 ký tự.' : 'Use at least 3 characters for the title.'; return; }
-      const body = `${mediaMarker}\n${JSON.stringify({ category: data.get('category'), title, description: String(data.get('description')).trim(), url: link.url }, null, 2)}`;
+      const tags = parseTags(String(data.get('tags') ?? ''));
+      if (!tags) { document.getElementById('media-status')!.textContent = vi ? 'Tối đa 12 tag, mỗi tag tối đa 40 ký tự.' : 'Use up to 12 tags of at most 40 characters.'; return; }
+      const body = `${mediaMarker}\n${JSON.stringify({ category: data.get('category'), tags, title, description: String(data.get('description')).trim(), url: link.url }, null, 2)}`;
       const destination = new URL(`https://github.com/${form.dataset.repository}/issues/new`);
       destination.searchParams.set('title', `[Media] ${title}`);
       destination.searchParams.set('body', body);

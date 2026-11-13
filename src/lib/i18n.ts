@@ -15,6 +15,7 @@ export function localeUrl(path: string, locale: Locale): string {
 
 export const viCopy: Record<string, string> = {
   'Music & Video': 'Âm nhạc & Video', 'Favorite music': 'Âm nhạc yêu thích', 'Favorite videos': 'Video yêu thích', 'Share a link': 'Gửi liên kết',
+  'Shared writing': 'Bài viết & sáng tác', 'Add Knowledge': 'Thêm nội dung',
   Xianxia: 'Tiên Hiệp', Fantasy: 'Kỳ ảo', Mystery: 'Trinh thám', Performances: 'Hiển chơi đàn', 'Music knowledge': 'Kiến thức âm nhạc',
   'Cultivation and immortal adventures.': 'Hành trình tu luyện và những câu chuyện tiên hiệp.',
   'Comics and graphic stories.': 'Truyện tranh và những câu chuyện qua hình vẽ.',

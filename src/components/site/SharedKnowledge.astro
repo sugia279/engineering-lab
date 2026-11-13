@@ -1,0 +1,56 @@
+---
+import { sharedKnowledge } from '../../lib/shared-knowledge';
+import { localeFromPath } from '../../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const groups = [...new Set(sharedKnowledge.map(item => item.series))];
+const categories = [...new Set(sharedKnowledge.map(item => item.category))];
+const tags = [...new Set(sharedKnowledge.flatMap(item => item.tags))];
+const kinds: Record<string,string> = vi ? { poem: 'Thơ', article: 'Bài viết', note: 'Ghi chú' } : { poem: 'Poem', article: 'Article', note: 'Note' };
+---
+<section aria-labelledby="shared-knowledge" id="shared-library">
+<h2 id="shared-knowledge">{vi ? 'Bài viết & sáng tác chia sẻ' : 'Shared writing & creations'}</h2>
+<form id="knowledge-filters" class="filters">
+<label for="filter-kind">{vi ? 'Loại' : 'Type'}</label><select id="filter-kind" name="kind"><option value="">{vi ? 'Tất cả' : 'All'}</option>{Object.entries(kinds).map(([key,label]) => <option value={key}>{label}</option>)}</select>
+<label for="filter-category">{vi ? 'Chuyên mục' : 'Category'}</label><select id="filter-category" name="category"><option value="">{vi ? 'Tất cả' : 'All'}</option>{categories.map(name => <option value={name}>{name}</option>)}</select>
+<label for="filter-tag">Tag</label><select id="filter-tag" name="tag"><option value="">{vi ? 'Tất cả' : 'All'}</option>{tags.map(name => <option value={name}>{name}</option>)}</select>
+<label for="filter-series">{vi ? 'Chuỗi bài' : 'Series'}</label><select id="filter-series" name="series"><option value="">{vi ? 'Tất cả' : 'All'}</option>{groups.filter(Boolean).map(name => <option value={name}>{name}</option>)}</select>
+<button type="submit">{vi ? 'Áp dụng' : 'Apply'}</button>
+<button type="reset">{vi ? 'Xóa bộ lọc' : 'Reset filters'}</button>
+</form>
+<p id="knowledge-count" role="status">{sharedKnowledge.length} {vi ? 'bài' : 'posts'}</p>
+{groups.map((series, index) => <section data-knowledge-group aria-labelledby={`shared-series-${index}`}>
+<h3 id={`shared-series-${index}`} data-original-content>{series || (vi ? 'Bài riêng lẻ' : 'Standalone posts')}</h3>
+{sharedKnowledge.filter(item => item.series === series).map(item => <article id={`shared-post-${item.number}`} class="room-card shared-post" data-kind={item.kind} data-category={item.category} data-tags={JSON.stringify(item.tags)} data-series={item.series}>
+<p data-original-content>{kinds[item.kind]} · {item.category}{series ? ` · #${item.order}` : ''}</p>
+<h4 data-original-content>{item.title}</h4><p data-original-content>{item.tags.map(tag => <span>#{tag} </span>)}</p>
+<div class="writing" data-original-content>{item.body}</div>
+</article>)}
+</section>)}
+</section>
+<script>
+const filters = document.querySelector<HTMLFormElement>('#knowledge-filters');
+if (filters) {
+  function apply() {
+    const fields = new FormData(filters!);
+    let count = 0;
+    document.querySelectorAll<HTMLElement>('.shared-post').forEach(post => {
+      const match = ['kind', 'category', 'series'].every(key => !fields.get(key) || fields.get(key) === post.dataset[key]) && (!fields.get('tag') || JSON.parse(post.dataset.tags!).includes(fields.get('tag')));
+      post.hidden = !match; if (match) count++;
+    });
+    document.querySelectorAll<HTMLElement>('[data-knowledge-group]').forEach(group => { group.hidden = !group.querySelector('.shared-post:not([hidden])'); });
+    document.getElementById('knowledge-count')!.textContent = `${count} ${document.documentElement.lang === 'vi' ? 'bài' : 'posts'}`;
+  }
+  filters.addEventListener('submit', event => { event.preventDefault(); apply(); });
+  filters.addEventListener('change', apply);
+  filters.addEventListener('reset', () => setTimeout(apply, 0));
+}
+</script>
+<style>
+#shared-library { margin-top: 3rem; }
+.filters { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; margin-block: 1rem; }
+select, button { padding: .5rem; border: 1px solid #94a3b8; border-radius: .3rem; }
+.shared-post { margin-block: 1rem; }
+.shared-post[hidden] { display: none; }
+.writing { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.9; margin-block: 1.5rem; }
+h4 { font-size: 1.25rem; }
+</style>

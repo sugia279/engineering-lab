@@ -19,3 +19,7 @@ To retry a failed synchronization, run **Actions → Archive guestbook → Run w
 ## Navigation state
 
 Native tree branches default to closed for a new visitor. Their expanded state uses logical paths in browser storage, shared across VI/EN and phone/desktop trees. Page navigation restores those states. The phone overlay still closes after a normal internal link selection; tablet/laptop sidebars remain open. If storage is blocked, navigation works but state cannot survive a full page load.
+
+## Embedded playback and tags
+
+Approved links render a responsive YouTube privacy-enhanced player or Facebook video plugin in their category. The submission form accepts up to 12 comma-separated tags, each at most 40 characters. Older archives without tags still work. Player sources are constructed only from validated YouTube/Facebook URLs; user-provided iframe/HTML is never accepted. Private, restricted, removed or embedding-disabled videos may not play. The original source link remains available, and Facebook short/share links may require the original public video URL for reliable embedding.

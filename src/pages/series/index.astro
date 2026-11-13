@@ -1,4 +1,6 @@
 ---
+import { buildUrl } from '../../utils/url';
+import { sharedKnowledge } from '../../lib/shared-knowledge';
 import ListingLayout from '../../layouts/ListingLayout.astro';
 import SeriesSummary from '../../components/cards/SeriesSummary.astro';
 import { getPublishedSeries, toSeriesSummary } from '../../lib/content/queries';
@@ -17,6 +19,7 @@ const seo = buildSEOData({
 });
 ---
 
-<ListingLayout seo={seo} title="Series" description="Curated ordered learning paths across topics." itemCount={summaries.length} activeCollection="series">
+<ListingLayout seo={seo} title="Series" description="Curated ordered learning paths across topics." itemCount={summaries.length + new Set(sharedKnowledge.map(item => item.series).filter(Boolean)).size} activeCollection="series">
+  {[...new Set(sharedKnowledge.map(item => item.series).filter(Boolean))].map(name => <a class="room-card" href={buildUrl('knowledge/#shared-knowledge')}><h2 data-original-content>{name}</h2><p>{sharedKnowledge.filter(item => item.series === name).length} bài / posts</p></a>)}
   {summaries.map((s) => <SeriesSummary series={s} />)}
 </ListingLayout>
