@@ -8,6 +8,7 @@ type Ref = { object: { sha: string } };
 export class GitHubPhotoUpload {
   private authorized = false;
   private branch = '';
+  private author: { name: string; email: string } | undefined;
   constructor(private readonly repository: string, private readonly token: string, private readonly send: Fetch = fetch) {
     if (!/^[\w.-]+\/[\w.-]+$/.test(repository)) throw new PhotoUploadError('repository');
   }
@@ -21,11 +22,13 @@ export class GitHubPhotoUpload {
     return response.json() as Promise<T>;
   }
   async connect(): Promise<string> {
-    const user = await this.request<{ login: string }>('/user');
+    const user = await this.request<{ login: string; id: number }>('/user');
     const owner = this.repository.split('/')[0]!;
     if (user.login.toLowerCase() !== owner.toLowerCase()) throw new PhotoUploadError('owner');
     const repo = await this.request<{ full_name: string; default_branch: string; permissions?: { push?: boolean } }>(`/repos/${this.repository}`);
     if (repo.full_name.toLowerCase() !== this.repository.toLowerCase() || !repo.permissions?.push || !repo.default_branch) throw new PhotoUploadError('permission');
+    if (!Number.isSafeInteger(user.id) || user.id < 1) throw new PhotoUploadError('owner');
+    this.author = { name: user.login, email: `${user.id}+${user.login}@users.noreply.github.com` };
     this.branch = repo.default_branch;
     this.authorized = true;
     return user.login;
@@ -51,7 +54,7 @@ export class GitHubPhotoUpload {
         { path: record.image, mode: '100644', type: 'blob', sha: image.sha },
         { path: `src/data/photos/${record.id}.json`, mode: '100644', type: 'blob', content: metadata },
       ] });
-      const commit = await this.request<{ sha: string }>(`${root}/commits`, 'POST', { message: `photos: add ${record.id}`, tree: tree.sha, parents: [parent] });
+      const commit = await this.request<{ sha: string }>(`${root}/commits`, 'POST', { message: `photos: add ${record.id}`, tree: tree.sha, parents: [parent], author: this.author, committer: this.author });
       try {
         await this.request(`${root}/refs/heads/${encodeURIComponent(this.branch)}`, 'PATCH', { sha: commit.sha, force: false });
         return { sha: commit.sha, url: `https://github.com/${this.repository}/commit/${commit.sha}` };

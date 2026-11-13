@@ -257,7 +257,8 @@ There is no shared token in the public JavaScript. GitHub enforces the token's
 repository permissions; the uploader additionally verifies the repository owner
 identity. Closing/reloading the page requires reconnecting.
 
-Image bytes and matching metadata are published in one Git commit. Ref updates
+Image bytes and matching metadata are published in one Git commit, using the
+owner’s GitHub noreply address for the commit identity. Ref updates
 never use force; concurrent archive writes cause a bounded retry against the new
 parent. Errors preserve the form. Branch protection or insufficient token scope
 can block publication and must be reported rather than bypassed. New photographs

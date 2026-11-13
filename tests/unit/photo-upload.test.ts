@@ -11,7 +11,7 @@ function fakeApi(options: { user?: string; push?: boolean; race?: boolean; prote
   const url = String(input); const method = init?.method ?? 'GET'; const body = init?.body ? JSON.parse(String(init.body)) : undefined;
   calls.push({ url, method, body, headers: init?.headers });
   let response: unknown; let status = 200;
-  if (url.endsWith('/user')) response = { login: options.user ?? 'owner' };
+  if (url.endsWith('/user')) response = { login: options.user ?? 'owner', id: 42 };
   else if (url.endsWith('/repos/owner/home')) response = { full_name: repository, default_branch: 'main', permissions: { push: options.push ?? true } };
   else if (url.endsWith('/blobs')) response = { sha: 'photo-blob' };
   else if (url.endsWith('/ref/heads/main')) { refReads++; response = { object: { sha: options.lostResponse && patches ? 'new-commit' : options.race && refReads > 1 ? 'concurrent-head' : 'old-head' } }; }
@@ -60,6 +60,7 @@ describe('owner photo publication', () => {
   const serializedBodies = JSON.stringify(api.calls.map((call) => call.body)); expect(serializedBodies).not.toContain('test-owner-token');
   expect(api.calls.filter((call) => call.method === 'PATCH').map((call) => call.body.force)).toEqual([false]);
   expect(api.calls.every((call) => call.url.startsWith('https://api.github.com/'))).toBe(true);
+  expect(api.calls.find((call) => call.url.endsWith('/commits') && call.method === 'POST')!.body.author).toEqual({ name: 'owner', email: '42+owner@users.noreply.github.com' });
  });
  it('retries concurrent ref changes on the latest parent, preserving the other write', async () => {
   const api = fakeApi({ race: true }); const client = new GitHubPhotoUpload(repository, 'test-owner-token', api.send); await client.connect(); await client.publish(bytes, record);
