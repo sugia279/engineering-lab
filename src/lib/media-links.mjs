@@ -44,7 +44,7 @@ export function mediaEmbed(input) {
   if (link.platform === 'YouTube') return `https://www.youtube-nocookie.com/embed/${new URL(link.url).searchParams.get('v')}`;
   const url = new URL('https://www.facebook.com/plugins/video.php');
   url.searchParams.set('href', link.url);
-  url.searchParams.set('show_text', 'false');
+  url.searchParams.set('show_text', 'true');
   url.searchParams.set('width', '560');
   return url.href;
 }

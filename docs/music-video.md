@@ -23,3 +23,5 @@ Native tree branches default to closed for a new visitor. Their expanded state u
 ## Embedded playback and tags
 
 Approved links render a responsive YouTube privacy-enhanced player or Facebook video plugin in their category. The submission form accepts up to 12 comma-separated tags, each at most 40 characters. Older archives without tags still work. Player sources are constructed only from validated YouTube/Facebook URLs; user-provided iframe/HTML is never accepted. Private, restricted, removed or embedding-disabled videos may not play. The original source link remains available, and Facebook short/share links may require the original public video URL for reliable embedding.
+
+Facebook players use the owner's supplied iframe settings: `show_text=true`, plugin width 560 and a responsive 560:429 frame, with fullscreen/media/share permissions. The Perfect entry retains its existing share URL and metadata. These presentation options do not resolve a share URL to a canonical video ID, and successful iframe rendering alone does not prove playback.
