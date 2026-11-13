@@ -16,7 +16,7 @@ const active = selected(item);
 const branch = item.children !== undefined;
 ---
 <li class="nav-node" style={`--depth:${depth}`}>
-  {branch ? <details class="nav-branch">
+  {branch ? <details class="nav-branch" data-nav-branch={item.href}>
     <summary class:list={['nav-row', { 'nav-row--active': active }]} title={ui(item.label, locale)}>
       {depth < 2 && <NavigationIcon name={item.label} />}<span class="nav-label">{item.label}</span><span class="nav-marker" aria-hidden="true">›</span>
     </summary>

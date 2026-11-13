@@ -1,0 +1,61 @@
+---
+import { repository } from '../../config/site';
+import { localeFromPath } from '../../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+---
+<section aria-labelledby="share-link" class="media-submit">
+  <h2 id="share-link">{vi ? 'Gửi liên kết yêu thích' : 'Share a favorite link'}</h2>
+  <p>{vi ? 'Chia sẻ một bài nhạc hoặc video từ YouTube / Facebook. Cần tài khoản GitHub để gửi. Liên kết sẽ xuất hiện tại đây sau khi Hiển duyệt và website cập nhật.' : 'Share music or a video from YouTube / Facebook. A GitHub account is required. Links appear here after Hien approves them and the website updates.'}</p>
+  <p>{vi ? 'Nội dung gửi được đăng công khai trên GitHub, kể cả khi chưa được duyệt.' : 'Your submission is public on GitHub, including before approval.'}</p>
+  <form id="media-form" data-repository={repository}>
+    <label for="media-category">{vi ? 'Chuyên mục' : 'Category'}</label>
+    <select id="media-category" name="category"><option value="music">{vi ? 'Âm nhạc yêu thích' : 'Favorite music'}</option><option value="video">{vi ? 'Video yêu thích' : 'Favorite videos'}</option></select>
+    <label for="media-title">{vi ? 'Tên bài nhạc / video' : 'Music / video title'}</label>
+    <input id="media-title" name="title" type="text" required minlength="3" maxlength="120" />
+    <label for="media-url">{vi ? 'Liên kết YouTube hoặc Facebook' : 'YouTube or Facebook link'}</label>
+    <input id="media-url" name="url" type="url" required maxlength="1000" placeholder="https://www.youtube.com/watch?v=…" aria-describedby="media-help" />
+    <p id="media-help">{vi ? 'Hỗ trợ video, Shorts, Reels và liên kết chia sẻ video. Video riêng tư vẫn cần quyền xem trên nền tảng gốc.' : 'Supports videos, Shorts, Reels, and shared video links. Private videos still require access on the original platform.'}</p>
+    <label for="media-description">{vi ? 'Mô tả / vì sao bạn thích (không bắt buộc)' : 'Description / why you like it (optional)'}</label>
+    <textarea id="media-description" name="description" maxlength="1500" rows="4"></textarea>
+    <p id="media-status" role="status"></p>
+    <button id="media-submit" class="button" type="submit" disabled>{vi ? 'Tiếp tục trên GitHub →' : 'Continue on GitHub →'}</button>
+    <noscript><p>{vi ? 'Bật JavaScript để điền và gửi liên kết.' : 'Enable JavaScript to fill in and submit a link.'}</p></noscript>
+  </form>
+</section>
+<script>
+  import { normalizeMediaUrl, mediaMarker } from '../../lib/media-links.mjs';
+  const form = document.querySelector<HTMLFormElement>('#media-form');
+  if (form) {
+    const vi = document.documentElement.lang === 'vi';
+    const input = form.querySelector<HTMLInputElement>('#media-url')!;
+    input.addEventListener('input', () => input.setCustomValidity(''));
+    form.querySelector<HTMLButtonElement>('#media-submit')!.disabled = false;
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      input.setCustomValidity('');
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const link = normalizeMediaUrl(String(data.get('url')));
+      if (!link) {
+        input.setCustomValidity(vi ? 'Hãy nhập liên kết video HTTPS hợp lệ từ YouTube hoặc Facebook.' : 'Enter a valid HTTPS YouTube or Facebook video link.');
+        input.reportValidity(); return;
+      }
+      const title = String(data.get('title')).trim();
+      if (title.length < 3) { document.getElementById('media-status')!.textContent = vi ? 'Tiêu đề cần ít nhất 3 ký tự.' : 'Use at least 3 characters for the title.'; return; }
+      const body = `${mediaMarker}\n${JSON.stringify({ category: data.get('category'), title, description: String(data.get('description')).trim(), url: link.url }, null, 2)}`;
+      const destination = new URL(`https://github.com/${form.dataset.repository}/issues/new`);
+      destination.searchParams.set('title', `[Media] ${title}`);
+      destination.searchParams.set('body', body);
+      if (destination.href.length > 7500) { document.getElementById('media-status')!.textContent = vi ? 'Mô tả quá dài cho liên kết gửi. Anh/chị rút gọn lại giúp nhé.' : 'Please shorten the description to fit the submission link.'; return; }
+      location.assign(destination.href);
+    });
+  }
+</script>
+<style>
+  .media-submit { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid #cbd5e1; }
+  form { display: grid; gap: .6rem; max-width: 46rem; margin-top: 1.5rem; }
+  label { font-weight: 600; margin-top: .5rem; }
+  input, textarea, select { width: 100%; padding: .7rem; border: 1px solid #94a3b8; border-radius: .4rem; background: #fff; color: #0f172a; }
+  input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid #0f766e; outline-offset: 2px; }
+  button { justify-self: start; margin-top: .75rem; }
+</style>
