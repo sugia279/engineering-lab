@@ -1,0 +1,19 @@
+---
+import { Image } from 'astro:assets';
+import type { Photo } from '../../lib/photos';
+import { localeFromPath } from '../../lib/i18n';
+interface Props { photo: Photo; eager?: boolean; }
+const { photo, eager = false } = Astro.props;
+const en = localeFromPath(Astro.url.pathname) === 'en';
+const title = en ? photo.titleEn ?? photo.title : photo.title;
+const description = en ? photo.descriptionEn ?? photo.description : photo.description;
+---
+<a class="photo-open" href={photo.asset.src} data-photo-full={photo.asset.src} data-photo-title={title} data-photo-description={description} aria-label={`${en ? 'View photo' : 'Xem ảnh'}: ${title}`}>
+  <Image src={photo.asset} alt={title} width={800} widths={[240,480,800]} sizes="(max-width: 767px) 90vw, 320px" format="webp" quality={82} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+</a>
+<style>
+ .photo-open { display: block; border-radius: .75rem; cursor: zoom-in; overflow: hidden; }
+ .photo-open :global(img) { display: block; width: 100%; height: auto; transition: opacity .15s; }
+ .photo-open:hover :global(img) { opacity: .88; }
+ .photo-open:focus-visible { outline: 3px solid #0f766e; outline-offset: 4px; }
+</style>

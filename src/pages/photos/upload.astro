@@ -1,0 +1,58 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { repository } from '../../config/site';
+import { localeFromPath } from '../../lib/i18n';
+import { buildUrl } from '../../utils/url';
+import { buildSEOData } from '../../utils/seo';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const owner = repository.split('/')[0];
+const seo = buildSEOData({ title: 'Add photo', description: vi ? 'Thêm ảnh và mô tả vào Hien’s Nha.' : 'Add a photograph and description to Hien’s Nha.', path: 'photos/upload/', kind: 'listing', noIndex: true });
+const tokenUrl = `https://github.com/settings/personal-access-tokens/new?name=Hiens-Nha-Photos&target_name=${owner}&expires_in=30&contents=write`;
+---
+<SiteLayout seo={seo}>
+ <div class="room upload-room" id="photo-upload" data-repository={repository}>
+  <p><a href={buildUrl('photos/')}>{vi ? '← Về Hình ảnh' : '← Back to Photos'}</a></p><h1>Add photo</h1>
+  <p>{vi ? 'Chọn ảnh, viết vài dòng và lưu vào album của mình.' : 'Choose a photograph, add a few words, and save it to your album.'}</p>
+  <details class="upload-help"><summary>{vi ? 'Kết nối GitHub lần đầu như thế nào?' : 'How do I connect GitHub for the first time?'}</summary>
+   <ol>
+    <li><a href={tokenUrl} target="_blank" rel="noopener noreferrer">{vi ? 'Mở trang tạo fine-grained token trên GitHub' : 'Open GitHub to create a fine-grained token'}</a>.</li>
+    <li>{vi ? 'Chọn Only select repositories → hiens-nha. Chỉ cấp Contents: Read and write; đặt ngày hết hạn.' : 'Choose Only select repositories → hiens-nha. Grant only Contents: Read and write and set an expiration date.'}</li>
+    <li>{vi ? 'Tạo token, sao chép và dán vào ô bên dưới trên thiết bị của anh. Không gửi token qua bình luận hay tin nhắn.' : 'Create the token, copy it, and paste it below on your own device. Do not send it in comments or messages.'}</li>
+   </ol>
+  </details>
+  <form id="photo-connect"><fieldset id="photo-auth-fields"><legend>{vi ? 'Chỉ dành cho chủ nhà' : 'For the site owner'}</legend>
+   <label for="photo-token">GitHub fine-grained token</label><input id="photo-token" type="password" required autocomplete="new-password" spellcheck="false" />
+   <button type="submit" class="button">{vi ? 'Kết nối GitHub' : 'Connect GitHub'}</button>
+  </fieldset></form>
+  <p class="token-note">{vi ? `Chỉ tài khoản ${owner} có quyền ghi vào ${repository} mới tải được ảnh. Token chỉ dùng trong phiên mở trang, không lưu vào trình duyệt, file hay repository.` : `Only ${owner} with write access to ${repository} can upload. The token stays in this page session and is never saved to browser storage, files, or the repository.`}</p>
+  <p id="photo-account" hidden></p><button id="photo-disconnect" type="button" hidden>{vi ? 'Ngắt kết nối' : 'Disconnect'}</button>
+  <form id="photo-upload-form"><fieldset id="photo-content-fields" disabled><legend>{vi ? 'Ảnh mới' : 'New photograph'}</legend>
+   <label for="photo-file">{vi ? 'Chọn ảnh — JPG, PNG hoặc WebP, tối đa 15 MB' : 'Choose a photo — JPG, PNG or WebP, up to 15 MB'}</label><input id="photo-file" type="file" accept="image/jpeg,image/png,image/webp" required />
+   <img id="photo-preview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt={vi ? 'Ảnh đang chuẩn bị tải lên' : 'Photograph ready to upload'} hidden />
+   <label for="photo-title">{vi ? 'Tiêu đề' : 'Title'}</label><input id="photo-title" type="text" required maxlength="120" />
+   <label for="photo-description">{vi ? 'Mô tả' : 'Description'}</label><textarea id="photo-description" rows="4" required maxlength="2000"></textarea>
+   <label for="photo-album">{vi ? 'Album' : 'Album'}</label><select id="photo-album"><option value="family">{vi ? 'Gia đình' : 'Family'}</option><option value="scenery">{vi ? 'Phong cảnh' : 'Scenery'}</option><option value="moments">{vi ? 'Khoảnh khắc' : 'Moments'}</option></select>
+   <label class="publish-consent"><input id="photo-public-consent" type="checkbox" required />{vi ? `Tôi đồng ý đăng công khai ảnh và mô tả trên Hien’s Nha và lưu chúng trong repository ${repository}.` : `I agree to publish this photograph and description publicly on Hien’s Nha and store them in ${repository}.`}</label>
+   <button type="submit" class="button">{vi ? 'Đăng ảnh công khai' : 'Publish photograph'}</button>
+  </fieldset></form>
+  <p id="photo-upload-status" role="status" aria-live="polite"></p><p id="photo-upload-result" hidden></p>
+  <p class="upload-footnote">{vi ? 'Mỗi lần đăng thêm một ảnh. Ảnh và mô tả được lưu cùng nhau; website cần dựng và triển khai lại trước khi ảnh mới xuất hiện. Nếu có lỗi, nội dung đang nhập vẫn được giữ để thử lại.' : 'Publish one photograph at a time. The photo and description are saved together; the website must rebuild and deploy before it appears. If an error occurs, your form remains available to retry.'}</p>
+ </div>
+</SiteLayout>
+<script src="../../components/photos/photo-upload-form.ts"></script>
+<style>
+ .upload-room { max-width: 48rem; }
+ .upload-room > p { margin: 1rem 0; }
+ .upload-room a { color: #0f766e; text-decoration: underline; }
+ .upload-help { padding: 1rem; background: #f0fdfa; border-radius: .65rem; margin: 1.5rem 0; }
+ summary { cursor: pointer; font-weight: 600; } ol { list-style: decimal; padding-left: 1.5rem; margin-top: .75rem; } li { margin: .6rem 0; line-height: 1.6; }
+ fieldset { display: grid; gap: .75rem; border: 1px solid #cbd5e1; border-radius: .75rem; padding: 1.25rem; margin: 1.5rem 0; min-width: 0; }
+ fieldset:disabled { opacity: .6; } legend, label { font-weight: 600; }
+ input:not([type=checkbox]), textarea, select { width: 100%; padding: .65rem; border: 1px solid #94a3b8; border-radius: .4rem; background: #fff; color: #0f172a; }
+ button { justify-self: start; } #photo-disconnect { border: 1px solid #94a3b8; padding: .5rem .75rem; border-radius: .4rem; cursor: pointer; }
+ .token-note, .upload-footnote { font-size: .88rem; }
+ .publish-consent { display: flex; align-items: start; gap: .7rem; line-height: 1.5; font-size: .9rem; } .publish-consent input { margin-top: .25rem; flex-shrink: 0; }
+ #photo-preview { max-width: 100%; max-height: 20rem; width: auto; height: auto; border-radius: .5rem; }
+ #photo-upload-status { white-space: pre-wrap; font-weight: 600; color: #134e4a; }
+ input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid #0f766e; outline-offset: 3px; }
+</style>

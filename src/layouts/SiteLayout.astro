@@ -9,6 +9,7 @@ import DocumentHead from '../components/metadata/DocumentHead.astro';
 import StructuredData from '../components/metadata/StructuredData.astro';
 import SkipLink from '../components/site/SkipLink.astro';
 import PageComments from '../components/site/PageComments.astro';
+import PhotoViewer from '../components/photos/PhotoViewer.astro';
 import Header from '../components/site/Header.astro';
 import Footer from '../components/site/Footer.astro';
 import '../styles/global.css';
@@ -24,6 +25,7 @@ interface Props {
 const { seo, structuredData, currentPath = Astro.url.pathname } = Astro.props;
 const locale = localeFromPath(currentPath);
 const notFound = currentPath.includes('/404');
+const ownerUpload = localeUrl(currentPath, 'vi').endsWith('/photos/upload/');
 const localizedSeo = { ...seo,
   canonical: notFound ? `${siteConfig.origin}${siteConfig.base}${locale === 'en' ? 'en/404/' : '404.html'}` : new URL(seo.canonical).origin === siteConfig.origin ? siteConfig.origin + localeUrl(new URL(seo.canonical).pathname, locale) : seo.canonical,
   openGraph: { ...seo.openGraph, url: siteConfig.origin + localeUrl(new URL(seo.openGraph.url).pathname, locale) },
@@ -44,11 +46,12 @@ const localizedSeo = { ...seo,
   <body class="app-shell">
     <SkipLink />
     <Header currentPath={currentPath} />
-    <main id="main-content" class="app-main" tabindex="-1" data-pagefind-body>
+    <main id="main-content" class="app-main" tabindex="-1" data-pagefind-body data-pagefind-ignore={ownerUpload ? true : undefined}>
       <slot />
-      {!notFound && !localeUrl(currentPath, 'vi').endsWith('/guestbook/') && <PageComments title={seo.title} />}
+      {!notFound && !ownerUpload && !localeUrl(currentPath, 'vi').endsWith('/guestbook/') && <PageComments title={seo.title} />}
     </main>
     <Footer />
+    <PhotoViewer />
   </body>
 </html>
 

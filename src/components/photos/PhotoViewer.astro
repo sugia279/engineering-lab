@@ -1,0 +1,31 @@
+---
+import { localeFromPath } from '../../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+---
+<dialog id="photo-viewer" class="photo-viewer" aria-labelledby="photo-viewer-title" data-pagefind-ignore>
+  <div class="viewer-toolbar">
+    <h2 id="photo-viewer-title">{vi ? 'Xem ảnh' : 'View photo'}</h2>
+    <button id="photo-size" type="button" aria-pressed="false">{vi ? 'Kích thước gốc 1:1' : 'Original size 1:1'}</button>
+    <form method="dialog"><button type="submit" aria-label={vi ? 'Đóng ảnh' : 'Close photo'}>{vi ? 'Đóng ×' : 'Close ×'}</button></form>
+  </div>
+  <div class="photo-stage" id="photo-stage"><img id="photo-viewer-image" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="" /></div>
+  <div class="viewer-caption"><button id="photo-previous" type="button" aria-label={vi ? 'Ảnh trước' : 'Previous photo'}>←</button><p id="photo-viewer-description"></p><button id="photo-next" type="button" aria-label={vi ? 'Ảnh sau' : 'Next photo'}>→</button></div>
+</dialog>
+<script src="./photo-viewer.ts"></script>
+<style>
+ .photo-viewer { position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; color: #f8fafc; background: #08090bf7; }
+ .photo-viewer::backdrop { background: #000e; }
+ .photo-viewer[open] { display: flex; flex-direction: column; }
+ .viewer-toolbar { display: flex; align-items: center; gap: .75rem; padding: .8rem 1rem; flex: 0 0 auto; }
+ h2 { margin: 0 auto 0 0; font-size: 1rem; overflow-wrap: anywhere; font-weight: 600; }
+ form { margin: 0; }
+ button { background: #20252c; border: 1px solid #64748b; color: #fff; padding: .6rem .8rem; border-radius: .4rem; cursor: pointer; white-space: nowrap; }
+ button:focus-visible { outline: 3px solid #5eead4; outline-offset: 2px; }
+ .photo-stage { flex: 1; min-height: 0; min-width: 0; overflow: auto; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+ .photo-stage img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; flex-shrink: 0; }
+ .photo-viewer.is-original .photo-stage { display: block; }
+ .photo-viewer.is-original img { max-width: none; max-height: none; margin: 0 auto; }
+ .viewer-caption { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .8rem 1rem; flex: 0 0 auto; }
+ .viewer-caption p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 15dvh; overflow: auto; line-height: 1.5; }
+ @media(max-width: 500px) { .viewer-toolbar { flex-wrap: wrap; } h2 { flex-basis: 100%; } .photo-stage { padding: .5rem; } }
+</style>

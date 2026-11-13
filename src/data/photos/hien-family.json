@@ -1,0 +1,10 @@
+{
+  "id": "hien-family",
+  "title": "Gia đình",
+  "description": "Lưu lại một khoảnh khắc cả nhà bên nhau.",
+  "titleEn": "Family",
+  "descriptionEn": "Keeping a moment with the family together.",
+  "album": "family",
+  "image": "src/assets/home/hien-family.jpg",
+  "featuredOrder": 3
+}

@@ -1,0 +1,40 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import PhotoLink from '../../components/photos/PhotoLink.astro';
+import { photos } from '../../lib/photos';
+import { photoAlbums } from '../../lib/photo-record';
+import { localeFromPath } from '../../lib/i18n';
+import { buildUrl } from '../../utils/url';
+import { buildSEOData } from '../../utils/seo';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+const labels = { family: vi ? 'Gia đình' : 'Family', scenery: vi ? 'Phong cảnh' : 'Scenery', moments: vi ? 'Khoảnh khắc' : 'Moments' };
+const seo = buildSEOData({ title: 'Photos', description: vi ? 'Ảnh gia đình, cảnh đẹp và những khoảnh khắc Hiển muốn giữ lại.' : 'Family photographs, beautiful scenery, and moments Hien wants to keep.', path: 'photos/', kind: 'listing' });
+---
+<SiteLayout seo={seo}>
+ <div class="room photos-room">
+  <header class="photos-header"><div><p class="eyebrow">{vi ? 'GIỮ LẠI NHỮNG KHOẢNH KHẮC' : 'MOMENTS WORTH KEEPING'}</p><h1>Photos</h1><p>{seo.description}</p></div><a class="button" href={buildUrl('photos/upload/')}>{vi ? 'Thêm ảnh' : 'Add photo'}</a></header>
+  <p class="photo-hint">{vi ? 'Bấm vào ảnh để xem rõ hơn trên nền đen. Chọn 1:1 để xem kích thước gốc.' : 'Select a photo to view it against a dark background. Choose 1:1 for its original size.'}</p>
+  <nav class="album-links" aria-label={vi ? 'Album ảnh' : 'Photo albums'}>{photoAlbums.map((album) => <a href={`#${album}`}>{labels[album]} <span>({photos.filter((photo) => photo.album === album).length})</span></a>)}</nav>
+  {photoAlbums.map((album) => <section class="photo-album" aria-labelledby={album}>
+   <h2 id={album}>{labels[album]}</h2>
+   <div class="photo-grid">{photos.filter((photo) => photo.album === album).map((photo) => <figure class="photo-card">
+    <PhotoLink photo={photo} />
+    <figcaption data-original-content><h3>{vi ? photo.title : photo.titleEn ?? photo.title}</h3><p>{vi ? photo.description : photo.descriptionEn ?? photo.description}</p></figcaption>
+   </figure>)}</div>
+   {!photos.some((photo) => photo.album === album) && <p class="album-empty">{vi ? 'Album này chưa có ảnh. Những khoảnh khắc mới sẽ được thêm tại đây.' : 'No photographs in this album yet. New moments will appear here.'}</p>}
+  </section>)}
+ </div>
+</SiteLayout>
+<style>
+ .photos-header { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+ .photo-hint { margin: 1rem 0 1.5rem; font-size: .9rem; }
+ .album-links { display: flex; flex-wrap: wrap; gap: .75rem; }
+ .album-links a { border: 1px solid #cbd5e1; padding: .5rem .85rem; border-radius: 2rem; color: #115e59; text-decoration: none; }
+ .album-links a:hover { background: #f0fdfa; }
+ .photo-album { margin-top: 2.5rem; scroll-margin-top: 5rem; }
+ .photo-album h2 { margin-bottom: 1.25rem; }
+ .photo-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,16rem),1fr)); gap: 1.5rem; align-items: start; }
+ .photo-card { margin: 0; border: 1px solid #e2e8f0; border-radius: .9rem; padding: .5rem; }
+ figcaption { padding: .85rem .5rem .5rem; } h3 { font-weight: 700; margin-bottom: .35rem; } figcaption p { font-size: .9rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+ .album-empty { padding: 1.5rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: .75rem; }
+</style>
