@@ -1,0 +1,21 @@
+# Music & Video
+
+The existing `/music/` URL is retained. Favorite music and favorite videos are separate categories. Personal performances and music knowledge remain available.
+
+## Send a link
+
+Open Music & Video → Share a link. Choose music or video, enter a title, a YouTube/Facebook video URL, and an optional description. Continue on GitHub, sign in and create the prefilled issue. Submissions are public on GitHub even before moderation. No access token is required from visitors.
+
+## Approve or remove
+
+In `sugia279/hiens-nha` → Issues, open the `[Media]` submission. In the right sidebar, select **Labels** → `media-approved`. The archive workflow creates this label after the first media submission; if needed, create it manually through Issues → Labels → New label.
+
+An approved, valid link is archived to `data/media/issue-N.json`. After the Archive guestbook workflow completes, the Pages workflow publishes the updated favorite list. Removing the label or deleting the issue removes the link after the same workflow cycle. Closing an issue alone does not remove an approved link. Editing an approved issue updates its published contents, so remove the approval label first if a revision needs another review.
+
+The marker and JSON in the issue body must be preserved. Invalid URLs or malformed data are not published. Descriptions render as escaped text. Facebook private/deleted videos may still be unavailable on Facebook; the website does not bypass platform access controls.
+
+To retry a failed synchronization, run **Actions → Archive guestbook → Run workflow**, supplying the issue number. Keep the existing workflow name because Pages deploys after its successful completion.
+
+## Navigation state
+
+Native tree branches default to closed for a new visitor. Their expanded state uses logical paths in browser storage, shared across VI/EN and phone/desktop trees. Page navigation restores those states. The phone overlay still closes after a normal internal link selection; tablet/laptop sidebars remain open. If storage is blocked, navigation works but state cannot survive a full page load.
