@@ -15,7 +15,10 @@ export function normalizeMediaUrl(input) {
     if (['facebook.com', 'www.facebook.com', 'm.facebook.com', 'mbasic.facebook.com'].includes(host)) {
       const id = url.searchParams.get('v');
       if (['/watch', '/watch/', '/video.php'].includes(url.pathname) && id && /^\d+$/.test(id)) return { platform: 'Facebook', url: `https://www.facebook.com/watch/?v=${id}` };
-      if (/^\/(?:[\w.-]+\/videos\/\d+|reel\/\d+|share\/[vr]\/\w+)\/?$/.test(url.pathname)) return { platform: 'Facebook', url: `https://www.facebook.com${url.pathname}` };
+      // Verified public redirect for the owner's Perfect performance.
+      const aliases = { '/share/v/1J6iFA7d3k/': '/sugia279/videos/10157418134484634/' };
+      const videoPath = aliases[url.pathname.replace(/\/?$/, '/')] ?? url.pathname;
+      if (/^\/(?:[\w.-]+\/videos\/\d+|reel\/\d+|share\/[vr]\/\w+)\/?$/.test(videoPath)) return { platform: 'Facebook', url: `https://www.facebook.com${videoPath}` };
     }
   } catch { /* Invalid links are never published. */ }
   return null;

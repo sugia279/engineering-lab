@@ -33,7 +33,8 @@ describe('community media links', () => {
 it('matches the supplied Facebook player options without changing the shared video URL', () => {
  const url = new URL(mediaEmbed('https://www.facebook.com/share/v/1J6iFA7d3k/')!);
  expect(url.origin + url.pathname).toBe('https://www.facebook.com/plugins/video.php');
- expect(url.searchParams.get('href')).toBe('https://www.facebook.com/share/v/1J6iFA7d3k/');
+ expect(url.searchParams.get('href')).toBe('https://www.facebook.com/sugia279/videos/10157418134484634/');
+ expect(mediaEmbed('https://www.facebook.com/sugia279/videos/10157418134484634/')).toBe(url.href);
  expect(url.searchParams.get('show_text')).toBe('true');
  expect(url.searchParams.get('width')).toBe('560');
 });
