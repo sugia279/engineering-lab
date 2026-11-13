@@ -1,0 +1,43 @@
+---
+import { repository } from '../../config/site';
+import { localeFromPath } from '../../lib/i18n';
+const vi = localeFromPath(Astro.url.pathname) === 'vi';
+---
+<section aria-labelledby="send-request"><h2 id="send-request">{vi ? 'Gửi một điều muốn nhờ' : 'Ask for a little help'}</h2>
+<p>{vi ? 'Cần tài khoản GitHub. Bạn xác nhận tạo issue ở bước tiếp theo; điền form chưa gửi yêu cầu. Nội dung công khai trên GitHub trước khi duyệt, nên hãy chỉ chia sẻ thông tin có thể công khai.' : 'A GitHub account is required. Confirm creation on the next page; filling this form does not send a request. Submissions are public on GitHub before review, so share only public information.'}</p>
+<form id="request-form" data-repository={repository}>
+<label for="request-title">{vi ? 'Bạn muốn nhờ việc gì?' : 'What do you need help with?'}</label><input id="request-title" name="title" type="text" minlength="3" maxlength="120" required />
+<label for="request-category">{vi ? 'Loại yêu cầu' : 'Category'}</label><select id="request-category" name="category"><option value="technology">{vi ? 'Công nghệ' : 'Technology'}</option><option value="creative">{vi ? 'Sáng tạo' : 'Creative'}</option><option value="information">{vi ? 'Tìm hiểu / tư vấn' : 'Information / advice'}</option><option value="other">{vi ? 'Việc khác' : 'Other'}</option></select>
+<label for="request-priority">{vi ? 'Mức độ cần hỗ trợ' : 'Requested priority'}</label><select id="request-priority" name="priority"><option value="normal">{vi ? 'Bình thường' : 'Normal'}</option><option value="low">{vi ? 'Khi thuận tiện' : 'When convenient'}</option><option value="high">{vi ? 'Cần sớm' : 'Soon'}</option></select>
+<label for="request-description">{vi ? 'Bối cảnh và việc cần hỗ trợ' : 'Context and help needed'}</label><textarea id="request-description" name="description" rows="6" minlength="10" maxlength="4000" required></textarea>
+<label for="request-result">{vi ? 'Kết quả bạn mong đợi' : 'Expected result'}</label><textarea id="request-result" name="expectedResult" rows="3" minlength="3" maxlength="1000" required></textarea>
+<label for="request-tags">{vi ? 'Tags (cách nhau bằng dấu phẩy; không bắt buộc)' : 'Tags (comma separated; optional)'}</label><input id="request-tags" type="text" name="tags" maxlength="490" />
+<p id="request-status" role="status"></p><button id="request-submit" type="submit" class="button" disabled>{vi ? 'Tiếp tục trên GitHub →' : 'Continue on GitHub →'}</button>
+<noscript><p>{vi ? 'Bật JavaScript để điền và gửi yêu cầu.' : 'Enable JavaScript to submit a request.'}</p></noscript>
+</form></section>
+<script>
+import { requestMarker, validateRequest } from '../../lib/requests.mjs';
+import { parseTags, submissionUrl } from '../../lib/submission-fields.mjs';
+const form = document.querySelector<HTMLFormElement>('#request-form');
+if (form) {
+ const vi = document.documentElement.lang === 'vi';
+ form.querySelector<HTMLButtonElement>('#request-submit')!.disabled = false;
+ form.addEventListener('submit', event => {
+  event.preventDefault(); if (!form.reportValidity()) return;
+  const data = new FormData(form);
+  const payload = validateRequest({ title: data.get('title'), description: data.get('description'), expectedResult: data.get('expectedResult'), category: data.get('category'), priority: data.get('priority'), tags: parseTags(String(data.get('tags') ?? '')) });
+  const status = document.getElementById('request-status')!;
+  if (!payload) { status.textContent = vi ? 'Kiểm tra nội dung và tags: tối đa 12 tag, mỗi tag 40 ký tự.' : 'Check the content and tags: up to 12 tags of 40 characters.'; return; }
+  const url = submissionUrl(`[Nhờ vả] ${payload.title}`, requestMarker, payload, form.dataset.repository!);
+  if (!url) { status.textContent = vi ? 'Nội dung quá dài để chuyển qua liên kết. Hãy rút gọn; nội dung vẫn được giữ ở đây và có thể bổ sung trên GitHub sau khi gửi.' : 'Too long for a transfer link. Please shorten it; your text stays here and you can add details on GitHub after sending.'; return; }
+  location.assign(url);
+ });
+}
+</script>
+<style>
+section { margin-top: 2.5rem; border-top: 1px solid #cbd5e1; padding-top: 1rem; }
+form { display: grid; gap: .6rem; max-width: 46rem; margin-block: 1.5rem; }
+label { font-weight: 600; margin-top: .5rem; }
+input, select, textarea { width: 100%; padding: .7rem; border: 1px solid #94a3b8; border-radius: .4rem; color: #0f172a; background: white; }
+button { justify-self: start; }
+</style>

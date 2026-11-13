@@ -12,7 +12,8 @@ const rooms = [
   ['novels/', vi ? 'Tủ truyện' : 'Novels', vi ? 'Một chút tiên hiệp, một khoảng thời gian thảnh thơi.' : 'Stories to get lost in, one chapter at a time.', '02'],
   ['music/', vi ? 'Âm nhạc & Video' : 'Music & Video', vi ? 'Học nhạc, chơi đàn và lưu lại những giai điệu.' : 'Learning, playing, and keeping the melodies.', '03'],
   ['photos/', vi ? 'Hình ảnh' : 'Photos', vi ? 'Ảnh gia đình, cảnh đẹp và những khoảnh khắc muốn giữ lại.' : 'Family, scenery, and moments to keep.', '04'],
-  ['projects/', vi ? 'Dự án' : 'Projects', vi ? 'Những thứ Hiển đang làm và đã xây dựng.' : 'Things Hien builds and experiments with.', '05'],
+  ['requests/', vi ? 'Tiệm Nhờ Vả' : 'Little Help Shop', vi ? 'Gửi điều muốn nhờ, theo dõi tiến độ và kết quả.' : 'Ask for help, follow progress and results.', '05'],
+  ['projects/', vi ? 'Dự án' : 'Projects', vi ? 'Những thứ Hiển đang làm và đã xây dựng.' : 'Things Hien builds and experiments with.', '06'],
 ];
 const seo = buildSEOData({ title: siteConfig.name, description: siteConfig.description, path: '/', kind: 'home' });
 ---
@@ -41,7 +42,8 @@ const seo = buildSEOData({ title: siteConfig.name, description: siteConfig.descr
     <aside class="house-note" aria-label={vi ? 'Một lời nhắn từ Hiển' : 'A note from Hien'}>
       <p class="eyebrow">{vi ? 'TIỆM NHỜ VẢ — TÍCH CÔNG ĐỨC' : 'A LITTLE HELP, A LITTLE GOOD KARMA'}</p>
       <h2>{vi ? '“Việc của bạn, công đức của tui!”' : '“Your request, my good karma!”'}</h2>
-      <p>{vi ? 'Có ý tưởng, lời nhắn hay điều muốn nhờ? Ghé sổ lưu bút, Hiển sẽ đọc khi có thời gian.' : 'An idea, a note, or something you need help with? Leave it in the guestbook; Hien will read it when he can.'}</p>
+      <p>{vi ? 'Có ý tưởng, lời nhắn hay điều muốn nhờ? Ghé Tiệm Nhờ Vả, Hiển sẽ xem xét khi có thời gian.' : 'An idea, a note, or something you need help with? Visit the Little Help Shop; Hien will review it when he can.'}</p>
+      <p><a href={buildUrl('requests/')}>{vi ? 'Ghé Tiệm Nhờ Vả →' : 'Visit the Little Help Shop →'}</a></p>
     </aside>
   </div>
 </SiteLayout>

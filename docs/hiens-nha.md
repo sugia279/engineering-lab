@@ -1,3 +1,5 @@
+> Hướng dẫn nền ban đầu. Hiện trạng đầy đủ và Tiệm Nhờ Vả: [Sổ tay dự án](project/README.md).
+
 # Hien's Nha
 
 Hien's Nha (Nhà của Hiển) is a personal home for knowledge, projects, novels,
