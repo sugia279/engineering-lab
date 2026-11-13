@@ -34,7 +34,7 @@ const seo = buildSEOData({ title: 'Music & Video', description: vi ? 'Kiến th�
           <p class="eyebrow">{heading} · {item.platform}</p><h3 data-original-content>{item.title}</h3>
           <p data-original-content style="white-space: pre-wrap">{item.description}</p>
           <p data-original-content>{item.tags.map((tag) => <span class="media-tag">#{tag} </span>)}</p>
-          <iframe src={mediaEmbed(item.url)!} title={item.title} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+          <iframe style={item.platform === 'Facebook' ? 'aspect-ratio: 560 / 429; overflow: hidden' : undefined} src={mediaEmbed(item.url)!} title={item.title} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen" allowfullscreen></iframe>
           <p>{vi ? 'Nếu nền tảng không cho phép nhúng video này, hãy mở liên kết bên dưới.' : 'If the platform does not allow embedding this video, open the link below.'}</p>
           <a href={item.url} target="_blank" rel="noopener noreferrer">{vi ? 'Mở trên' : 'Open on'} {item.platform} ↗</a>
         </article>)}</div> : <p>{vi ? 'Chưa có liên kết được duyệt. Bạn có thể gửi gợi ý bên dưới.' : 'No approved links yet. Share a suggestion below.'}</p>}
