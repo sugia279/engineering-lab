@@ -1,4 +1,6 @@
 ---
+import KnowledgeForm from '../../components/site/KnowledgeForm.astro';
+import SharedKnowledge from '../../components/site/SharedKnowledge.astro';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import { buildSEOData } from '../../utils/seo';
 import { buildUrl } from '../../utils/url';
@@ -20,5 +22,7 @@ const seo = buildSEOData({ title: 'Knowledge', description: vi ? 'Ghi chép, bà
     <div class="room-grid">{types.map(([path, title, description]) => (
       <a class="room-card" href={buildUrl(path!)}><h2>{title}</h2><p>{description}</p></a>
     ))}</div>
+    <SharedKnowledge />
+    <KnowledgeForm />
   </div>
 </SiteLayout>
