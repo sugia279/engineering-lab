@@ -5,19 +5,45 @@
  * Depends on: SeriesContext, ResolvedSeriesEntry types, URL utility.
  */
 import type { ResolvedSeriesEntry } from '../../types/content';
+import { localeFromPath, localeUrl } from '../../lib/i18n';
 
 interface Props {
   seriesTitle: string;
   seriesUrl: string;
   previous?: ResolvedSeriesEntry;
   next?: ResolvedSeriesEntry;
+  chapterMode?: boolean;
+  position?: 'top' | 'bottom';
 }
 
-const { seriesTitle, seriesUrl, previous, next } = Astro.props;
+const { seriesTitle, seriesUrl, previous, next, chapterMode = false, position = 'bottom' } = Astro.props;
+const locale = localeFromPath(Astro.url.pathname);
+const vi = locale === 'vi';
 ---
 
+{chapterMode && (
+  <nav class="chapter-nav" data-chapter-nav={position} aria-label={vi ? 'Điều hướng chương truyện' : 'Chapter navigation'}>
+    {previous ? (
+      <a class="chapter-nav__button" href={localeUrl(previous.url, locale)} rel="prev" title={previous.title}>
+        <span aria-hidden="true">←</span> {vi ? 'Chương trước' : 'Previous chapter'}
+      </a>
+    ) : (
+      <span class="chapter-nav__button chapter-nav__button--disabled" aria-disabled="true"><span aria-hidden="true">←</span> {vi ? 'Chương trước' : 'Previous chapter'}</span>
+    )}
+    <a class="chapter-nav__button chapter-nav__button--home" href={localeUrl(seriesUrl, locale)} title={seriesTitle}>
+      <span aria-hidden="true">⌂</span> {vi ? 'Trang chủ truyện' : 'Story home'}
+    </a>
+    {next ? (
+      <a class="chapter-nav__button" href={localeUrl(next.url, locale)} rel="next" title={next.title}>
+        {vi ? 'Chương sau' : 'Next chapter'} <span aria-hidden="true">→</span>
+      </a>
+    ) : (
+      <span class="chapter-nav__button chapter-nav__button--disabled" aria-disabled="true">{vi ? 'Chương sau' : 'Next chapter'} <span aria-hidden="true">→</span></span>
+    )}
+  </nav>
+)}
 {
-  (previous || next) && (
+  !chapterMode && (previous || next) && (
     <nav aria-label={`Navigation within series: ${seriesTitle}`} class="series-nav">
       <p class="series-nav__label">
         Part of{' '}
@@ -55,6 +81,13 @@ const { seriesTitle, seriesUrl, previous, next } = Astro.props;
 }
 
 <style>
+  .chapter-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; margin: 1.4rem 0 1.8rem; }
+  .chapter-nav__button { display: flex; align-items: center; justify-content: center; gap: .3rem; min-height: 2.75rem; padding: .65rem .4rem; border: 1px solid #cbd5e1; border-radius: .55rem; background: #fff; color: #0f172a; text-align: center; font-weight: 600; font-size: .875rem; line-height: 1.3; text-decoration: none; }
+  a.chapter-nav__button:hover { border-color: #0f766e; background: #f0fdfa; color: #115e59; }
+  .chapter-nav__button:focus-visible { outline: 2px solid #0f766e; outline-offset: 2px; }
+  .chapter-nav__button--home { border-color: #99f6e4; background: #f0fdfa; color: #115e59; }
+  .chapter-nav__button--disabled { color: #94a3b8; background: #f8fafc; cursor: not-allowed; }
+  @media (max-width: 450px) { .chapter-nav { gap: .35rem; } .chapter-nav__button { padding: .55rem .25rem; font-size: .78rem; } }
   .series-nav {
     margin: 2rem 0;
     padding: 1rem 1.25rem;

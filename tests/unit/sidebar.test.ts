@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { shouldClosePhoneNavigation } from '../../src/components/site/sidebar';
+import { shouldClosePhoneNavigation, shouldDismissPhoneNavigationOutside, expandParentNavigationBranch } from '../../src/components/site/sidebar';
 
 const event = { button: 0, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false, defaultPrevented: false };
 const link = { href: 'https://sugia279.github.io/hiens-nha/music/', target: '', download: '' };
@@ -56,5 +56,25 @@ describe('navigation branch persistence across documents', () => {
     expect(branches[0]!.open).toBe(false);
     initNavigationBranches(rootFor(branches), { getItem: () => { throw new Error('disabled'); }, setItem: () => { throw new Error('disabled'); } }, '/');
     expect(() => branches[0]!.toggle(true)).not.toThrow();
+  });
+});
+
+
+describe('phone tap outside and parent navigation', () => {
+  it('dismisses only an open phone overlay when tapping outside', () => {
+    expect(shouldDismissPhoneNavigationOutside(true, false, false, false)).toBe(true);
+    expect(shouldDismissPhoneNavigationOutside(true, true, false, false)).toBe(false);
+    expect(shouldDismissPhoneNavigationOutside(false, false, false, false)).toBe(false);
+    expect(shouldDismissPhoneNavigationOutside(true, false, true, false)).toBe(false);
+    expect(shouldDismissPhoneNavigationOutside(true, false, false, true)).toBe(false);
+  });
+
+  it('opens and persists the clicked parent on both menu copies before navigation', () => {
+    const branches = [new Branch({ navBranch: '/music/' }), new Branch({ navBranch: '/music/' }), new Branch({ navBranch: '/photos/' })];
+    const expanded = new Set<string>(['/photos/']);
+    const data = new Map<string, string>();
+    expandParentNavigationBranch(branches, expanded, '/music/', { setItem: (key, value) => { data.set(key, value); } }, 'navigation-branches:/hiens-nha/');
+    expect(branches.map((branch) => branch.open)).toEqual([true, true, false]);
+    expect(new Set(JSON.parse(data.get('navigation-branches:/hiens-nha/')!))).toEqual(new Set(['/photos/', '/music/']));
   });
 });

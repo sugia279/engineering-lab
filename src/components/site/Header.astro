@@ -90,6 +90,7 @@ const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
   </div>
   <MobileNavigation items={navigation} currentPath={currentPath} />
 </aside>
+<div class="sidebar-backdrop" aria-hidden="true"></div>
 
 <script>
   import { initSidebar } from './sidebar';
@@ -195,6 +196,7 @@ const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
     border-right: 1px solid rgba(255, 255, 255, 0.06);
   }
   .sidebar__desktop-nav { display: block; }
+  .sidebar-backdrop { display: none; }
 
   @media (max-width: 639px) { .topbar__search { width: calc(100% - 180px); } }
   @media (max-width: 767px) {
@@ -211,5 +213,7 @@ const navigation = primaryNavigation.map((item) => item.href === '/novels/' ? {
     }
     :global(.app-shell:not(.is-collapsed)) .sidebar { transform: translateX(0); }
     .sidebar__desktop-nav { display: none; }
+    .sidebar-backdrop { position: fixed; inset: var(--topbar-h) 0 0; z-index: 150; background: rgba(2, 6, 23, .48); }
+    :global(.app-shell:not(.is-collapsed)) .sidebar-backdrop { display: block; }
   }
 </style>

@@ -6,6 +6,24 @@ export function shouldClosePhoneNavigation(phone: boolean, event: Pick<MouseEven
   try { const url = new URL(link.href); return url.origin === origin && ['http:', 'https:'].includes(url.protocol); } catch { return false; }
 }
 
+/** Dismiss a phone overlay only for a pointer outside both sidebar and its toggle. */
+export function shouldDismissPhoneNavigationOutside(phone: boolean, collapsed: boolean, insideSidebar: boolean, insideToggle: boolean): boolean {
+  return phone && !collapsed && !insideSidebar && !insideToggle;
+}
+
+/** Record a parent destination's expanded state synchronously before its link navigates. */
+export function expandParentNavigationBranch(
+  branches: readonly { open: boolean; dataset: { navBranch?: string } }[],
+  expanded: Set<string>,
+  path: string,
+  storage: Pick<Storage, 'setItem'>,
+  key: string,
+): void {
+  expanded.add(path);
+  for (const peer of branches) if (peer.dataset.navBranch === path) peer.open = true;
+  try { storage.setItem(key, JSON.stringify([...expanded])); } catch { /* Navigation still works. */ }
+}
+
 /** Stable logical paths survive page loads and language changes. */
 export function initNavigationBranches(root: Pick<ParentNode, 'querySelectorAll'>, storage: Pick<Storage, 'getItem' | 'setItem'>, base: string): void {
   const key = `navigation-branches:${base}`;
@@ -16,6 +34,13 @@ export function initNavigationBranches(root: Pick<ParentNode, 'querySelectorAll'
     if (Array.isArray(saved)) expanded = new Set(saved.filter((value): value is string => typeof value === 'string'));
   } catch { /* Corrupt or unavailable storage starts with collapsed branches. */ }
   for (const branch of branches) branch.open = expanded.has(branch.dataset.navBranch!);
+  for (const branch of branches) branch.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const link = target.closest('a[data-nav-parent-link]');
+    if (link?.closest('details[data-nav-branch]') !== branch) return;
+    expandParentNavigationBranch(branches, expanded, branch.dataset.navBranch!, storage, key);
+  });
   for (const branch of branches) branch.addEventListener('toggle', () => {
     const path = branch.dataset.navBranch!;
     if (expanded.has(path) === branch.open) return;
@@ -45,6 +70,17 @@ export function initSidebar(): void {
   restorePreference();
   phone.addEventListener('change', restorePreference);
   toggle.addEventListener('click', () => setCollapsed(!shell.classList.contains('is-collapsed')));
+  document.addEventListener('pointerdown', (event) => {
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (shouldDismissPhoneNavigationOutside(phone.matches, shell.classList.contains('is-collapsed'), sidebar.contains(target), toggle.contains(target))) setCollapsed(true);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && phone.matches && !shell.classList.contains('is-collapsed')) {
+      setCollapsed(true);
+      toggle.focus();
+    }
+  });
   sidebar.addEventListener('click', (event) => {
     const link = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>('a[href]') : null;
     if (link && !link.hasAttribute('download') && shouldClosePhoneNavigation(phone.matches, event, link, window.location.origin)) setCollapsed(true);
