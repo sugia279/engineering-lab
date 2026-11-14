@@ -34,6 +34,7 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@electric-sql/pglite": "0.5.16",
+    "@supabase/supabase-js": "2.119.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/cytoscape": "^3.21.9",
     "@types/node": "^26.1.1",
@@ -53,6 +54,6 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.119.0"
+    "@supabase/auth-js": "2.119.0"
   }
 }

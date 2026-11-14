@@ -22,3 +22,11 @@
 - Blockers / unverified: `supabase start` fails because Docker and Podman are absent. Embedded DB uses real PostgreSQL semantics with a minimal auth schema and simulated claims; no real Auth-issued JWT/PostgREST/Edge gateway, OAuth browser/provider, multi-session race, cloud staging, backup/restore or load measurements yet. Supplied full-stack integration command is deliberately environment-required; it has not passed here.
 - Missing external setup: owner-controlled Supabase account, region/tier/billing, OAuth app/callback, verified owner auth UUID, secure local/staging env configuration. No secrets requested or committed.
 - Next: finish existing-site quality gates, review diff and save final verification milestone; then run full local stack + real-JWT/OAuth checks on a container-enabled machine. Phase 2 UI/import/shadow reads/cutover stay deferred.
+
+## Milestone 1B — Pages compatibility and browser bundle (2026-11-14)
+
+- Branch `feat/backend-foundation`; implementation `c9be4da`; follow-up commit is the commit containing this section.
+- Existing static build/routes pass: 93 smoke tests (including 6 VI/EN backend shells), artifact verification 26/26, 21,530 links / 0 broken, HTML validation. Default Pages budgets pass 1277/1277 (515 KiB JS, existing 600,000-byte limit unchanged).
+- The first build exposed a real regression: full Supabase browser SDK pushed total JS to 742 KiB. Fixed by using the matching pinned auth-only SDK in browser and statically omitting the backend module from the default disabled Pages build. SDK remains on Edge/Node only. This does not enable production login or comments.
+- Edge and browser both reject configured secret/service-role keys. SDK transport test checks caller Authorization and singular RPC representation. Added committed-response guard and same-origin callback privacy metadata; no raw error/token/body logging.
+- Still unverified: provider popup behavior, actual local Supabase, staging and performance. Disabled production build budgets do not establish latency/capacity or approval to enable backend.

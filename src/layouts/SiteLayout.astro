@@ -37,6 +37,7 @@ const localizedSeo = { ...seo,
 <!doctype html>
 <html lang={locale}>
   <head>
+    {accountShell && <meta name="referrer" content="no-referrer" />}
     <DocumentHead seo={localizedSeo} />
     {!notFound && <>
       <link rel="alternate" hreflang="vi" href={siteConfig.origin + localeUrl(currentPath, 'vi')} data-locale-link />

@@ -42,3 +42,14 @@ export function decodeCursor(value: string | null): Cursor | null {
     return { created_at: parsed.created_at, id: uuid(parsed.id) };
   } catch { throw new ApiError(422, 'INVALID_INPUT', 'Invalid cursor'); }
 }
+
+/** Configuration guard only; session JWTs are always verified by Auth, never decoded for trust. */
+export function publicKey(value: unknown): string {
+  const key = typeof value === 'string' ? value : '';
+  if (key.startsWith('sb_publishable_') && key.length > 15) return key;
+  try {
+    const parts = key.split('.');
+    if (parts.length === 3 && JSON.parse(atob(parts[1]!.replace(/-/g, '+').replace(/_/g, '/'))).role === 'anon') return key;
+  } catch { /* invalid configuration */ }
+  throw new Error('A public publishable/anon key is required');
+}

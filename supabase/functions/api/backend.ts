@@ -35,6 +35,9 @@ export function callerBackend(client: SupabaseClient): CallerBackend {
       if (cursor) query = query.or(`created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`);
       const { data, error } = await query; dbError(error); return data as Comment[];
     },
-    async rpc(name, args) { const { data, error } = await client.rpc(name, args).single(); dbError(error); return data as Comment; },
+    async rpc(name, args) { const { data, error } = await client.rpc(name, args).single(); dbError(error);
+      const row = data as Partial<Comment> | null;
+      if (!row || typeof row.id !== 'string' || !Number.isInteger(row.version)) throw new ApiError(503, 'UNAVAILABLE', 'Invalid committed response');
+      return row as Comment; },
   };
 }
