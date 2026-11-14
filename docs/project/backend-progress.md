@@ -1,6 +1,6 @@
 # Backend API + DB progress
 
-Current: Phase 1 local foundation and Phase 2 comments pilot have passing Docker-backed Supabase/Chromium CI at `b8e9893`; see milestone 1F/2B. Real OAuth/staging/production and load gates remain open. Earlier entries are historical snapshots, not current blockers.
+Current: Phase 1 local foundation and Phase 2 comments pilot are verified at `fce4e32` by full Docker-backed Supabase/Chromium CI (35 backend tests). Local/CI work is ready for review; real GitHub OAuth, hosted staging, production cutover and load/release gates remain open. Earlier entries are historical snapshots.
 
 ## Milestone 0 — design freeze (2026-11-14)
 
@@ -97,3 +97,12 @@ Follow-up evidence: commit `250bec49fd3aa7d915b22d199cc4e318f090853f` passed [si
 - Previous auth-generation guard: local `0bee77a`, published `d968ab3ea0850fa453a005ede4b336a94b7d8ba0`. Preserve this exact source when reviewing CI evidence.
 - Browser API reads now attach a session token only after `/me` has verified the current UI identity. `/me` alone may use the pending session for verification; signed-out/unverified reads stay anonymous even if SDK storage still has a token. This prevents private pending text being fetched during a not-yet-verified UI state. Added a regression covering before verification, verified member and SIGNED_OUT; DB/RLS remains the authority.
 - Final gate requires the new 35-test backend suite and full-stack CI; previous passing source remains recorded above. No production enablement.
+
+## Milestone 1I / 2C — local/CI handoff
+
+- Branch `feat/backend-foundation`; final runtime source `fce4e32fa9237066a5af17ce232442fb300c5e9d` (local `7b86fa0`, preserved under `local/comments-verified-session`). Previous auth guard `d968ab3` also passed site/backend CI 25/5.
+- [Site CI 26](https://github.com/sugia279/hiens-nha/actions/runs/43619908831): success. [Backend CI 6](https://github.com/sugia279/hiens-nha/actions/runs/43619908824): success, contracts and Docker-backed Supabase/Chromium pilot. 35 backend tests, 229 unit tests, 93 smoke tests; original quality gates and Deno checks pass. The new auth-generation and unverified-read regressions pass.
+- Real local service evidence includes fresh migrations, A/B/owner Auth JWTs, RLS/direct RPC denial, version/idempotency races, refresh, import rerun changed 0 + public shadow match, and legacy username collision denied. Browser test passed through real API/Auth/PostgREST/DB; only the provider/code exchange is mocked. Pending/edit/one-level reply/moderation/VI-EN/logout are exercised without a GitHub rebuild.
+- Latest CI enabled inventory: 651194 bytes; max route graph/index.html 574921 < 600,000. This uses ADR 0002's manifest dependency closure, not the former enabled aggregate metric or a network benchmark. Default aggregate ceiling remains unchanged and passes.
+- Phase 1 foundation and Phase 2 pilot **local/CI implementation are complete for review**. Full roadmap exit gates involving real OAuth/staging and production remain open: owner Supabase account/project, region/tier/billing, real GitHub app/callback + verified owner UUID, staging rehearsal/restore/abuse controls, production final-delta/source-epoch signoff, measured 10–20 RPS / 50 burst / p95 <2s. Browser sessions intentionally remain page-memory only.
+- [PR #21](https://github.com/sugia279/hiens-nha/pull/21) remains draft. Production source is still Git, no merge/deploy/cutover/cloud provisioning, original archives/assets/routes preserved. The commit adding this handoff changes only this progress document; tested runtime source remains identical to the verified commit.
