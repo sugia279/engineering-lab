@@ -91,3 +91,9 @@ The commit adding this mapping only updates this progress document. Review is dr
 - Re-run auth/backend tests and CI on this code before final handoff. No new provider/cloud/production work.
 
 Follow-up evidence: commit `250bec49fd3aa7d915b22d199cc4e318f090853f` passed [site CI 24](https://github.com/sugia279/hiens-nha/actions/runs/43618879104) and [backend CI 4](https://github.com/sugia279/hiens-nha/actions/runs/43618879095), including Docker/Chromium. Thus actual local import rerun (changed 0) and real-JWT legacy ownership collisions are verified; auth-generation guard is the next tested change. Route-byte scope excludes runtime-computed external/data/WASM requests, so this is not a total network budget.
+
+## Milestone 1H — verified-session read scope (2026-11-14)
+
+- Previous auth-generation guard: local `0bee77a`, published `d968ab3ea0850fa453a005ede4b336a94b7d8ba0`. Preserve this exact source when reviewing CI evidence.
+- Browser API reads now attach a session token only after `/me` has verified the current UI identity. `/me` alone may use the pending session for verification; signed-out/unverified reads stay anonymous even if SDK storage still has a token. This prevents private pending text being fetched during a not-yet-verified UI state. Added a regression covering before verification, verified member and SIGNED_OUT; DB/RLS remains the authority.
+- Final gate requires the new 35-test backend suite and full-stack CI; previous passing source remains recorded above. No production enablement.

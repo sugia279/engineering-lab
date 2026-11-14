@@ -20,3 +20,15 @@ it('a late identity refresh cannot resurrect an automatically signed-out session
   resolve(new Response(JSON.stringify({id:'old-user',role:'owner'}),{headers:{'content-type':'application/json'}}));await refresh;
   expect(runtime.current()).toMatchObject({user:null,busy:false,error:null});
 });
+
+it('unverified or signed-out UI reads never attach a cached session token',async()=>{
+  const fetcher=vi.fn<typeof fetch>().mockImplementation(async input=>new Response(JSON.stringify(String(input).endsWith('/me')?{id:'member',role:'member'}:{items:[],nextCursor:null}),{headers:{'content-type':'application/json'}}));vi.stubGlobal('fetch',fetcher);
+  vi.spyOn(window,'open').mockReturnValue({closed:false,close:()=>{},location:{href:''}} as Window);
+  const runtime=createBackendRuntime({supabaseUrl:'http://127.0.0.1:54321',apiBase:'http://127.0.0.1:54321/functions/v1/api/v1',publishableKey:'sb_publishable_fixture'});
+  await runtime.signIn('/hiens-nha/account/callback/');await runtime.api.comments('entity');
+  expect(new Headers(fetcher.mock.calls[0]![1]?.headers).has('authorization')).toBe(false);
+  await runtime.refresh();await runtime.api.comments('entity');
+  expect(new Headers(fetcher.mock.calls[2]![1]?.headers).get('authorization')).toBe('Bearer local-fixture');
+  sdk.changed!('SIGNED_OUT');await runtime.api.comments('entity');
+  expect(new Headers(fetcher.mock.calls[3]![1]?.headers).has('authorization')).toBe(false);
+});

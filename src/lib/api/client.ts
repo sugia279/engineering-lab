@@ -1,9 +1,9 @@
 import { ApiError, type Comment, type CommentPage, type CommentState, type ContentEntity } from '../../../supabase/functions/_shared/contracts';
 import type { BackendConfig } from './config';
 export interface CurrentUser { id: string; role: 'member' | 'owner' }
-export function createApiClient(config: BackendConfig, getToken: () => Promise<string | null>, fetcher: typeof fetch = fetch) {
+export function createApiClient(config: BackendConfig, getToken: (verifyIdentity?: boolean) => Promise<string | null>, fetcher: typeof fetch = fetch) {
   async function request<T>(path: string, method = 'GET', body?: unknown, idempotencyKey?: string): Promise<T> {
-    const token = await getToken();
+    const token = await getToken(path === '/me');
     const headers = new Headers({ apikey: config.publishableKey });
     if (token) headers.set('Authorization', `Bearer ${token}`);
     if (body !== undefined) headers.set('Content-Type', 'application/json');

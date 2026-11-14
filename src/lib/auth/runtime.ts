@@ -14,10 +14,11 @@ export function createBackendRuntime(config: NonNullable<ReturnType<typeof publi
   let snapshot: AuthSnapshot = { user: null, busy: false, error: null };
   const listeners = new Set<(value: AuthSnapshot) => void>();
   const publish = (next: Partial<AuthSnapshot>) => { snapshot = { ...snapshot, ...next }; listeners.forEach(fn => fn(snapshot)); };
-  const api = createApiClient(config, async () => {
-    if (!auth) return null;
+  const api = createApiClient(config, async (verifyIdentity) => {
+    if (!auth || (!verifyIdentity && !snapshot.user)) return null;
     const { data, error } = await auth.auth.getSession();
     if (error) throw error;
+    if (!verifyIdentity && !snapshot.user) return null;
     return data.session?.access_token ?? null;
   });
   let popup: Window | null = null;
