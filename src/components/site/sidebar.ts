@@ -34,11 +34,11 @@ export function initNavigationBranches(root: Pick<ParentNode, 'querySelectorAll'
     if (Array.isArray(saved)) expanded = new Set(saved.filter((value): value is string => typeof value === 'string'));
   } catch { /* Corrupt or unavailable storage starts with collapsed branches. */ }
   for (const branch of branches) branch.open = expanded.has(branch.dataset.navBranch!);
-  for (const branch of branches) branch.addEventListener('click', (event) => {
+  for (const branch of branches) branch.parentElement?.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof Element)) return;
     const link = target.closest('a[data-nav-parent-link]');
-    if (link?.closest('details[data-nav-branch]') !== branch) return;
+    if (link?.parentElement !== branch.parentElement) return;
     expandParentNavigationBranch(branches, expanded, branch.dataset.navBranch!, storage, key);
   });
   for (const branch of branches) branch.addEventListener('toggle', () => {

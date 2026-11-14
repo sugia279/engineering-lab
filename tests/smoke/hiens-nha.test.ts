@@ -92,7 +92,7 @@ describe('primary menu overview links and homepage ordering', () => {
     const expectedEn = ['Music & Video', 'Photos', 'Projects', 'Little Help Shop', 'Knowledge', 'Novels'];
     for (const [path, titles] of [['index.html', expected], ['en/index.html', expectedEn]] as const) {
       const main = html(path).split('<main')[1]!.split('</main>')[0]!;
-      const actual = [...main.matchAll(/<a class="room-card"[^>]*>[\s\S]*?<h2[^>]*>([^<]+)<\/h2>/g)].map((m) => m[1]);
+      const actual = [...main.matchAll(/<a class="room-card"[^>]*>[\s\S]*?<h2[^>]*>([^<]+)<\/h2>/g)].map((m) => m[1]!.replaceAll('&amp;', '&'));
       expect(actual).toEqual(titles);
     }
   });
@@ -101,6 +101,8 @@ describe('primary menu overview links and homepage ordering', () => {
       const page = html(`${prefix}index.html`);
       expect(page).not.toContain('class="nav-overview"');
       expect(page).toContain('data-nav-parent-link');
+      // The overview link must be outside <details> so it remains visible when closed.
+      expect(page).toMatch(/<li class="nav-node"[^>]*>\s*<a[^>]*data-nav-parent-link[^>]*>[\s\S]*?<\/a>\s*<details class="nav-branch"/);
       expect(page).toContain('class="nav-expander');
       expect(page).toContain(`href="${base}${prefix}music/"`);
       expect(page).toContain(`href="${base}${prefix}photos/"`);
