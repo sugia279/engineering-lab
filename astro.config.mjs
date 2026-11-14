@@ -13,6 +13,6 @@ export default defineConfig({
     plugins: [tailwindcss()],
     // Keep client modules external so Vite resolves external dynamic-import
     // preload markers before Astro emits the final pages (Pagefind runtime).
-    build: { assetsInlineLimit: 0 },
+    build: { assetsInlineLimit: 0, manifest: true },
   },
 });

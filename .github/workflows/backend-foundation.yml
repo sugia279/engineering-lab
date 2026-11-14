@@ -1,0 +1,56 @@
+name: Backend foundation checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Embedded PostgreSQL, HTTP and client contracts
+        run: npm run test:backend
+      - name: Deno Edge typecheck
+        run: npm run check:edge
+  local-stack:
+    name: Local Supabase and browser pilot
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Build current Git source and inventory import contexts
+        run: npm run build
+      - name: Prepare disposable local test providers
+        run: node scripts/backend/prepare-ci.mjs
+      - name: Start local Supabase (credentials stay out of logs)
+        run: |
+          npx supabase start --exclude studio,postgres-meta,imgproxy,supavisor > /tmp/hiens-local-start.log 2>&1 || { node scripts/backend/start-errors.mjs; exit 1; }
+          npx supabase status -o json > backend-test-results/stack.json
+      - name: Bootstrap isolated members/owner and rehearse import
+        run: node --import tsx scripts/backend/fixtures.mjs
+      - name: Real JWT, direct Data API/RPC, concurrency and refresh checks
+        run: npm run test:backend:integration
+      - name: Compile local API comments and enforce route budgets
+        run: |
+          export LOCAL_PUBLISHABLE_KEY="$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync("backend-test-results/sessions.json")).key)')"
+          npm run build:pilot
+          npm run check:pilot
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Browser pilot against real local API
+        run: npm run test:browser
+      - name: Stop local stack
+        if: always()
+        run: npx supabase stop --no-backup

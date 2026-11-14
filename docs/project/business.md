@@ -31,3 +31,7 @@ Thứ tự menu chính: Trang chủ → Âm nhạc & Video → Hình ảnh → D
 ## Tiệm Nhờ Vả là phòng riêng
 
 Sổ lưu bút giữ chức năng chào hỏi/bình luận. Các lời nhắn loại request cũ vẫn ở Sổ theo contract cũ, không tự migrate để tránh mất dữ liệu hoặc đổi quyền duyệt. Trang Home và Sổ dẫn sang Tiệm cho các yêu cầu mới cần theo dõi tiến độ. Một yêu cầu không tự động trở thành project/knowledge; muốn công bố kết quả thành bài viết phải đi qua luồng xuất bản tương ứng.
+
+## Pilot bình luận qua API trong local
+
+Phần đang chạy production vẫn là bảng trên. Khi bật đúng source/epoch ở môi trường local, pilot cho member gửi/sửa/xóa bình luận của mình, xem pending riêng và trả lời một cấp; sửa bình luận đã duyệt sẽ tạm ẩn để duyệt lại. Owner duyệt/ẩn/từ chối có lý do và version check, không sửa thay nội dung của người khác. Sổ lưu bút API đọc tổng hợp các thread và ghi lời nhắn mới vào thread chung. `My comments` giữ khả năng quản lý trả lời của mình khi parent bị ẩn; không tiết lộ nội dung parent chưa public. Tác giả import chưa liên kết Auth không được claim bằng tên trùng. Đây chưa là luồng đã cutover trên Pages.
