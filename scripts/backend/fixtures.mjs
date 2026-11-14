@@ -25,6 +25,9 @@ try {
   const imported=spawnSync(process.execPath,['--import','tsx','scripts/migration/comments.mjs','--apply'],{env:{...process.env,LOCAL_DATABASE_URL:database},encoding:'utf8'});
   if(imported.status!==0) throw new Error('Local import rehearsal failed: '+imported.stderr.replaceAll(database,'[local-db]'));
   console.log(imported.stdout);
+  const rerun=spawnSync(process.execPath,['--import','tsx','scripts/migration/comments.mjs','--apply'],{env:{...process.env,LOCAL_DATABASE_URL:database},encoding:'utf8'});
+  if(rerun.status!==0 || JSON.parse(rerun.stdout).changed!==0) throw new Error('Local import rerun was not idempotent');
+  console.log('Local import rerun changed 0 records; shadow projection matches.');
   const entity=(await sql`select id from public.content_entities where canonical_path='/hiens-nha/music/'`)[0];
   if(!entity) throw new Error('Music discussion entity was not registered');
   await sql`update private.backend_settings set comments_source='api',comments_epoch=1,comments_writes_enabled=true where singleton`;

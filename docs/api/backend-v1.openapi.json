@@ -100,6 +100,10 @@
               "string",
               "null"
             ]
+          },
+          "context_path": {
+            "type": "string",
+            "description": "Operator-registered canonical page path, locale-independent."
           }
         },
         "description": "Imported authors stay unclaimed (author_id=null); a matching username never grants edit ownership."
@@ -894,6 +898,21 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
           }
         }
       }
@@ -912,6 +931,21 @@
                 }
               }
             }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
           }
         },
         "parameters": [
@@ -924,6 +958,68 @@
             }
           }
         ]
+      }
+    },
+    "/comments": {
+      "get": {
+        "summary": "Guestbook root feed across registered entities; RLS public + own + owner",
+        "security": [],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "schema": {
+              "enum": [
+                "mine"
+              ]
+            },
+            "description": "Auth required; includes own replies."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated root feed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentPage"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Error401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Error403"
+          },
+          "404": {
+            "$ref": "#/components/responses/Error404"
+          },
+          "422": {
+            "$ref": "#/components/responses/Error422"
+          },
+          "503": {
+            "$ref": "#/components/responses/Error503"
+          }
+        }
       }
     }
   }

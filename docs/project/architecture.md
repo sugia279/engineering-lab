@@ -90,7 +90,7 @@ Chưa implement. Nếu cần ẩn danh, dữ liệu riêng tư, upload nhiều n
 
 ## Foundation backend riêng trong local (14/11/2026)
 
-Production vẫn theo sơ đồ Git/Issues ở trên. [ADR 0001](../decisions/0001-backend-foundation.md) chấp nhận Phase 0–1: `supabase/` chứa local config, migrations/RLS/RPC và Edge HTTP; `src/lib/api`/`auth` là adapter dùng chung cho các shell account/admin VI/EN. Mặc định frontend tắt backend và DB tắt comment writes. Không có composer/API cutover, import, cloud project hoặc writer thứ hai cho dữ liệu production. Xem [cách chạy local](backend-local.md), [OpenAPI](../api/backend-v1.openapi.json) và [tiến độ kiểm chứng](backend-progress.md).
+Production vẫn theo sơ đồ Git/Issues ở trên. [ADR 0001](../decisions/0001-backend-foundation.md) chấp nhận Phase 0–1: `supabase/` chứa local config, migrations/RLS/RPC và Edge HTTP; `src/lib/api`/`auth` là adapter dùng chung cho các shell account/admin VI/EN. Mặc định frontend tắt backend và DB tắt comment writes. Tại mốc foundation chưa có composer; Phase 2 local đã bổ sung UI/import rehearsal như phần bên dưới. Không có API cutover, cloud project hoặc writer thứ hai cho dữ liệu production. Xem [cách chạy local](backend-local.md), [OpenAPI](../api/backend-v1.openapi.json) và [tiến độ kiểm chứng](backend-progress.md).
 
 ```mermaid
 flowchart TD

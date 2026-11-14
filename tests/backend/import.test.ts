@@ -17,6 +17,7 @@ describe('pilot import without author claims or dual writes',()=>{
     expect(()=>planCommentsImport({paths:[base+'guestbook/'],archives:[legacy],base,sourceCommit:'x'})).toThrow('Unregistered');
     expect(()=>planCommentsImport({paths:[base+'music/'],archives:[legacy,legacy],base,sourceCommit:'x'})).toThrow('Duplicate');
     expect(()=>planCommentsImport({paths:[base+'music/'],archives:[{...legacy,message:'x'.repeat(4001)}],base,sourceCommit:'x'})).toThrow('without loss');
+    expect(()=>planCommentsImport({paths:[base+'guestbook/'],archives:[{...legacy,deleted:true,contextPath:undefined,body:''}],base,sourceCommit:'x'})).toThrow('explicit retained context');
   });
   it('imports then reruns idempotently and shadow-compares public visibility with RLS',async()=>{
     const p=plan(); expect((await applyCommentsPlan(db,p)).changed).toBe(5);

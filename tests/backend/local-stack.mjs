@@ -59,3 +59,8 @@ if(fixture){
   fixture.sessions.B=refreshed;await (await import('node:fs/promises')).writeFile('backend-test-results/sessions.json',JSON.stringify(fixture),{mode:0o600});
 }
 console.log('Real local JWT canonical identity, own-view, concurrent idempotency/version and Auth refresh assertions passed.');
+
+const legacy=await call('/rest/v1/comments?author_id=is.null&limit=1');
+assert.equal(legacy.status,200);assert.ok(legacy.data.length>0,'Imported legacy fixture exists');
+for(const token of [A,O]) assert.equal((await call(`${api}/comments/${legacy.data[0].id}`,token,'PATCH',{body:'unverified claim',expectedVersion:legacy.data[0].version})).status,403);
+console.log('Real JWT legacy username collision grants no edit ownership, including owner.');

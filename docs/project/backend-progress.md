@@ -1,5 +1,7 @@
 # Backend API + DB progress
 
+Current: Phase 1 local foundation and Phase 2 comments pilot have passing Docker-backed Supabase/Chromium CI at `b8e9893`; see milestone 1F/2B. Real OAuth/staging/production and load gates remain open. Earlier entries are historical snapshots, not current blockers.
+
 ## Milestone 0 — design freeze (2026-11-14)
 
 - Branch: `feat/backend-foundation`; baseline `main@f3efbf33bc3f4dd75421b77762a96ab8bf1d5736`. Milestone commit: the commit containing this section (see `git log -- docs/project/backend-progress.md`).
@@ -71,3 +73,13 @@ The commit adding this mapping only updates this progress document. Review is dr
 - Added isolated Docker-backed CI job for real Supabase Auth-issued JWTs, direct Data API/RPC, version/idempotency races, refresh, archive import/shadow rehearsal and browser flow. Provider/code exchange only is mocked; backend endpoints use actual local services. This new job has not yet passed at this milestone. No hosted credentials or provisioning.
 - Blockers/unverified: this executor still cannot run Docker/Chromium; real GitHub provider configuration, hosted staging/region/tier/billing, verified real owner UUID, load capacity/p95 and production cutover are outstanding. Need CI evidence before claiming the full-stack pilot gate.
 - Next: run new CI, fix failures, complete regression checks and record final evidence; keep PR draft until external gates are satisfied.
+
+## Milestone 1F / 2B — full local stack verified in CI (2026-11-14)
+
+- Branch `feat/backend-foundation`; local implementation `3de14ec` published as `b8e9893fd1b0fc8efb0f9fa2722908c6540b8a4b` with identical tree `95b0765bbc58204a7c3585370e9df59ac016608d`. Original local milestone is preserved under `local/comments-pilot-milestone`.
+- [Site CI run 23](https://github.com/sugia279/hiens-nha/actions/runs/43618073391): success. [Backend checks run 3](https://github.com/sugia279/hiens-nha/actions/runs/43618073403): success, both contracts and **Local Supabase and browser pilot** jobs.
+- Real CI evidence: fresh Supabase migrations, Auth-issued A/B/owner JWTs, member metadata cannot grant owner, direct Data API/RPC deny rules, pending/public visibility, author-only edits, owner review, stale-version rejection, concurrent same-key create deduplication and competing edits (one 200 / one 409), actual local Auth refresh. Import/shadow comparison retained 2 public legacy records. Chromium 1 test passed: pending → owner approve → public refetch without rebuild, one-level reply, VI/EN same thread, approved edit hides root/reply, own view, XSS rendered as text, logout clears private UI/storage.
+- Provider/code exchange only was mocked. API, Auth verification, PostgREST and PostgreSQL were real local services in CI. This is not proof of actual GitHub OAuth consent/redirect or hosted-region performance. This executor still lacks Docker/browser socket access; CI supplied those runtimes.
+- Local regression evidence: 33 backend tests, 229 original/unit+budget tests, 93 smoke; Astro/Deno checks; build artifact 26/26; 21,661 links with 0 broken; HTML validation. Default JS 527,623 bytes and default aggregate/per-route gates pass. CI enabled inventory 651,087 bytes; largest route graph 574,814 < 600,000, with dynamic chunks included. Default 1785 / pilot 1784 static checks pass; these are not real Lighthouse scores.
+- Follow-up in this milestone: added actual-stack idempotent import rerun and legacy username-collision checks, clarified current runbook/API schema; their new CI run must pass before final handoff. No cloud/production writes.
+- Remaining external/release gates: real GitHub OAuth app/client/callback and verified real owner UUID; owner-controlled Supabase project/region/tier/billing and staging; production final-delta/import/source-epoch cutover signoff. IP/read-abuse protection, retention/restore and 10–20 RPS / 50 burst / p95 target remain unmeasured release work. Current production stays Git, backend disabled.

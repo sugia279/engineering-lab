@@ -71,3 +71,5 @@ Tương lai: tạo ADR cho multi-operator, private requests, backend/DB, anonymo
 ## Backend foundation local
 
 Đọc [ADR 0001](../decisions/0001-backend-foundation.md), [OpenAPI](../api/backend-v1.openapi.json), [runbook](backend-local.md) và [progress](backend-progress.md) trước khi sửa auth/API/SQL. Chạy thêm `npm run test:backend` và `npm run check:edge`; workflow `Backend foundation checks` kiểm tra hai gate này, không deploy. Với Docker/Podman + Supabase local, chạy `npm run test:backend:integration` theo runbook; thiếu môi trường phải báo chưa kiểm chứng. Gate load 10–20 RPS/burst 50 và p95 <2s chỉ đạt khi có số đo, không suy ra từ unit tests.
+
+Phase 2 bổ sung `npm run build:pilot`, `npm run check:pilot` và `npm run backend:comments:dry-run`. `npm run test:backend` bao gồm DOM pending/retry/logout/XSS và migration/shadow/legacy ownership. Job Docker trong backend CI chạy real Auth JWT + RPC/concurrency/import, sau đó `npm run test:browser` với credentials local ignored; chỉ provider handoff được mock. Không báo browser test này là xác minh GitHub OAuth thật. Route budgets tính cả dependency dynamic; default aggregate cũ vẫn giữ.

@@ -1,10 +1,10 @@
 # Run the backend foundation locally
 
-Status: local foundation only; existing pages still use Git/Issues. No production migration or deployment commands are required here.
+Status: Phase 1 foundation + Phase 2 local pilot; production pages still use Git/Issues. No production migration or deployment commands are required here.
 
 ## Prerequisites and commands
 
-Use Node from `.nvmrc`, `npm ci`, Docker Desktop/Rancher Desktop (Docker-compatible engine) or Podman, and enough local RAM. CLI/SDK/Deno versions are pinned in package-lock.json. Storage/realtime/analytics are disabled in this slice to reduce local services. Docker was unavailable in the implementation executor; the full stack sequence below is pending verification.
+Use Node from `.nvmrc`, `npm ci`, Docker Desktop/Rancher Desktop (Docker-compatible engine) or Podman, and enough local RAM. CLI/SDK/Deno versions are pinned in package-lock.json. Storage/realtime/analytics are disabled in this slice to reduce local services. Docker is unavailable in this executor; the Docker-backed full stack and Chromium flow have passed in GitHub CI at b8e9893 (see backend-progress.md).
 
 ```sh
 npm ci
@@ -30,7 +30,7 @@ Do not allow wildcard CORS. Function gateway JWT verification is disabled to all
 
 Create an OAuth app owned by you, with local provider callback `http://127.0.0.1:54321/auth/v1/callback`. Set its client ID/secret in ignored `supabase/.env` and set `[auth.external.github].enabled=true` locally. No credential should be committed. Application callbacks are the exact VI/EN URLs listed in config.toml, including `/hiens-nha/`. Restart the local stack after provider config changes. A hosted staging app needs its own callback and redirect allowlist; do not reuse production credentials without a separate decision.
 
-Visit `/hiens-nha/account/` (or `/hiens-nha/en/account/`). OAuth opens a popup; PKCE verifier, session and refresh token stay in originating page memory. Callback hands a code only to the same-origin opener and immediately clears URL query/hash; opener checks origin + popup identity. Page reload/navigation loses the local session. `/admin/` signs in independently and asks `/me` for DB-backed role; hiding UI never grants access. Current admin is an identity shell, not a moderation editor. OAuth refusal, popup blocking, refresh, revocation and logout against the actual provider remain unverified until a real local/staging app is available.
+Visit `/hiens-nha/account/` (or `/hiens-nha/en/account/`). OAuth opens a popup; PKCE verifier, session and refresh token stay in originating page memory. Callback hands a code only to the same-origin opener and immediately clears URL query/hash; opener checks origin + popup identity. Page reload/navigation loses the local session. `/admin/` signs in independently and asks `/me` for DB-backed role; hiding UI never grants access. Admin now has an owner-only moderation queue. Local Auth refresh/logout and the browser comments flow passed CI with real local JWTs; provider/code exchange was mocked. Real GitHub consent/refusal/redirect, popup policies on target browsers and hosted staging still need an owner OAuth app.
 
 ## Owner bootstrap and fixture registration
 
@@ -51,7 +51,7 @@ Register an isolated local fixture entity (not a real imported thread), then ena
 insert into public.content_entities(collection, legacy_key, canonical_path)
 values ('page', 'local-permission-fixture', '/hiens-nha/local-permission-fixture/')
 returning id;
-update private.backend_settings set comments_writes_enabled=true where singleton;
+update private.backend_settings set comments_source='api',comments_epoch=1,comments_writes_enabled=true where singleton;
 ```
 
 When done: `update private.backend_settings set comments_writes_enabled=false where singleton;`. On a real migrated feature, stopping writes is maintenance, not a rollback to Git. Public frontend flags cannot bypass this DB switch.
@@ -61,19 +61,19 @@ When done: `update private.backend_settings set comments_writes_enabled=false wh
 - `npm run test:backend`: actual embedded PostgreSQL grants/RLS/transactions against a minimal auth schema + HTTP/client contract tests. Claims are set with SQL as a test administrator; this is **not real JWT verification**. PostgreSQL extensions/network/concurrent sessions and Supabase default roles/grants are not emulated fully.
 - `npm run check:edge`: Deno checks the actual entry/import graph. Not an Edge gateway deployment or runtime test.
 - `npm run test:backend:integration`: requires a running **loopback-only** Supabase stack, local publishable key, registered fixture entity, write switch enabled, and three valid Auth-issued access tokens for member A, member B, owner. Set `LOCAL_SUPABASE_URL`, `LOCAL_PUBLISHABLE_KEY`, `LOCAL_ENTITY_ID`, `LOCAL_MEMBER_A_JWT`, `LOCAL_MEMBER_B_JWT`, `LOCAL_OWNER_JWT` privately in the process environment. Tokens stay in memory; command reports assertions only. It tests HTTP + direct Data API/RPC pending/ownership/moderation/version/bypass defenses. It refuses remote hosts and fails if configuration is missing; never reports an omitted suite as passing.
-- CI runs embedded DB/HTTP/client and Deno checks in a separate non-deploying workflow. Full stack/provider/browser/load/backup restore are outstanding gates, not green CI implications.
+- CI runs embedded DB/HTTP/DOM/import/client and Deno checks plus a Docker-backed local Supabase/Chromium job. Real JWT/RPC/concurrency/refresh and a mocked-provider browser flow passed. Real provider, hosted staging, load and restore remain outstanding; no job deploys.
 
 The shared DTO is imported by browser/Node/Deno. SDK dependency has one pinned version. Do not introduce a third copied business implementation. Public raw comment reads also enforce RLS. API responses use no-store (including errors); API errors stay visible to the client and do not become empty lists.
 
 ## Deferred release work
 
-Phase 2: entity mapping using the existing canonical-page helper, comment composer, owner moderation UI, pilot import + dry-run/rerun/shadow diff, source mode marker and archive-writer freeze. Full-stack concurrent moderation/edit and idempotency races need real PostgreSQL sessions. IP-level rate limiting/provider quotas and read-abuse protection require staging infrastructure decisions; Phase 1 enforces per-user mutation quotas in DB, not a global IP limit. Plan cleanup/retention for quota/idempotency/revision data before launch. Backups/restore, region latency and [10–20 / 50 RPS tests](backend-load-test.md) are still unmeasured.
+Phase 2 local code is implemented: entity mapping, composer, owner queue, dry-run/idempotent import/shadow comparison and source marker. Local version/idempotency races passed against real Supabase in CI. Production writer freeze, final import and cutover have not run. IP-level rate limiting/provider quotas and read-abuse protection require staging infrastructure decisions; Phase 1 enforces per-user mutation quotas in DB, not a global IP limit. Plan cleanup/retention for quota/idempotency/revision data before launch. Backups/restore, region latency and [10–20 / 50 RPS tests](backend-load-test.md) are still unmeasured.
 
 Cloud blockers: owner-controlled Supabase account; project region and Free/Pro/billing decision; staging/production environments and OAuth app/allowlist; verified owner UUID; secure environment configuration. No secrets need to be sent through chat. No cloud resource was provisioned here.
 
-## Known enablement blocker
+## Enabled-build byte gate
 
-The disabled/default Pages build meets the existing 600,000-byte JS budget (527,621 bytes). A local build with `PUBLIC_BACKEND_ENABLED=true` compiles but currently totals 639,687 bytes and exceeds that limit. Do not enable it in production yet. Resolve this with a reviewed loading/budget strategy and rerun enabled-mode gates; do not infer that default-build CI covers enabled mode. No budget limit was raised. Browser smoke was also blocked by executor Chromium socket permissions; real OAuth remains unverified.
+The previous all-assets enabled sum exceeded 600,000 bytes. ADR 0002 documents the new route-specific pilot gate: default Git build retains the original aggregate ceiling; enabled pilot enforces the same ceiling on each route's complete static/lazy Vite graph. CI b8e9893 reported 651,087 total emitted bytes, largest route 574,814 bytes (graph), across 254 checked HTML routes. The old enabled aggregate metric is not claimed passing. Browser verification is now available from CI; the executor itself still cannot launch Chromium. Real OAuth/staging remains unverified.
 
 Sources checked for setup: [CLI v3 env precedence](https://supabase.com/docs/guides/local-development/local-and-hosted-projects), [function auth](https://supabase.com/docs/guides/functions/auth), [RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [GitHub OAuth](https://supabase.com/docs/guides/auth/social-sign-in/auth-github), [PostgREST singular responses](https://docs.postgrest.org/en/stable/references/api/resource_representation.html). Match CLI major version when following environment-file instructions.
 
