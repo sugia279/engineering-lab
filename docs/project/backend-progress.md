@@ -40,3 +40,16 @@
 - Browser smoke attempt could not launch Chromium: executor denies its singleton socket. Real popup/login/callback/logout/refresh browser verification remains unperformed; unit tests of message origin/source and memory storage are not equivalent.
 - Full Supabase start remains blocked by missing Docker/Podman; JWT/Auth/PostgREST integration runner is supplied but not run. No multi-session concurrency, staging, backup restore, cloud quota/IP protection or load benchmark was verified. 10–20 RPS steady, 50 RPS burst, p95 <2s are targets to measure, with read-only k6 harness and mixed-write plan prepared.
 - Next in order: container-enabled machine → fresh local reset and real-JWT direct-RPC tests → GitHub OAuth provider/browser tests and owner bootstrap → enabled Pages bundle gate → staging/account/region/tier setup after owner decisions → Phase 2 composer/moderation UI/import rehearsal. Existing features remain Git mode throughout this work.
+
+## Published review branch
+
+Branch: `feat/backend-foundation`. Git HTTPS push was unavailable in the executor, so GitHub's connected API published the same trees (each tree SHA compared exactly to local Git before publishing). Commit authorship metadata differs; original local milestone commits remain preserved locally.
+
+| Milestone | Local commit | Published commit |
+| --- | --- | --- |
+| Design freeze | `877dd4a` | `03cfb8cdcf37807a6d18e0694b2019496c40c4c0` |
+| Foundation | `c9be4da` | `da8c89a16dfd43c5684ca338978b1adb5964ea38` |
+| Browser isolation | `f33a126` | `ef59149f50d3cfbd2f2c0d3d4e6db2bace5da4d1` |
+| Verification | `a52e056` | `84c88f5cc3891f97306974f8b3bf268320790ddf` |
+
+The commit adding this mapping only updates this progress document. Review is draft; no merge, production deploy or cloud provisioning is performed. CI status must be checked separately from local results above.
