@@ -47,4 +47,22 @@ describe('published imported novel', () => {
     expect(last).toContain('rel="prev"');
     expect(last).not.toContain('rel="next"');
   });
+
+  it('shows previous, story home, and next controls above and below every novel chapter', () => {
+    for (const prefix of ['', 'en/']) {
+      const first = html(`${prefix}articles/${title}/${chapters[0]}/index.html`);
+      const middle = html(`${prefix}articles/${title}/${chapters[1]}/index.html`);
+      const last = html(`${prefix}articles/${title}/${chapters[chapters.length - 1]}/index.html`);
+      for (const chapter of [first, middle, last]) {
+        expect(chapter.match(/data-chapter-nav="(?:top|bottom)"/g)).toEqual(['data-chapter-nav="top"', 'data-chapter-nav="bottom"']);
+        expect(chapter).toContain(`href="${BASE}${prefix}${folderRoute}"`);
+      }
+      expect(first.match(/rel="next"/g)).toHaveLength(2);
+      expect(first).not.toContain('rel="prev"');
+      expect(middle.match(/rel="prev"/g)).toHaveLength(2);
+      expect(middle.match(/rel="next"/g)).toHaveLength(2);
+      expect(last.match(/rel="prev"/g)).toHaveLength(2);
+      expect(last).not.toContain('rel="next"');
+    }
+  });
 });

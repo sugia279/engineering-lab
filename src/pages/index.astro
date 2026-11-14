@@ -8,12 +8,12 @@ import { siteConfig } from '../config/site';
 import { localeFromPath } from '../lib/i18n';
 const vi = localeFromPath(Astro.url.pathname) === 'vi';
 const rooms = [
-  ['knowledge/', vi ? 'Góc tri thức' : 'Knowledge', vi ? 'Những điều học được, ghi lại và chia sẻ.' : 'Ideas learned, recorded, and shared.', '01'],
-  ['novels/', vi ? 'Tủ truyện' : 'Novels', vi ? 'Một chút tiên hiệp, một khoảng thời gian thảnh thơi.' : 'Stories to get lost in, one chapter at a time.', '02'],
-  ['music/', vi ? 'Âm nhạc & Video' : 'Music & Video', vi ? 'Học nhạc, chơi đàn và lưu lại những giai điệu.' : 'Learning, playing, and keeping the melodies.', '03'],
-  ['photos/', vi ? 'Hình ảnh' : 'Photos', vi ? 'Ảnh gia đình, cảnh đẹp và những khoảnh khắc muốn giữ lại.' : 'Family, scenery, and moments to keep.', '04'],
-  ['requests/', vi ? 'Tiệm Nhờ Vả' : 'Little Help Shop', vi ? 'Gửi điều muốn nhờ, theo dõi tiến độ và kết quả.' : 'Ask for help, follow progress and results.', '05'],
-  ['projects/', vi ? 'Dự án' : 'Projects', vi ? 'Những thứ Hiển đang làm và đã xây dựng.' : 'Things Hien builds and experiments with.', '06'],
+  ['music/', vi ? 'Âm nhạc & Video' : 'Music & Video', vi ? 'Học nhạc, chơi đàn và lưu lại những giai điệu.' : 'Learning, playing, and keeping the melodies.', '01'],
+  ['photos/', vi ? 'Hình ảnh' : 'Photos', vi ? 'Ảnh gia đình, cảnh đẹp và những khoảnh khắc muốn giữ lại.' : 'Family, scenery, and moments to keep.', '02'],
+  ['projects/', vi ? 'Dự án' : 'Projects', vi ? 'Những thứ Hiển đang làm và đã xây dựng.' : 'Things Hien builds and experiments with.', '03'],
+  ['requests/', vi ? 'Tiệm Nhờ Vả' : 'Little Help Shop', vi ? 'Gửi điều muốn nhờ, theo dõi tiến độ và kết quả.' : 'Ask for help, follow progress and results.', '04'],
+  ['knowledge/', vi ? 'Góc tri thức' : 'Knowledge', vi ? 'Những điều học được, ghi lại và chia sẻ.' : 'Ideas learned, recorded, and shared.', '05'],
+  ['novels/', vi ? 'Tủ truyện' : 'Novels', vi ? 'Một chút tiên hiệp, một khoảng thời gian thảnh thơi.' : 'Stories to get lost in, one chapter at a time.', '06'],
 ];
 const seo = buildSEOData({ title: siteConfig.name, description: siteConfig.description, path: '/', kind: 'home' });
 ---

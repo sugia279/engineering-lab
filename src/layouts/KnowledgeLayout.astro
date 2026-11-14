@@ -85,6 +85,17 @@ const structuredData = breadcrumbs.length > 0
       <TagList tags={entry.tags} mode="linked" />
     </header>
 
+    {isChapter && entry.seriesContext && (
+      <SeriesNavigation
+        seriesTitle={entry.seriesContext.seriesTitle}
+        seriesUrl={entry.seriesContext.seriesUrl}
+        previous={entry.seriesContext.previous}
+        next={entry.seriesContext.next}
+        chapterMode
+        position="top"
+      />
+    )}
+
     {showTOC && (
       <aside class="knowledge-layout__toc" aria-label="Table of contents">
         <TableOfContents headings={headings} />
@@ -102,6 +113,8 @@ const structuredData = breadcrumbs.length > 0
         seriesUrl={entry.seriesContext.seriesUrl}
         previous={entry.seriesContext.previous}
         next={entry.seriesContext.next}
+        chapterMode={isChapter}
+        position="bottom"
       />
     )}
 
