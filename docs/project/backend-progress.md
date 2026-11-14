@@ -53,3 +53,10 @@ Branch: `feat/backend-foundation`. Git HTTPS push was unavailable in the executo
 | Verification | `a52e056` | `84c88f5cc3891f97306974f8b3bf268320790ddf` |
 
 The commit adding this mapping only updates this progress document. Review is draft; no merge, production deploy or cloud provisioning is performed. CI status must be checked separately from local results above.
+
+## Milestone 1D — review CI (2026-11-14)
+
+- Branch `feat/backend-foundation`; tested commit `69efa83b8bb84d9b91eebc4a37cf0442e32089d7`.
+- [Site CI run 21](https://github.com/sugia279/hiens-nha/actions/runs/43614034234) succeeded, including all original quality gates and the default disabled-backend production build. [Backend foundation checks run 1](https://github.com/sugia279/hiens-nha/actions/runs/43614034312) succeeded (embedded DB/HTTP/client contracts and Deno check).
+- [PR #21](https://github.com/sugia279/hiens-nha/pull/21) remains draft. This evidence does not close real Supabase/OAuth/browser, enabled-mode bundle, staging or performance gates listed above. No merge/deploy/cutover.
+- The commit recording this result changes documentation only; runtime source is identical to the tested commit. Next step remains full local stack on a container-enabled machine and the known enablement blockers.
