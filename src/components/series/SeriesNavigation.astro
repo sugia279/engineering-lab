@@ -22,7 +22,7 @@ const vi = locale === 'vi';
 ---
 
 {chapterMode && (
-  <nav class="chapter-nav" data-chapter-nav={position} aria-label={vi ? 'Điều hướng chương truyện' : 'Chapter navigation'}>
+  <nav class="chapter-nav" data-chapter-nav={position} aria-label={vi ? (position === 'top' ? 'Điều hướng chương đầu trang' : 'Điều hướng chương cuối trang') : (position === 'top' ? 'Chapter navigation at top' : 'Chapter navigation at bottom')}>
     {previous ? (
       <a class="chapter-nav__button" href={localeUrl(previous.url, locale)} rel="prev" title={previous.title}>
         <span aria-hidden="true">←</span> {vi ? 'Chương trước' : 'Previous chapter'}
