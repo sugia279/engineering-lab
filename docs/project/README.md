@@ -21,3 +21,7 @@ Node theo `.nvmrc`, Git, npm theo lockfile. Chạy `npm ci`, `npm run dev`, mở
 ## Cách dùng tài liệu với AI
 
 Giao mục tiêu và ví dụ hành vi mong muốn, yêu cầu AI đọc `AGENTS.md` và bộ tài liệu này, liệt kê business bị ảnh hưởng trước khi sửa. Yêu cầu test cả hành vi mới và luồng cũ bị chạm, cập nhật tài liệu, báo rõ giới hạn. Tài liệu và tests giúp giảm hồi quy, không thể bảo đảm tuyệt đối không có bug.
+
+## Backend đang chuẩn bị trong local
+
+[Roadmap đề xuất](backend-plan.md), [ADR Phase 0–1](../decisions/0001-backend-foundation.md) và [tiến độ/giới hạn kiểm chứng](backend-progress.md). Production vẫn dùng Git/Issues/Pages; foundation không tự cutover nguồn ghi.
