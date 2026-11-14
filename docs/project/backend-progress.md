@@ -83,3 +83,11 @@ The commit adding this mapping only updates this progress document. Review is dr
 - Local regression evidence: 33 backend tests, 229 original/unit+budget tests, 93 smoke; Astro/Deno checks; build artifact 26/26; 21,661 links with 0 broken; HTML validation. Default JS 527,623 bytes and default aggregate/per-route gates pass. CI enabled inventory 651,087 bytes; largest route graph 574,814 < 600,000, with dynamic chunks included. Default 1785 / pilot 1784 static checks pass; these are not real Lighthouse scores.
 - Follow-up in this milestone: added actual-stack idempotent import rerun and legacy username-collision checks, clarified current runbook/API schema; their new CI run must pass before final handoff. No cloud/production writes.
 - Remaining external/release gates: real GitHub OAuth app/client/callback and verified real owner UUID; owner-controlled Supabase project/region/tier/billing and staging; production final-delta/import/source-epoch cutover signoff. IP/read-abuse protection, retention/restore and 10–20 RPS / 50 burst / p95 target remain unmeasured release work. Current production stays Git, backend disabled.
+
+## Milestone 1G — auth refresh race guard (2026-11-14)
+
+- Continuation after published follow-up `250bec49fd3aa7d915b22d199cc4e318f090853f` (local `4b93af3`, preserved under `local/comments-pilot-followup`).
+- Added a generation guard to identity refresh: an old `/me` response cannot restore a session after an automatic SIGNED_OUT event. Logout completion also cannot overwrite a newer auth state. Added a deferred-response regression test; permission authority remains in DB.
+- Re-run auth/backend tests and CI on this code before final handoff. No new provider/cloud/production work.
+
+Follow-up evidence: commit `250bec49fd3aa7d915b22d199cc4e318f090853f` passed [site CI 24](https://github.com/sugia279/hiens-nha/actions/runs/43618879104) and [backend CI 4](https://github.com/sugia279/hiens-nha/actions/runs/43618879095), including Docker/Chromium. Thus actual local import rerun (changed 0) and real-JWT legacy ownership collisions are verified; auth-generation guard is the next tested change. Route-byte scope excludes runtime-computed external/data/WASM requests, so this is not a total network budget.

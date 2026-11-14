@@ -16,3 +16,5 @@ The old 600,000-byte all-assets sum counted mutually exclusive routes together (
 ## Gates
 
 Embedded SQL/HTTP/DOM tests locally; enabled/default build gates; Docker-backed Supabase integration and browser flow in non-deploying CI. Exercise anonymous/A/B/owner real JWT roles and direct Data API/RPC bypass, version/idempotency races, immediate pending/approval without rebuild, VI/EN identity, XSS-as-text and unavailable API. OAuth provider is separately unverified until a real app is configured. Targets 10–20 steady RPS, 50 burst and p95 <2s remain a load plan unless measured. No production source switch in this change.
+
+The byte gate covers emitted Vite JS/CSS and the manifest's static/literal-dynamic edges, plus linked local script/style assets. Runtime-computed fetches outside that graph (for example Pagefind data/WASM or provider traffic), inline HTML/text and actual network timing require separate browser/load measurements. The gate is not a complete network-transfer budget or p95 benchmark.

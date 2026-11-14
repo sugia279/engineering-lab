@@ -2,14 +2,14 @@ import { createApiClient, type CurrentUser } from '../api/client';
 import { publicBackendConfig } from '../api/config';
 import type { createAuth } from './session';
 export interface AuthSnapshot { user: CurrentUser | null; busy: boolean; error: string | null }
-export type BackendRuntime = ReturnType<typeof makeRuntime>;
+export type BackendRuntime = ReturnType<typeof createBackendRuntime>;
 let singleton: BackendRuntime | null = null;
 export function getBackendRuntime() {
   const config = publicBackendConfig(import.meta.env);
   if (!config) throw new Error('Backend disabled');
-  return singleton ??= makeRuntime(config);
+  return singleton ??= createBackendRuntime(config);
 }
-function makeRuntime(config: NonNullable<ReturnType<typeof publicBackendConfig>>) {
+export function createBackendRuntime(config: NonNullable<ReturnType<typeof publicBackendConfig>>) {
   let auth: ReturnType<typeof createAuth> | null = null;
   let snapshot: AuthSnapshot = { user: null, busy: false, error: null };
   const listeners = new Set<(value: AuthSnapshot) => void>();
@@ -23,12 +23,14 @@ function makeRuntime(config: NonNullable<ReturnType<typeof publicBackendConfig>>
   let popup: Window | null = null;
   let timer: ReturnType<typeof setInterval> | null = null;
   let exchanging = false;
+  let authGeneration = 0;
   const finish = () => { if (timer) clearInterval(timer); timer = null; popup?.close(); popup = null; };
   const fail = (code = 'AUTH_FAILED') => { finish(); publish({ user: null, busy: false, error: code }); };
   const refresh = async () => {
+    const generation = ++authGeneration;
     publish({ busy: true, error: null });
-    try { publish({ user: await api.me(), busy: false }); }
-    catch { publish({ user: null, busy: false, error: 'AUTH_FAILED' }); }
+    try { const user = await api.me(); if (generation === authGeneration) publish({ user, busy: false }); }
+    catch { if (generation === authGeneration) publish({ user: null, busy: false, error: 'AUTH_FAILED' }); }
   };
   window.addEventListener('message', async event => {
     if (!popup || event.source !== popup || event.origin !== location.origin || exchanging) return;
@@ -60,7 +62,7 @@ function makeRuntime(config: NonNullable<ReturnType<typeof publicBackendConfig>>
         if (!auth) {
           const { createAuth } = await import('./session'); auth = createAuth(config);
           auth.auth.onAuthStateChange(event => {
-            if (event === 'SIGNED_OUT') publish({ user: null, busy: false, error: null });
+            if (event === 'SIGNED_OUT') { authGeneration++; publish({ user: null, busy: false, error: null }); }
           });
         }
         const redirect = new URL(redirectPath, location.origin);
@@ -72,9 +74,10 @@ function makeRuntime(config: NonNullable<ReturnType<typeof publicBackendConfig>>
     },
     async signOut() {
       if (!auth || snapshot.busy) return;
+      const generation = ++authGeneration;
       publish({ busy: true, error: null });
-      try { const { error } = await auth.auth.signOut({ scope: 'local' }); if (error) throw error; publish({ user: null, busy: false }); }
-      catch { publish({ busy: false, error: 'SIGNOUT_FAILED' }); }
+      try { const { error } = await auth.auth.signOut({ scope: 'local' }); if (error) throw error; if (generation === authGeneration) publish({ user: null, busy: false }); }
+      catch { if (generation === authGeneration) publish({ busy: false, error: 'SIGNOUT_FAILED' }); }
     },
   };
 }
