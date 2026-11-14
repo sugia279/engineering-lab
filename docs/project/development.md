@@ -67,3 +67,7 @@ Trong executor chặn IPC của CLI `tsx`, dùng `node --import tsx scripts/<nam
 | Trang EN/asset 404 | Route enumeration, base URL utility, exact-case path, build/link checks |
 
 Tương lai: tạo ADR cho multi-operator, private requests, backend/DB, anonymous submit, notifications, realtime. Đây chưa là tính năng hiện tại. Không ghi roadmap thành khả năng đã có.
+
+## Backend foundation local
+
+Đọc [ADR 0001](../decisions/0001-backend-foundation.md), [OpenAPI](../api/backend-v1.openapi.json), [runbook](backend-local.md) và [progress](backend-progress.md) trước khi sửa auth/API/SQL. Chạy thêm `npm run test:backend` và `npm run check:edge`; workflow `Backend foundation checks` kiểm tra hai gate này, không deploy. Với Docker/Podman + Supabase local, chạy `npm run test:backend:integration` theo runbook; thiếu môi trường phải báo chưa kiểm chứng. Gate load 10–20 RPS/burst 50 và p95 <2s chỉ đạt khi có số đo, không suy ra từ unit tests.

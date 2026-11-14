@@ -25,3 +25,5 @@ Giao mục tiêu và ví dụ hành vi mong muốn, yêu cầu AI đọc `AGENTS
 ## Backend đang chuẩn bị trong local
 
 [Roadmap đề xuất](backend-plan.md), [ADR Phase 0–1](../decisions/0001-backend-foundation.md) và [tiến độ/giới hạn kiểm chứng](backend-progress.md). Production vẫn dùng Git/Issues/Pages; foundation không tự cutover nguồn ghi.
+
+Chạy foundation: [Backend local](backend-local.md). Contract: [OpenAPI v1](../api/backend-v1.openapi.json). Performance: [load test plan](backend-load-test.md). Phase 2 comments UI/import/cutover chưa thực hiện.

@@ -87,3 +87,20 @@ Không gom các marker/schema khác nhau thành một parser “generic” nếu
 ## Mở rộng backend trong tương lai
 
 Chưa implement. Nếu cần ẩn danh, dữ liệu riêng tư, upload nhiều người hoặc realtime: thiết kế ADR mới về authentication, authorization theo owner/visitor, DB schema, object storage, moderation, rate limiting, backup và hosting. Giữ issue number/version hoặc có bảng mapping khi migrate; có export/import và rollback. Không thêm secret vào client để biến static site thành backend.
+
+## Foundation backend riêng trong local (14/11/2026)
+
+Production vẫn theo sơ đồ Git/Issues ở trên. [ADR 0001](../decisions/0001-backend-foundation.md) chấp nhận Phase 0–1: `supabase/` chứa local config, migrations/RLS/RPC và Edge HTTP; `src/lib/api`/`auth` là adapter dùng chung cho các shell account/admin VI/EN. Mặc định frontend tắt backend và DB tắt comment writes. Không có composer/API cutover, import, cloud project hoặc writer thứ hai cho dữ liệu production. Xem [cách chạy local](backend-local.md), [OpenAPI](../api/backend-v1.openapi.json) và [tiến độ kiểm chứng](backend-progress.md).
+
+```mermaid
+flowchart TD
+  Shell["Account/admin local"] --> Auth["Supabase Auth: OAuth"]
+  Shell --> Edge["Edge HTTP: caller JWT"]
+  Edge --> Read["Data API: grants + RLS"]
+  Edge --> RPC["Invoker RPC"]
+  RPC --> Authority["Private DB transaction"]
+  Authority --> Check["Owner, author, version, quota, write switch"]
+  Check --> Data["Comments + revision + audit"]
+```
+
+Role không lấy từ metadata tự khai; browser chỉ đọc public config. Owner cấp bằng operator SQL sau khi xác minh auth UUID. Browser auth dùng PKCE popup để session/verifier ở memory; reload/navigation phải đăng nhập lại. Đây là giới hạn foundation đã chọn, chưa phải persistent login hoàn chỉnh. Các kiểm thử PostgreSQL nhúng không thay thế real JWT/PostgREST/OAuth/full-stack tests.

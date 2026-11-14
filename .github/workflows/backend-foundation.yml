@@ -1,0 +1,21 @@
+name: Backend foundation checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - name: Embedded PostgreSQL, HTTP and client contracts
+        run: npm run test:backend
+      - name: Deno Edge typecheck
+        run: npm run check:edge

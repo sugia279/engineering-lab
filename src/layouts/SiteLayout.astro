@@ -26,6 +26,8 @@ const { seo, structuredData, currentPath = Astro.url.pathname } = Astro.props;
 const locale = localeFromPath(currentPath);
 const notFound = currentPath.includes('/404');
 const ownerUpload = localeUrl(currentPath, 'vi').endsWith('/photos/upload/');
+const accountShell = /\/(?:account(?:\/callback)?|admin)\/$/.test(localeUrl(currentPath, 'vi'));
+const privateShell = ownerUpload || accountShell;
 const localizedSeo = { ...seo,
   canonical: notFound ? `${siteConfig.origin}${siteConfig.base}${locale === 'en' ? 'en/404/' : '404.html'}` : new URL(seo.canonical).origin === siteConfig.origin ? siteConfig.origin + localeUrl(new URL(seo.canonical).pathname, locale) : seo.canonical,
   openGraph: { ...seo.openGraph, url: siteConfig.origin + localeUrl(new URL(seo.openGraph.url).pathname, locale) },
@@ -46,9 +48,9 @@ const localizedSeo = { ...seo,
   <body class="app-shell">
     <SkipLink />
     <Header currentPath={currentPath} />
-    <main id="main-content" class="app-main" tabindex="-1" data-pagefind-body data-pagefind-ignore={ownerUpload ? true : undefined}>
+    <main id="main-content" class="app-main" tabindex="-1" data-pagefind-body data-pagefind-ignore={privateShell ? true : undefined}>
       <slot />
-      {!notFound && !ownerUpload && !localeUrl(currentPath, 'vi').endsWith('/guestbook/') && <PageComments title={seo.title} />}
+      {!notFound && !privateShell && !localeUrl(currentPath, 'vi').endsWith('/guestbook/') && <PageComments title={seo.title} />}
     </main>
     <Footer />
     <PhotoViewer />
