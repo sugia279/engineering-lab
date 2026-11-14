@@ -1,15 +1,19 @@
-import { ApiError, bodyText, decodeCursor, encodeCursor, inputObject, uuid, version, type Comment, type Cursor } from '../_shared/contracts.ts';
+import { ApiError, bodyText, decodeCursor, encodeCursor, inputObject, uuid, version, type Comment, type Cursor, type CommentState, type ContentEntity } from '../_shared/contracts.ts';
+import { canonicalPageContext } from '../_shared/page-context.ts';
 
 export interface CallerBackend {
+  commentState(): Promise<CommentState>;
+  resolveEntity(path: string): Promise<ContentEntity | null>;
   verifyUser(): Promise<{ id: string }>;
   isOwner(): Promise<boolean>;
   entityExists(id: string): Promise<boolean>;
-  listComments(entityId: string | null, cursor: Cursor | null, limit: number): Promise<Comment[]>;
+  listComments(entityId: string | null, cursor: Cursor | null, limit: number, parentId?: string | null, authorId?: string, feed?: boolean): Promise<Comment[]>;
   rpc(name: string, args: Record<string, unknown>): Promise<Comment>;
 }
 export interface ApiDependencies {
   backend(token?: string): CallerBackend;
   allowedOrigins: string[];
+  siteBase?: string;
   log?: (event: { requestId: string; method: string; status: number }) => void;
 }
 async function jsonBody(request: Request): Promise<unknown> {
@@ -54,10 +58,10 @@ export function createHandler(deps: ApiDependencies) {
       if (route === '/health' && request.method === 'GET') return respond(200, { status: 'ok', version: 1 });
       const entityMatch = route.match(/^\/entities\/([^/]+)\/comments$/);
       const commentMatch = route.match(/^\/comments\/([^/]+)(\/moderate)?$/);
-      const publicRead = !!entityMatch && request.method === 'GET';
+      const publicRead = (!!entityMatch || ['/state', '/entities/resolve', '/comments'].includes(route)) && request.method === 'GET';
       if (!(entityMatch && ['GET', 'POST'].includes(request.method)) &&
           !(commentMatch && (commentMatch[2] ? request.method === 'POST' : ['PATCH', 'DELETE'].includes(request.method))) &&
-          !(['/me', '/admin/moderation'].includes(route) && request.method === 'GET'))
+          !(['/me', '/admin/moderation', '/state', '/entities/resolve', '/comments'].includes(route) && request.method === 'GET'))
         throw new ApiError(404, 'NOT_FOUND', 'Route not found');
       const authorization = request.headers.get('authorization');
       if (authorization && !/^Bearer \S+$/i.test(authorization)) throw new ApiError(401, 'UNAUTHENTICATED', 'Invalid session');
@@ -65,17 +69,32 @@ export function createHandler(deps: ApiDependencies) {
       if (!publicRead && !token) throw new ApiError(401, 'UNAUTHENTICATED', 'Sign in required');
       const backend = deps.backend(token);
       const user = token ? await backend.verifyUser() : null;
+      if (route === '/state') return respond(200, await backend.commentState());
+      if (route === '/entities/resolve') {
+        const search = new URL(request.url).searchParams;
+        if ([...search.keys()].some(k => k !== 'path')) throw new ApiError(422, 'INVALID_INPUT', 'Unknown query parameter');
+        const canonical = canonicalPageContext(search.get('path') ?? '', deps.siteBase ?? '/hiens-nha/');
+        if (!canonical) throw new ApiError(422, 'INVALID_INPUT', 'Invalid page context');
+        const entity = await backend.resolveEntity(canonical);
+        if (!entity) throw new ApiError(404, 'NOT_FOUND', 'Page is not registered for comments');
+        return respond(200, entity);
+      }
       if (route === '/me') return respond(200, { id: user!.id, role: await backend.isOwner() ? 'owner' : 'member' });
       if (request.method === 'GET') {
         const url = new URL(request.url);
-        if ([...url.searchParams.keys()].some(k => !['limit', 'cursor'].includes(k))) throw new ApiError(422, 'INVALID_INPUT', 'Unknown query parameter');
+        if ([...url.searchParams.keys()].some(k => !['limit', 'cursor', ...(entityMatch ? ['parentId', 'view'] : route === '/comments' ? ['view'] : [])].includes(k))) throw new ApiError(422, 'INVALID_INPUT', 'Unknown query parameter');
         const rawLimit = url.searchParams.get('limit') ?? '20';
         if (!/^\d+$/.test(rawLimit) || +rawLimit < 1 || +rawLimit > 50) throw new ApiError(422, 'INVALID_INPUT', 'Limit must be 1–50');
         const limit = +rawLimit; const cursor = decodeCursor(url.searchParams.get('cursor'));
         const entityId = entityMatch ? uuid(entityMatch[1]) : null;
         if (entityId && !await backend.entityExists(entityId)) throw new ApiError(404, 'NOT_FOUND', 'Entity not found');
-        if (!entityId && !await backend.isOwner()) throw new ApiError(403, 'FORBIDDEN', 'Owner required');
-        const rows = await backend.listComments(entityId, cursor, limit + 1);
+        if (route === '/admin/moderation' && !await backend.isOwner()) throw new ApiError(403, 'FORBIDDEN', 'Owner required');
+        const parentId = entityMatch && url.searchParams.has('parentId') ? uuid(url.searchParams.get('parentId'), 'parentId') : null;
+        const view = url.searchParams.get('view');
+        if (view && view !== 'mine') throw new ApiError(422, 'INVALID_INPUT', 'Invalid comment view');
+        if (view === 'mine' && !user) throw new ApiError(401, 'UNAUTHENTICATED', 'Sign in required');
+        if (view === 'mine' && parentId) throw new ApiError(422, 'INVALID_INPUT', 'Choose a thread or own comments');
+        const rows = route === '/comments' ? await backend.listComments(null, cursor, limit + 1, null, view === 'mine' ? user!.id : undefined, true) : view === 'mine' ? await backend.listComments(entityId, cursor, limit + 1, null, user!.id) : await backend.listComments(entityId, cursor, limit + 1, parentId);
         const items = rows.slice(0, limit);
         return respond(200, { items, nextCursor: rows.length > limit ? encodeCursor(items[items.length - 1]!) : null });
       }

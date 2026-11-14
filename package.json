@@ -26,7 +26,12 @@
     "backend:start": "supabase start",
     "backend:reset": "supabase db reset --local",
     "backend:serve": "supabase functions serve api --env-file supabase/.env",
-    "backend:inventory": "node scripts/migration/inventory.mjs"
+    "backend:inventory": "node scripts/migration/inventory.mjs",
+    "build:pilot": "node scripts/backend-build-pilot.mjs",
+    "check:pilot": "node --import tsx scripts/check-lighthouse.ts --pilot --dist .pilot-dist",
+    "backend:comments:dry-run": "node --import tsx scripts/migration/comments.mjs",
+    "backend:comments:import": "node --import tsx scripts/migration/comments.mjs --apply",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.0",
@@ -34,6 +39,7 @@
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "@electric-sql/pglite": "0.5.16",
+    "@playwright/test": "1.65.1",
     "@supabase/supabase-js": "2.119.0",
     "@tailwindcss/vite": "^4.0.0",
     "@types/cytoscape": "^3.21.9",
@@ -42,9 +48,11 @@
     "cytoscape": "^3.34.0",
     "deno": "2.9.6",
     "gray-matter": "^4.0.3",
+    "happy-dom": "21.0.4",
     "html-validate": "^11.5.6",
     "pagefind": "^1.5.2",
     "parse5": "^8.1.1",
+    "postgres": "4.1.1",
     "prettier": "^3.0.0",
     "prettier-plugin-astro": "^0.14.0",
     "supabase": "3.1.0",

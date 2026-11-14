@@ -104,3 +104,11 @@ flowchart TD
 ```
 
 Role không lấy từ metadata tự khai; browser chỉ đọc public config. Owner cấp bằng operator SQL sau khi xác minh auth UUID. Browser auth dùng PKCE popup để session/verifier ở memory; reload/navigation phải đăng nhập lại. Đây là giới hạn foundation đã chọn, chưa phải persistent login hoàn chỉnh. Các kiểm thử PostgreSQL nhúng không thay thế real JWT/PostgREST/OAuth/full-stack tests.
+
+## Comments pilot trong local (Phase 2)
+
+Production vẫn Git mode theo `config/comments-source.json`. Local `api-local` chỉ chấp nhận backend loopback. API mode render composer/thread/replies, own-pending/edit/delete và Sổ lưu bút tổng hợp từ DB; trang admin có hàng đợi duyệt owner-only. Các feature media/knowledge/requests giữ nguyên writer. Epoch và DB write switch phải khớp trước thao tác ghi; không fallback âm thầm sang snapshot Git khi API lỗi.
+
+Một Auth runtime dùng chung trong trang, SDK chỉ tải khi đăng nhập, session/verifier vẫn ở memory. Trả lời một cấp có pagination riêng; `view=mine` cho phép quản lý câu trả lời của mình kể cả khi root bị ẩn. Đăng xuất xóa pending UI và response cũ bị bỏ qua. Text được gán bằng textContent, không chạy HTML/MDX.
+
+Import local giữ raw provenance ở private schema, author_id=null cho tài khoản cũ chưa xác minh; không nhận ownership theo login. Operator import chỉ khi source Git và API writes đã khóa, sau đó shadow compare bằng anon RLS. [ADR 0002](../decisions/0002-comments-local-pilot.md) ghi source/budget/gates; [runbook](backend-local.md) ghi các bước rehearsal. Đây chưa phải feature đã bật trên Pages.

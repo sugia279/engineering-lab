@@ -1,4 +1,4 @@
-import { ApiError, type Comment, type CommentPage } from '../../../supabase/functions/_shared/contracts';
+import { ApiError, type Comment, type CommentPage, type CommentState, type ContentEntity } from '../../../supabase/functions/_shared/contracts';
 import type { BackendConfig } from './config';
 export interface CurrentUser { id: string; role: 'member' | 'owner' }
 export function createApiClient(config: BackendConfig, getToken: () => Promise<string | null>, fetcher: typeof fetch = fetch) {
@@ -16,10 +16,16 @@ export function createApiClient(config: BackendConfig, getToken: () => Promise<s
     if (!response.ok) throw new ApiError(response.status, data.code ?? 'API_ERROR', data.message ?? 'Request failed', data.fieldErrors ?? {});
     return data as T;
   }
-  const query = (cursor?: string | null) => cursor ? `?cursor=${encodeURIComponent(cursor)}` : '';
+  const query = (cursor?: string | null, parentId?: string, mine = false) => {
+    const params = new URLSearchParams(); if (cursor) params.set('cursor', cursor); if (parentId) params.set('parentId', parentId); if (mine) params.set('view', 'mine');
+    return params.size ? `?${params}` : '';
+  };
   return {
+    state: () => request<CommentState>('/state'),
+    resolveEntity: (path: string) => request<ContentEntity>(`/entities/resolve?path=${encodeURIComponent(path)}`),
     me: () => request<CurrentUser>('/me'),
-    comments: (entity: string, cursor?: string | null) => request<CommentPage>(`/entities/${encodeURIComponent(entity)}/comments${query(cursor)}`),
+    comments: (entity: string, cursor?: string | null, parentId?: string, mine = false) => request<CommentPage>(`/entities/${encodeURIComponent(entity)}/comments${query(cursor, parentId, mine)}`),
+    commentFeed: (cursor?: string | null, mine = false) => request<CommentPage>(`/comments${query(cursor, undefined, mine)}`),
     moderation: (cursor?: string | null) => request<CommentPage>(`/admin/moderation${query(cursor)}`),
     createComment: (entity: string, body: string, key: string, parentId?: string) => request<Comment>(`/entities/${encodeURIComponent(entity)}/comments`, 'POST', { body, parentId }, key),
     editComment: (id: string, body: string, expectedVersion: number) => request<Comment>(`/comments/${encodeURIComponent(id)}`, 'PATCH', { body, expectedVersion }),

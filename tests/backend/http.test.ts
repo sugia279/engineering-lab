@@ -11,7 +11,7 @@ let handler: ReturnType<typeof createHandler>;
 function request(path: string, options: RequestInit = {}) { return handler(new Request(`https://backend.test/functions/v1/api/v1${path}`, options)); }
 function write(body: unknown, method = 'POST'): RequestInit { return { method, headers: { authorization: 'Bearer valid', 'content-type': 'application/json', 'idempotency-key': key }, body: JSON.stringify(body) }; }
 beforeEach(() => {
-  backend = { verifyUser: vi.fn().mockResolvedValue({ id }), isOwner: vi.fn().mockResolvedValue(false), entityExists: vi.fn().mockResolvedValue(true), listComments: vi.fn().mockResolvedValue([]), rpc: vi.fn().mockResolvedValue(item) };
+  backend = { commentState: vi.fn().mockResolvedValue({ source: 'api', epoch: 1, writes_enabled: true }), resolveEntity: vi.fn().mockResolvedValue({ id, canonical_path: '/hiens-nha/music/' }), verifyUser: vi.fn().mockResolvedValue({ id }), isOwner: vi.fn().mockResolvedValue(false), entityExists: vi.fn().mockResolvedValue(true), listComments: vi.fn().mockResolvedValue([]), rpc: vi.fn().mockResolvedValue(item) };
   factory = vi.fn(() => backend); log = vi.fn(); handler = createHandler({ backend: factory, allowedOrigins: ['http://localhost:4321'], log });
 });
 describe('thin HTTP boundary', () => {
@@ -33,7 +33,7 @@ describe('thin HTTP boundary', () => {
     vi.mocked(backend.isOwner).mockResolvedValue(true); vi.mocked(backend.listComments).mockResolvedValue([item, item]);
     const response = await request('/admin/moderation?limit=1', { headers: { authorization: 'Bearer valid' } });
     const page = await response.json(); expect(page.items).toHaveLength(1); expect(decodeCursor(page.nextCursor)).toEqual({ id, created_at: item.created_at });
-    expect(backend.listComments).toHaveBeenLastCalledWith(null, null, 2);
+    expect(backend.listComments).toHaveBeenLastCalledWith(null, null, 2, null);
   });
   it('forwards narrowly scoped create input and caller token without accepting author/status', async () => {
     expect((await request(`/entities/${id}/comments`, write({ body: 'hello', authorId: id, status: 'approved' }))).status).toBe(422);

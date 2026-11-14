@@ -1,9 +1,12 @@
 /** Portable DTOs: browser, Node tests and Deno import this exact module. */
 export interface Comment {
-  id: string; entity_id: string; author_id: string; parent_id: string | null;
+  id: string; entity_id: string; author_id: string | null; parent_id: string | null;
+  context_path?: string; legacy_author_login?: string | null; legacy_url?: string | null;
   body: string; status: 'pending' | 'approved' | 'rejected' | 'hidden'; version: number;
   created_at: string; updated_at: string; deleted_at: string | null;
 }
+export interface CommentState { source: 'git' | 'api'; epoch: number; writes_enabled: boolean }
+export interface ContentEntity { id: string; canonical_path: string }
 export interface CommentPage { items: Comment[]; nextCursor: string | null }
 export interface Cursor { created_at: string; id: string }
 export class ApiError extends Error {

@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-const env = process.env;
+import { readFile } from 'node:fs/promises';
+const env = { ...process.env };
+const fixture = await readFile('backend-test-results/sessions.json','utf8').then(JSON.parse,()=>null);
+if (fixture) Object.assign(env,{ LOCAL_SUPABASE_URL:fixture.url,LOCAL_PUBLISHABLE_KEY:fixture.key,LOCAL_ENTITY_ID:fixture.entityId,LOCAL_MEMBER_A_JWT:fixture.sessions.A.access_token,LOCAL_MEMBER_B_JWT:fixture.sessions.B.access_token,LOCAL_OWNER_JWT:fixture.sessions.owner.access_token });
 const base = env.LOCAL_SUPABASE_URL;
 if (!base || !['localhost', '127.0.0.1', '[::1]'].includes(new URL(base).hostname)) throw new Error('A loopback-only local Supabase URL is required');
 for (const name of ['LOCAL_PUBLISHABLE_KEY', 'LOCAL_ENTITY_ID', 'LOCAL_MEMBER_A_JWT', 'LOCAL_MEMBER_B_JWT', 'LOCAL_OWNER_JWT']) if (!env[name]) throw new Error(`Missing ${name}`);
@@ -36,3 +39,23 @@ assert.deepEqual((await call(`/rest/v1/comments?id=eq.${id}`)).data, []);
 assert.equal((await call(`${api}/comments/${id}/moderate`, O, 'POST', { status: 'approved', expectedVersion: 2, reason: 'stale' })).status, 409);
 assert.equal((await call(`${api}/comments/${id}`, A, 'DELETE', { expectedVersion: 3 })).status, 200);
 console.log('Local Supabase JWT / Edge / PostgREST permission assertions passed; fixture soft-deleted.');
+
+const parallelKey = crypto.randomUUID();
+const duplicates = await Promise.all([1,2].map(()=>call(`${api}/entities/${entity}/comments`,A,'POST',{body:'Concurrent retry fixture'},{'idempotency-key':parallelKey})));
+assert.ok(duplicates.every(x=>x.status===200),'Concurrent create should commit/replay');
+assert.equal(duplicates[0].data.id,duplicates[1].data.id);
+const raceId=duplicates[0].data.id;
+const edits=await Promise.all(['first','second'].map(body=>call(`${api}/comments/${raceId}`,A,'PATCH',{body,expectedVersion:1})));
+assert.deepEqual(edits.map(x=>x.status).sort(),[200,409]);
+assert.equal((await call(`${api}/comments/${raceId}`,A,'DELETE',{expectedVersion:2})).status,200);
+const canonical=await call(`${api}/entities/resolve?path=${encodeURIComponent('/hiens-nha/en/music?x=1')}`);
+assert.equal(canonical.status,200);assert.equal(canonical.data.id,entity);
+const mine=await call(`${api}/entities/${entity}/comments?view=mine`,A);assert.equal(mine.status,200);
+assert.equal((await call(`${api}/entities/${entity}/comments?view=mine`)).status,401);
+// Refresh uses the actual local Auth service, independently of the browser's mocked provider handoff.
+if(fixture){
+  const response=await fetch(base+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:env.LOCAL_PUBLISHABLE_KEY,'content-type':'application/json'},body:JSON.stringify({refresh_token:fixture.sessions.B.refresh_token})});
+  assert.equal(response.status,200);const refreshed=await response.json();assert.ok(refreshed.access_token&&refreshed.refresh_token,'Local Auth refresh succeeds');
+  fixture.sessions.B=refreshed;await (await import('node:fs/promises')).writeFile('backend-test-results/sessions.json',JSON.stringify(fixture),{mode:0o600});
+}
+console.log('Real local JWT canonical identity, own-view, concurrent idempotency/version and Auth refresh assertions passed.');

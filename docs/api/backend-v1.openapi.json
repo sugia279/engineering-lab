@@ -43,7 +43,10 @@
             "format": "uuid"
           },
           "author_id": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid"
           },
           "parent_id": {
@@ -85,8 +88,21 @@
               "null"
             ],
             "format": "date-time"
+          },
+          "legacy_author_login": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "legacy_url": {
+            "type": [
+              "string",
+              "null"
+            ]
           }
-        }
+        },
+        "description": "Imported authors stay unclaimed (author_id=null); a matching username never grants edit ownership."
       },
       "CommentPage": {
         "type": "object",
@@ -153,6 +169,45 @@
             "additionalProperties": {
               "type": "string"
             }
+          }
+        }
+      },
+      "CommentState": {
+        "type": "object",
+        "required": [
+          "source",
+          "epoch",
+          "writes_enabled"
+        ],
+        "properties": {
+          "source": {
+            "enum": [
+              "git",
+              "api"
+            ]
+          },
+          "epoch": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "writes_enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ContentEntity": {
+        "type": "object",
+        "required": [
+          "id",
+          "canonical_path"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "canonical_path": {
+            "type": "string"
           }
         }
       }
@@ -417,7 +472,7 @@
         }
       ],
       "get": {
-        "summary": "RLS: approved public plus caller own; owner sees all",
+        "summary": "Paginated root threads, one-level replies, or own comments; RLS protected",
         "security": [],
         "responses": {
           "200": {
@@ -475,6 +530,25 @@
               "maxLength": 256
             },
             "description": "Opaque base64url cursor; preserves timestamp microseconds and UUID tie-breaker"
+          },
+          {
+            "in": "query",
+            "name": "parentId",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "One-level replies for this root; root pagination is independent."
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "schema": {
+              "enum": [
+                "mine"
+              ]
+            },
+            "description": "Auth required; includes own replies even if their root is no longer public. Cannot combine with parentId."
           }
         ]
       },
@@ -804,6 +878,52 @@
             }
           }
         }
+      }
+    },
+    "/state": {
+      "get": {
+        "summary": "DB source/epoch and write switch",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "DB source/epoch and write switch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentState"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entities/resolve": {
+      "get": {
+        "summary": "Resolve a registered locale-independent canonical path",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Resolve a registered locale-independent canonical path",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentEntity"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     }
   }

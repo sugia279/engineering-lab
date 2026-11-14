@@ -37,3 +37,8 @@ supabase/.branches/
 backend-test-results/
 !/.env.example
 !/supabase/.env.example
+
+# Isolated local comments build and browser fixtures (never publish with Pages)
+.pilot-dist/
+test-results/
+playwright-report/

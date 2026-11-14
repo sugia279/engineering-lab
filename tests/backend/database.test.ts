@@ -30,6 +30,7 @@ beforeAll(async () => {
     grant usage on schema auth, public to anon, authenticated;
     grant execute on function auth.uid() to anon, authenticated;`);
   await db.exec(readFileSync('supabase/migrations/202611140001_foundation.sql', 'utf8'));
+  await db.exec(readFileSync('supabase/migrations/202611140002_comments_pilot.sql', 'utf8'));
   for (const id of [A, B, O]) await db.query("insert into auth.users values($1, '{\"role\":\"owner\"}')", [id]);
   await db.query("insert into public.role_assignments(user_id,role) values($1,'owner')", [O]);
   await db.query("insert into public.content_entities(id,collection,legacy_key,canonical_path) values($1,'page','music','/hiens-nha/music/'),($2,'page','other','/hiens-nha/other/')", [E, F]);
@@ -44,7 +45,7 @@ describe('fresh migration and deny-first PostgreSQL permissions', () => {
   });
   it('default mutation kill switch blocks direct RPC', async () => {
     await errorCode(create(), 'PT503');
-    await db.exec('update private.backend_settings set comments_writes_enabled = true');
+    await db.exec("update private.backend_settings set comments_writes_enabled = true, comments_source = 'api', comments_epoch = 1");
   });
   it('denies direct insert/update/delete, role, profile, entity and audit writes', async () => {
     for (const user of [null, A, B, O]) {
@@ -55,7 +56,7 @@ describe('fresh migration and deny-first PostgreSQL permissions', () => {
   });
   it('every new table has RLS and public functions are invoker-only', async () => {
     const rows = (await db.query<{ relrowsecurity: boolean }>(`select relrowsecurity from pg_class c join pg_namespace n on c.relnamespace=n.oid where n.nspname in ('public','private') and c.relkind='r'`)).rows;
-    expect(rows.length).toBe(10); expect(rows.every(x => x.relrowsecurity)).toBe(true);
+    expect(rows.length).toBe(12); expect(rows.every(x => x.relrowsecurity)).toBe(true);
     expect((await db.query(`select proname from pg_proc p join pg_namespace n on p.pronamespace=n.oid where n.nspname='public' and prosecdef`)).rows).toEqual([]);
     expect((await db.query(`select proname from pg_proc p join pg_namespace n on p.pronamespace=n.oid where n.nspname='private' and prosecdef and not ('search_path=""'=any(proconfig))`)).rows).toEqual([]);
   });

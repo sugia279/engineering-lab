@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ApiError, type Comment, type Cursor } from '../_shared/contracts.ts';
+import { ApiError, type Comment, type Cursor, type ContentEntity, type CommentState } from '../_shared/contracts.ts';
 import type { CallerBackend } from './handler.ts';
 
 export function dbError(error: { code?: string } | null): void {
@@ -16,6 +16,13 @@ export function dbError(error: { code?: string } | null): void {
 }
 export function callerBackend(client: SupabaseClient): CallerBackend {
   return {
+    async commentState() {
+      const { data, error } = await client.rpc('comment_state').single(); dbError(error); return data as CommentState;
+    },
+    async resolveEntity(path: string) {
+      const { data, error } = await client.from('content_entities').select('id,canonical_path').eq('canonical_path', path).maybeSingle();
+      dbError(error); return data as ContentEntity | null;
+    },
     async verifyUser() {
       const { data, error } = await client.auth.getUser();
       if (error || !data.user) throw new ApiError(401, 'UNAUTHENTICATED', 'Invalid or expired session');
@@ -29,11 +36,15 @@ export function callerBackend(client: SupabaseClient): CallerBackend {
       const { data, error } = await client.from('content_entities').select('id').eq('id', id).maybeSingle();
       dbError(error); return !!data;
     },
-    async listComments(entityId: string | null, cursor: Cursor | null, limit: number) {
-      let query = client.from('comments').select('*').is('deleted_at', null).order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit);
-      query = entityId ? query.eq('entity_id', entityId) : query.eq('status', 'pending');
+    async listComments(entityId: string | null, cursor: Cursor | null, limit: number, parentId: string | null = null, authorId?: string, feed = false) {
+      let query = client.from('comments').select('*,entity:content_entities(canonical_path)').is('deleted_at', null).order('created_at', { ascending: false }).order('id', { ascending: false }).limit(limit);
+      if (entityId) {
+        query = query.eq('entity_id', entityId);
+        query = authorId ? query.eq('author_id', authorId) : parentId ? query.eq('parent_id', parentId) : query.is('parent_id', null);
+      } else if (feed) query = authorId ? query.eq('author_id', authorId) : query.is('parent_id', null);
+      else query = query.eq('status', 'pending');
       if (cursor) query = query.or(`created_at.lt.${cursor.created_at},and(created_at.eq.${cursor.created_at},id.lt.${cursor.id})`);
-      const { data, error } = await query; dbError(error); return data as Comment[];
+      const { data, error } = await query; dbError(error); return (data ?? []).map((record) => { const { entity, ...row } = record; return { ...row, context_path: (entity as { canonical_path: string }).canonical_path } as Comment; });
     },
     async rpc(name, args) { const { data, error } = await client.rpc(name, args).single(); dbError(error);
       const row = data as Partial<Comment> | null;

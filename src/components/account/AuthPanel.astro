@@ -1,8 +1,10 @@
 ---
+import { buildUrl } from '../../utils/url';
+import { localeUrl } from '../../lib/i18n';
 interface Props { vi: boolean; admin?: boolean }
 const { vi, admin = false } = Astro.props;
 ---
-<div data-backend-panel data-admin={admin ? 'true' : 'false'} data-locale={vi ? 'vi' : 'en'} data-pagefind-ignore>
+<div data-backend-panel data-admin={admin ? 'true' : 'false'} data-locale={vi ? 'vi' : 'en'} data-callback={localeUrl(buildUrl('account/callback/'), vi ? 'vi' : 'en')} data-pagefind-ignore>
   <p data-auth-status role="status" aria-live="polite">{vi ? 'Đăng nhập chưa được bật.' : 'Sign-in is not enabled.'}</p>
   <button data-sign-in type="button" hidden>{vi ? 'Đăng nhập bằng GitHub' : 'Sign in with GitHub'}</button>
   <button data-sign-out type="button" hidden>{vi ? 'Đăng xuất' : 'Sign out'}</button>
